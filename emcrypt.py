@@ -177,6 +177,11 @@ class Ui_OtherWindow(object):
         self.plainTextEdit.setPlainText(_translate("OtherWindow", "   Enter the Cryptocurrency related tweets here..."))
         self.pushButton_2.setText(_translate("OtherWindow", "Clear"))
         self.pushButton_3.setText(_translate("OtherWindow", "Evaluate"))
+        self.pushButton_2.clicked.connect(self.clearPlainText)
+        self.pushButton_2.clicked.connect(self.clearPlainText)
+
+    def clearPlainText(self):
+        self.plainTextEdit.setPlainText("") 
 import design2
 
 
