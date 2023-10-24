@@ -178,7 +178,6 @@ class Ui_OtherWindow(object):
         self.pushButton_2.setText(_translate("OtherWindow", "Clear"))
         self.pushButton_3.setText(_translate("OtherWindow", "Evaluate"))
         self.pushButton_2.clicked.connect(self.clearPlainText)
-        self.pushButton_2.clicked.connect(self.clearPlainText)
 
     def clearPlainText(self):
         self.plainTextEdit.setPlainText("") 
