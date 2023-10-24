@@ -9,7 +9,7 @@
 
 
 from PyQt5 import QtCore, QtGui, QtWidgets
-
+from PyQt5.QtWidgets import QFileDialog
 
 class Ui_OtherWindow(object):
     def setupUi(self, OtherWindow):
@@ -174,6 +174,9 @@ class Ui_OtherWindow(object):
         item = self.tableWidget.horizontalHeaderItem(3)
         item.setText(_translate("OtherWindow", "Intensity"))
         self.pushButton.setText(_translate("OtherWindow", "Upload File"))
+
+        self.pushButton.clicked.connect(self.uploadFile)  # Connect the button to the function
+       
         self.plainTextEdit.setPlainText(_translate("OtherWindow", "   Enter the Cryptocurrency related tweets here..."))
         self.pushButton_2.setText(_translate("OtherWindow", "Clear"))
         self.pushButton_3.setText(_translate("OtherWindow", "Evaluate"))
@@ -181,6 +184,16 @@ class Ui_OtherWindow(object):
 
     def clearPlainText(self):
         self.plainTextEdit.setPlainText("") 
+    def uploadFile(self):
+        options = QFileDialog.Options()
+        options |= QFileDialog.ReadOnly
+        file_name, _ = QFileDialog.getOpenFileName(None, "Upload File", "", "Text Files (*.txt);;All Files (*)", options=options)
+
+        if file_name:
+            with open(file_name, 'r') as file:
+                content = file.read()
+                self.plainTextEdit.setPlainText(content)
+
 import design2
 
 
