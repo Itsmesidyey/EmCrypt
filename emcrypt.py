@@ -1,4 +1,6 @@
+
 import os
+
 
 from PyQt5 import QtCore, QtGui, QtWidgets
 from PyQt5.QtWidgets import QFileDialog
@@ -93,7 +95,7 @@ class Ui_OtherWindow(object):
 "")
         self.tableWidget.setShowGrid(True)
         self.tableWidget.setGridStyle(QtCore.Qt.CustomDashLine)
-        self.tableWidget.setRowCount(50)
+        
         self.tableWidget.setObjectName("tableWidget")
         self.tableWidget.setColumnCount(4)
         item = QtWidgets.QTableWidgetItem()
@@ -152,12 +154,30 @@ class Ui_OtherWindow(object):
         item.setText(_translate("OtherWindow", "Intensity"))
         
         self.pushButton.clicked.connect(self.uploadFile)  # Connect the button to the function
-       
-        self.plainTextEdit.setPlainText(_translate("OtherWindow", "   Enter the Cryptocurrency related tweets here..."))
-        self.pushButton_2.setText(_translate("OtherWindow", "Clear"))
-        self.pushButton_3.setText(_translate("OtherWindow", "Evaluate"))
         self.pushButton_2.clicked.connect(self.clearPlainText)
-    
+        
+        self.pushButton_3.clicked.connect(self.updateTextInTable)
+
+        
+    def updateTextInTable(self):
+        # Get the text from the plain text edit widget
+        text = self.plainTextEdit.toPlainText()
+
+        current_row_count = self.tableWidget.rowCount()
+
+        self.tableWidget.insertRow(current_row_count)
+        
+
+        # Set the text in the first row of the table (row 0, column 0)
+        item = QtWidgets.QTableWidgetItem(text)
+        item.setForeground(QtGui.QColor(0, 0, 0))
+        font = QtGui.QFont()
+        font.setPointSize(8) 
+        item.setFont(font)
+
+        self.tableWidget.setItem(current_row_count, 0, item)
+        
+
 
     def clearPlainText(self):
         self.plainTextEdit.setPlainText("") 
