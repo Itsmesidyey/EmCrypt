@@ -18,6 +18,13 @@ def analyze_sentiment(text):
     else:
         return "Neutral"
     
+def classify_intensity(sentiment_score):
+    if sentiment_score > 0.5:
+        return "High"
+    elif sentiment_score > 0:
+        return "Medium"
+    else:
+        return "Low"   
 class Ui_OtherWindow(object):
     def setupUi(self, OtherWindow):
         OtherWindow.setObjectName("OtherWindow")
@@ -190,27 +197,35 @@ class Ui_OtherWindow(object):
         current_row_count = self.tableWidget.rowCount()
         self.tableWidget.insertRow(current_row_count)
 
-        # Perform sentiment analysis
-        sentiment = analyze_sentiment(text)
+        # Perform sentiment analysis using TextBlob
+        blob = TextBlob(text)
+        sentiment_score = blob.sentiment.polarity
 
+        # Classify the intensity level
+        intensity = classify_intensity(sentiment_score)
 
         # Set the sentiment result in the first row of the table (row 0, column 1)
-        sentiment_item = QtWidgets.QTableWidgetItem(sentiment)
+        sentiment_item = QtWidgets.QTableWidgetItem(analyze_sentiment(text))
         sentiment_item.setForeground(QtGui.QColor(0, 0, 0))
         sentiment_item.setTextAlignment(QtCore.Qt.AlignCenter)  # Set text color to black
         font = QtGui.QFont()
         font.setPointSize(8)
         sentiment_item.setFont(font)
-
         self.tableWidget.setItem(current_row_count, 1, sentiment_item)
+
+        # Set the intensity result in the first row of the table (row 0, column 3)
+        intensity_item = QtWidgets.QTableWidgetItem(intensity)
+        intensity_item.setForeground(QtGui.QColor(0, 0, 0))
+        intensity_item.setTextAlignment(QtCore.Qt.AlignCenter)  # Set text color to black
+        intensity_item.setFont(font)
+        self.tableWidget.setItem(current_row_count, 3, intensity_item)
 
         # Set the text in the first row of the table (row 0, column 0)
         text_item = QtWidgets.QTableWidgetItem(text)
         text_item.setForeground(QtGui.QColor(0, 0, 0))  # Set text color to black
-        font = QtGui.QFont()
-        font.setPointSize(8)
         text_item.setFont(font)
         self.tableWidget.setItem(current_row_count, 0, text_item)
+
 
 
 
