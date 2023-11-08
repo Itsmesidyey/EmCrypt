@@ -1,11 +1,22 @@
 
 import os
-
-
+import numpy as np
+import tensorflow as tf
+from textblob import TextBlob 
 from PyQt5 import QtCore, QtGui, QtWidgets
 from PyQt5.QtWidgets import QFileDialog
 
-
+# Define the sentiment analysis function
+def analyze_sentiment(text):
+    # Use TextBlob for polarity analysis
+    blob = TextBlob(text)
+    polarity = blob.sentiment.polarity
+    if polarity > 0:
+        return "Positive"
+    elif polarity < 0:
+        return "Negative"
+    else:
+        return "Neutral"
 class Ui_OtherWindow(object):
     def setupUi(self, OtherWindow):
         OtherWindow.setObjectName("OtherWindow")
@@ -135,6 +146,18 @@ class Ui_OtherWindow(object):
 
         self.retranslateUi(OtherWindow)
         QtCore.QMetaObject.connectSlotsByName(OtherWindow)
+        
+    def clearPlainText(self):
+        self.plainTextEdit.setPlainText("") 
+    def uploadFile(self):
+        options = QFileDialog.Options()
+        options |= QFileDialog.ReadOnly
+        file_name, _ = QFileDialog.getOpenFileName(None, "Upload File", "", "Text Files (*.txt);;All Files (*)", options=options)
+
+        if file_name:
+            with open(file_name, 'r') as file:
+                content = file.read()
+                self.plainTextEdit.setPlainText(content)
 
     def retranslateUi(self, OtherWindow):
         _translate = QtCore.QCoreApplication.translate
@@ -164,32 +187,26 @@ class Ui_OtherWindow(object):
         text = self.plainTextEdit.toPlainText()
 
         current_row_count = self.tableWidget.rowCount()
-
         self.tableWidget.insertRow(current_row_count)
+
+        # Perform sentiment analysis
+        sentiment = analyze_sentiment(text)
+
+        # Set the sentiment result in the first row of the table (row 0, column 1)
+        sentiment_item = QtWidgets.QTableWidgetItem(sentiment)
         
+        # Set text color to black
+        sentiment_item.setForeground(QtGui.QColor(0, 0, 0))
+        
+        self.tableWidget.setItem(current_row_count, 1, sentiment_item)
 
         # Set the text in the first row of the table (row 0, column 0)
-        item = QtWidgets.QTableWidgetItem(text)
-        item.setForeground(QtGui.QColor(0, 0, 0))
+        text_item = QtWidgets.QTableWidgetItem(text)
+        text_item.setForeground(QtGui.QColor(0, 0, 0))  # Set text color to black
         font = QtGui.QFont()
-        font.setPointSize(8) 
-        item.setFont(font)
-
-        self.tableWidget.setItem(current_row_count, 0, item)
-        
-
-
-    def clearPlainText(self):
-        self.plainTextEdit.setPlainText("") 
-    def uploadFile(self):
-        options = QFileDialog.Options()
-        options |= QFileDialog.ReadOnly
-        file_name, _ = QFileDialog.getOpenFileName(None, "Upload File", "", "Text Files (*.txt);;All Files (*)", options=options)
-
-        if file_name:
-            with open(file_name, 'r') as file:
-                content = file.read()
-                self.plainTextEdit.setPlainText(content)
+        font.setPointSize(8)
+        text_item.setFont(font)
+        self.tableWidget.setItem(current_row_count, 0, text_item)
 
 
 
