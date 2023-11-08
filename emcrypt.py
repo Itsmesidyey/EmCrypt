@@ -1,6 +1,7 @@
 
 import os
 import numpy as np
+import pandas as pd
 import tensorflow as tf
 from textblob import TextBlob 
 from PyQt5 import QtCore, QtGui, QtWidgets
@@ -157,15 +158,58 @@ class Ui_OtherWindow(object):
         
     def clearPlainText(self):
         self.plainTextEdit.setPlainText("") 
+   
     def uploadFile(self):
         options = QFileDialog.Options()
         options |= QFileDialog.ReadOnly
-        file_name, _ = QFileDialog.getOpenFileName(None, "Upload File", "", "Text Files (*.txt);;All Files (*)", options=options)
+        file_name, _ = QFileDialog.getOpenFileName(None, "Upload File", "", "Excel Files (*.xlsx);;All Files (*)", options=options)
 
         if file_name:
-            with open(file_name, 'r') as file:
-                content = file.read()
-                self.plainTextEdit.setPlainText(content)
+            # Use pandas to read the Excel file
+            try:
+                df = pd.read_excel(file_name)
+                # Clear any previous data in the tableWidget
+                self.tableWidget.setRowCount(0)
+                
+                # Iterate over rows in the Excel file
+                for index, row in df.iterrows():
+                    text = row['Tweets']  # Assuming 'Tweets' is the column name with the text data
+
+                    current_row_count = self.tableWidget.rowCount()
+                    self.tableWidget.insertRow(current_row_count)
+
+                    # Perform sentiment analysis using TextBlob
+                    blob = TextBlob(text)
+                    sentiment_score = blob.sentiment.polarity
+
+                    # Classify the intensity level
+                    intensity = classify_intensity(sentiment_score)
+
+                    # Set the sentiment result in the current row of the table (column 1)
+                    sentiment_item = QtWidgets.QTableWidgetItem(analyze_sentiment(text))
+                    sentiment_item.setForeground(QtGui.QColor(0, 0, 0))
+                    sentiment_item.setTextAlignment(QtCore.Qt.AlignCenter)  # Set text color to black
+                    font = QtGui.QFont()
+                    font.setPointSize(8)
+                    sentiment_item.setFont(font)
+                    self.tableWidget.setItem(current_row_count, 1, sentiment_item)
+
+                    # Set the intensity result in the current row of the table (column 3)
+                    intensity_item = QtWidgets.QTableWidgetItem(intensity)
+                    intensity_item.setForeground(QtGui.QColor(0, 0, 0))
+                    intensity_item.setTextAlignment(QtCore.Qt.AlignCenter)  # Set text color to black
+                    intensity_item.setFont(font)
+                    self.tableWidget.setItem(current_row_count, 3, intensity_item)
+
+                    # Set the text in the current row of the table (column 0)
+                    text_item = QtWidgets.QTableWidgetItem(text)
+                    text_item.setForeground(QtGui.QColor(0, 0, 0))  # Set text color to black
+                    text_item.setFont(font)
+                    self.tableWidget.setItem(current_row_count, 0, text_item)
+
+            except Exception as e:
+                # Handle any errors that may occur while reading the Excel file
+                QtWidgets.QMessageBox.critical(None, "Error", f"An error occurred: {str(e)}")
 
     def retranslateUi(self, OtherWindow):
         _translate = QtCore.QCoreApplication.translate
