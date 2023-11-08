@@ -6,7 +6,7 @@ from textblob import TextBlob
 from PyQt5 import QtCore, QtGui, QtWidgets
 from PyQt5.QtWidgets import QFileDialog
 
-# Define the sentiment analysis function
+
 def analyze_sentiment(text):
     # Use TextBlob for polarity analysis
     blob = TextBlob(text)
@@ -17,6 +17,7 @@ def analyze_sentiment(text):
         return "Negative"
     else:
         return "Neutral"
+    
 class Ui_OtherWindow(object):
     def setupUi(self, OtherWindow):
         OtherWindow.setObjectName("OtherWindow")
@@ -192,12 +193,15 @@ class Ui_OtherWindow(object):
         # Perform sentiment analysis
         sentiment = analyze_sentiment(text)
 
+
         # Set the sentiment result in the first row of the table (row 0, column 1)
         sentiment_item = QtWidgets.QTableWidgetItem(sentiment)
-        
-        # Set text color to black
         sentiment_item.setForeground(QtGui.QColor(0, 0, 0))
-        
+        sentiment_item.setTextAlignment(QtCore.Qt.AlignCenter)  # Set text color to black
+        font = QtGui.QFont()
+        font.setPointSize(8)
+        sentiment_item.setFont(font)
+
         self.tableWidget.setItem(current_row_count, 1, sentiment_item)
 
         # Set the text in the first row of the table (row 0, column 0)
@@ -207,7 +211,6 @@ class Ui_OtherWindow(object):
         font.setPointSize(8)
         text_item.setFont(font)
         self.tableWidget.setItem(current_row_count, 0, text_item)
-
 
 
 
