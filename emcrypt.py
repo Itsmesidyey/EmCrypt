@@ -325,7 +325,13 @@ class Ui_OtherWindow(object):
                 for index, row in df.iterrows():
                     text = row['Tweets']  # Assuming 'Tweets' is the column name with the text data
 
-    
+                            # Preprocess the text
+                    text = preprocess_text(text)
+                    # Detect emojis in the preprocessed text
+                    emojis = detect_emojis(text)
+                    # Append detected emojis to the preprocessed text
+                    text_with_emojis = f"{text} {' '.join(emojis)}"
+                    
                     current_row_count = self.tableWidget.rowCount()
                     self.tableWidget.insertRow(current_row_count)
 
