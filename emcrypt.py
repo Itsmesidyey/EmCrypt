@@ -223,7 +223,7 @@ class Ui_OtherWindow(object):
                     sentiment_item.setFont(font)
                     self.tableWidget.setItem(current_row_count, 1, sentiment_item)
 
-                                    # Set the emotion result in the first row of the table (row 0, column 2)
+                    # Set the emotion result in the first row of the table (row 0, column 2)
                     emotion_item = QtWidgets.QTableWidgetItem(emotion)
                     emotion_item.setForeground(QtGui.QColor(0, 0, 0))
                     emotion_item.setTextAlignment(QtCore.Qt.AlignCenter)  # Set text color to black
@@ -295,7 +295,7 @@ class Ui_OtherWindow(object):
         sentiment_item.setFont(font)
         self.tableWidget.setItem(current_row_count, 1, sentiment_item)
 
-                # Set the emotion result in the first row of the table (row 0, column 2)
+        # Set the emotion result in the first row of the table (row 0, column 2)
         emotion_item = QtWidgets.QTableWidgetItem(emotion)
         emotion_item.setForeground(QtGui.QColor(0, 0, 0))
         emotion_item.setTextAlignment(QtCore.Qt.AlignCenter)  # Set text color to black
@@ -317,10 +317,7 @@ class Ui_OtherWindow(object):
         self.tableWidget.setItem(current_row_count, 0, text_item)
 
 
-
-
 import design2
-
 
 
 if __name__ == "__main__":
