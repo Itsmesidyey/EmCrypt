@@ -26,6 +26,33 @@ def classify_intensity(sentiment_score):
         return "Medium"
     else:
         return "Low"   
+
+def classify_emotion(text):
+    # Analyze emotion using TextBlob
+    blob = TextBlob(text)
+    
+    # Extract sentiment polarity scores
+    sentiment_score = blob.sentiment.polarity
+    
+    # Define emotion labels and their corresponding sentiment score ranges
+    emotion_mapping = {
+        "Happy": (0.5, 1.0),    # Positive sentiment
+        "Sad": (-1.0, -0.5),   # Negative sentiment
+        "Angry": (-0.5, 0.0),  # Negative sentiment
+        "Anticipation": (0.0, 0.5),  # Neutral sentiment
+        "Eagerness": (0.5, 1.0),    # Positive sentiment
+        "Fear": (-1.0, -0.5),       # Negative sentiment
+    }
+    
+    # Determine the emotion based on sentiment score
+    detected_emotion = "Neutral"  # Default to neutral
+    
+    for emotion, (min_score, max_score) in emotion_mapping.items():
+        if min_score <= sentiment_score <= max_score:
+            detected_emotion = emotion
+            break
+    
+    return detected_emotion
 class Ui_OtherWindow(object):
     def setupUi(self, OtherWindow):
         OtherWindow.setObjectName("OtherWindow")
@@ -184,6 +211,8 @@ class Ui_OtherWindow(object):
 
                     # Classify the intensity level
                     intensity = classify_intensity(sentiment_score)
+                    #Emotion
+                    emotion = classify_emotion(text)
 
                     # Set the sentiment result in the current row of the table (column 1)
                     sentiment_item = QtWidgets.QTableWidgetItem(analyze_sentiment(text))
@@ -193,6 +222,13 @@ class Ui_OtherWindow(object):
                     font.setPointSize(8)
                     sentiment_item.setFont(font)
                     self.tableWidget.setItem(current_row_count, 1, sentiment_item)
+
+                                    # Set the emotion result in the first row of the table (row 0, column 2)
+                    emotion_item = QtWidgets.QTableWidgetItem(emotion)
+                    emotion_item.setForeground(QtGui.QColor(0, 0, 0))
+                    emotion_item.setTextAlignment(QtCore.Qt.AlignCenter)  # Set text color to black
+                    emotion_item.setFont(font)
+                    self.tableWidget.setItem(current_row_count, 2, emotion_item)
 
                     # Set the intensity result in the current row of the table (column 3)
                     intensity_item = QtWidgets.QTableWidgetItem(intensity)
@@ -247,6 +283,8 @@ class Ui_OtherWindow(object):
 
         # Classify the intensity level
         intensity = classify_intensity(sentiment_score)
+        emotion = classify_emotion(text)
+
 
         # Set the sentiment result in the first row of the table (row 0, column 1)
         sentiment_item = QtWidgets.QTableWidgetItem(analyze_sentiment(text))
@@ -256,6 +294,14 @@ class Ui_OtherWindow(object):
         font.setPointSize(8)
         sentiment_item.setFont(font)
         self.tableWidget.setItem(current_row_count, 1, sentiment_item)
+
+                # Set the emotion result in the first row of the table (row 0, column 2)
+        emotion_item = QtWidgets.QTableWidgetItem(emotion)
+        emotion_item.setForeground(QtGui.QColor(0, 0, 0))
+        emotion_item.setTextAlignment(QtCore.Qt.AlignCenter)  # Set text color to black
+        emotion_item.setFont(font)
+        self.tableWidget.setItem(current_row_count, 2, emotion_item)
+
 
         # Set the intensity result in the first row of the table (row 0, column 3)
         intensity_item = QtWidgets.QTableWidgetItem(intensity)
