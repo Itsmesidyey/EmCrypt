@@ -1,11 +1,171 @@
 
+# utilities
 import os
+import re
 import numpy as np
 import pandas as pd
 import tensorflow as tf
 from textblob import TextBlob 
 from PyQt5 import QtCore, QtGui, QtWidgets
 from PyQt5.QtWidgets import QFileDialog
+
+# nltk
+from nltk.stem import WordNetLemmatizer
+
+#SpellCorrection
+from spellchecker import SpellChecker
+
+import string
+import emoji
+import chardet
+
+DATASET_COLUMNS = ['date', 'username', 'text', 'polarity', 'emotion']
+
+#Detect file encoding using chardet
+with open('data.csv', 'rb') as f:
+    result = chardet.detect(f.read())
+
+# Print the detected encoding
+print("Detected encoding:", result['encoding'])
+
+# Read the file using the detected encoding
+df = pd.read_csv('data.csv', encoding=result['encoding'], names=DATASET_COLUMNS)
+df.sample(5)
+
+#Data preprocessing
+data=df[['text','polarity', 'emotion']]
+data['polarity'].unique()
+data_pos = data[data['polarity'] == 1]
+data_neu = data[data['polarity'] == 0]
+data_neg = data[data['polarity'] == -1]
+data_pos = data_pos.iloc[:int(100)]
+data_neu = data_neu.iloc[:int(100)]
+data_neg = data_neg.iloc[:int(100)] 
+dataset = pd.concat([data_pos, data_neu, data_neg])
+
+def cleaning_numbers(data):
+    return re.sub('[0-9]+', '', data)
+dataset['text'] = dataset['text'].apply(lambda x: cleaning_numbers(x))
+dataset['text'].tail()
+
+emoticons_to_keep = [
+    '💰', '📈', '🤣', '🎊', '😂', '😭', '🙁', '😞', '💔', '😢', '😮', '😵', '🙀',
+    '😱', '❗', '😠', '😡', '😤', '👎', '🔪', '🌕', '🚀', '💎', '👀', '💭', '📉',
+    '😨', '😩', '😰', '💸'
+]
+
+def clean_tweet(text):
+    # Remove URLs
+    text = re.sub(r'https?://\S+|www\.\S+', '', text)
+
+    # Remove hashtags and mentions
+    text = re.sub(r'@\w+|#\w+', '', text)
+
+    # Remove special characters except for emoticons
+    text = re.sub(r'[^\w\s.!?{}]+'.format(''.join(emoticons_to_keep)), '', text)
+
+    # Remove extra whitespace
+    text = ' '.join(text.split())
+
+    return text
+
+# Apply the modified cleaning function to the 'text' column in your dataset
+dataset['text'] = dataset['text'].apply(clean_tweet)
+
+# Display the 'text' column in the entire dataset
+print(dataset['text'])
+
+# Initialize SpellChecker only once to avoid re-creation for each call
+spell = SpellChecker()
+
+# Function for spell correction
+def spell_correction(text):
+    words = text.split()
+    misspelled = spell.unknown(words)
+    corrected_words = []
+    for word in words:
+        if word in misspelled:
+            corrected_word = spell.correction(word)
+            # Check if the correction is not None, otherwise use the original word
+            corrected_words.append(corrected_word if corrected_word is not None else word)
+        else:
+            corrected_words.append(word)
+    return ' '.join(corrected_words)
+
+# Apply spell correction to the entire 'text' column
+dataset['text'] = dataset['text'].apply(spell_correction)
+
+#Define the emoticon dictionary outside the function for a wider scope
+emoticon_dict = {
+    ":)": "smile ",
+    ":(": "sad ",
+    ":D": "laugh ",
+    "😊": "smiling face with smiling eyes ",
+    "😃": "grinning face with big eyes ",
+    "😉": "winking face ",
+    "👌": "OK hand ",
+    "👍": "Thumbs up ",
+    "😁": "beaming face with smiling eyes ",
+    "😂": "face with tears of joy ",
+    "😄": "grinning face with smiling eyes ",
+    "😅": "grinning face with sweat ",
+    "😆": "grinning squinting face ",
+    "😇": "smiling face with halo ",
+    "😞": "disappointed face ",
+    "😔": "pensive face ",
+    "😑": "expressionless face ",
+    "😒": "unamused face ",
+    "😓": "downcast face with sweat ",
+    "😕": "confused face ",
+    "😖": "confounded face ",
+    "💰": "Money Bag ",
+    "📈": "Up Trend ",
+    "🤣": "Rolling on the Floor Laughing ",
+    "🎊": "Confetti Ball ",
+    "😭": "Loudly Crying ",
+    "🙁": "Slightly frowning face ",
+    "💔": "Broken Heart ",
+    "😢": "Crying Face ",
+    "😮": "Face with Open Mouth ",
+    "😵": "Dizzy Face ",
+    "🙀": "Weary Cat ",
+    "😱": "Face Screaming in Fear ",
+    "❗": "Exclamation Mark ",
+    "😠": "Angry Face ",
+    "😡": "Pouting Face ",
+    "😤": "Face with Steam from Nose ",
+    "👎": "Thumbs Down ",
+    "🔪": "Hocho ",
+    "🌕": "Moon ",
+    "🚀": "Rocket ",
+    "💎": "Diamond ",
+    "👀": "Eyes ",
+    "💭": "Thought Balloon ",
+    "📉": "Down Trend ",
+    "😨": "Fearful Face ",
+    "😩": "Weary Face ",
+    "😰": "Anxious Face with Fear ",
+    "💸": "Money with Wings "
+}
+
+# Emoticon to word conversion function
+def convert_emoticons_to_words(text):
+    changed_emoticons = 0  # Variable to count the number of changed emoticons
+    for emoticon, word in emoticon_dict.items():
+        while emoticon in text:
+            text = text.replace(emoticon, word + " ", 1)
+            changed_emoticons += 1
+    return text, changed_emoticons
+
+# Apply the function and count emoticons for each row
+def apply_conversion(text):
+    converted_text, count = convert_emoticons_to_words(text)
+    return pd.Series([converted_text, count], index=['converted_text', 'emoticons_count'])
+
+conversion_results = dataset['text'].apply(apply_conversion)
+dataset['converted_text'] = conversion_results['converted_text']
+dataset['emoticons_count'] = conversion_results['emoticons_count']
+
 
 
 def analyze_sentiment(text):
@@ -53,6 +213,7 @@ def classify_emotion(text):
             break
     
     return detected_emotion
+
 class Ui_OtherWindow(object):
     def setupUi(self, OtherWindow):
         OtherWindow.setObjectName("OtherWindow")
