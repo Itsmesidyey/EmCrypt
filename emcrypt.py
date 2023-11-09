@@ -295,22 +295,22 @@ class Ui_OtherWindow(object):
                     text = row['Tweets']  # Assuming 'Tweets' is the column name with the text data
 
                     # Preprocess the text
-                    text = preprocess_text(text)
+                    preprocessed_text = preprocess_text(text)
                     # Detect emojis in the preprocessed text
-                    emojis = detect_emojis(text)
+                    emojis = detect_emojis(preprocessed_text)
                     
 
                     current_row_count = self.tableWidget.rowCount()
                     self.tableWidget.insertRow(current_row_count)
 
                     # Perform sentiment analysis using TextBlob
-                    blob = TextBlob(text)
+                    blob = TextBlob(preprocessed_text)
                     sentiment_score = blob.sentiment.polarity
 
                     # Classify the intensity level
                     intensity = classify_intensity(sentiment_score)
-                    #Emotion
-                    emotion = classify_emotion(text)
+                    # Emotion
+                    emotion = classify_emotion(preprocessed_text)
 
                     # Set the sentiment result in the current row of the table (column 1)
                     sentiment_item = QtWidgets.QTableWidgetItem(analyze_sentiment(text))
@@ -335,7 +335,7 @@ class Ui_OtherWindow(object):
                     intensity_item.setFont(font)
                     self.tableWidget.setItem(current_row_count, 3, intensity_item)
 
-                    # Set the text in the current row of the table (column 0)
+                    # Set the original text in the current row of the table (column 0)
                     text_item = QtWidgets.QTableWidgetItem(text)
                     text_item.setForeground(QtGui.QColor(0, 0, 0))  # Set text color to black
                     text_item.setFont(font)
@@ -344,6 +344,7 @@ class Ui_OtherWindow(object):
             except Exception as e:
                 # Handle any errors that may occur while reading the Excel file
                 QtWidgets.QMessageBox.critical(None, "Error", f"An error occurred: {str(e)}")
+
 
     def retranslateUi(self, OtherWindow):
         _translate = QtCore.QCoreApplication.translate
