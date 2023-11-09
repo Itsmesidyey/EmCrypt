@@ -207,6 +207,7 @@ class Ui_OtherWindow(object):
         self.radioButton1.setGeometry(QtCore.QRect(170, 383, 21, 20))
         self.radioButton1.setText("")
         self.radioButton1.setObjectName("radioButton1")
+        self.radioButton1.setChecked(True)
 
         self.radioButton2 = QtWidgets.QRadioButton(self.centralwidget)
         self.radioButton2.setGeometry(QtCore.QRect(170, 415, 21, 21))
@@ -331,7 +332,7 @@ class Ui_OtherWindow(object):
                     emojis = detect_emojis(text)
                     # Append detected emojis to the preprocessed text
                     text_with_emojis = f"{text} {' '.join(emojis)}"
-                    
+
                     current_row_count = self.tableWidget.rowCount()
                     self.tableWidget.insertRow(current_row_count)
 
