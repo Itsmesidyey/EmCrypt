@@ -35,98 +35,66 @@ def preprocess_text(text):
     return text
 
 def detect_emojis(text):
-    emoji_pattern = re.compile("["
-        u"\U0001F4B0"  # Money Bag
-        u"\U0001F4B5"  # Banknote with Dollar Sign
-        u"\U0001F4B8"  # Money with Wings
-        u"\U0001F4B9"  # Credit Card
-        u"\U0001F4B1"  # Currency Exchange
-        u"\U0001F4F1"  # Mobile Phone with Dollar Sign
-        u"\U0001F4F2"  # Personal Computer with Dollar Sign
-        u"\U0001F4F0"  # Money Mouth Face
-        u"\U0001F3E6"  # Bank
-        u"\U0001F3E8"  # Hotel
-        u"\U0001F4F4"  # Currency Exchange
-        u"\U0001F4F5"  # Heavy Dollar Sign
-        u"\U0001F4F6"  # Credit Card
-        u"\U0001F4F7"  # Banknote with Yen Sign
-        u"\U0001F4F8"  # Banknote with Euro Sign
-        u"\U0001F4F9"  # Banknote with Pound Sign
-        u"\U0001F4B4"  # Banknote with Yen Sign
-        u"\U0001F4B7"  # Banknote with Pound Sign
-        u"\U0001F4B6"  # Banknote with Euro Sign
-        u"\U0001F4C8"  # Chart Increasing with Yen Sign
-        u"\U0001F4C9"  # Chart Decreasing with Yen Sign
-        u"\U0001F4CA"  # Bar Chart with Yen Sign
-        u"\U0001F4CB"  # Bar Chart with Dollar Sign
-        u"\U0001F4CC"  # Bar Chart with Euro Sign
-        u"\U0001F4CD"  # Bar Chart with Pound Sign
-        u"\U0001F50E"  # Money-Mouth Face
-        u"\U0001F52A"  # Dollar Banknote
-        u"\U0001F52B"  # Euro Banknote
-        u"\U0001F4BB"  # Dollar Banknote with Wings
-        u"\U0001F4C1"  # Dollar Banknote with Coins
-        u"\U0001F4C2"  # Yen Banknote
-        u"\U0001F4C3"  # Dollar Banknote
-        u"\U0001F4C4"  # Euro Banknote
-        u"\U0001F4C5"  # Pound Banknote
-        u"\U0001F4C6"  # Money Bag
-        u"\U0001F4C7"  # Credit Card
-        u"\U0001F4C9"  # Chart Increasing
-        u"\U0001F4CA"  # Chart Decreasing
-        u"\U0001F4E6"  # Package
-        u"\U0001F4E7"  # E-Mail
-        u"\U0001F4E8"  # Incoming Envelope
-        u"\U0001F4E9"  # Envelope with Downwards Arrow Above
-        u"\U0001F4EA"  # Closed Mailbox with Lowered Flag
-        u"\U0001F4EB"  # Closed Mailbox with Raised Flag
-        u"\U0001F4EC"  # Open Mailbox with Raised Flag
-        u"\U0001F4ED"  # Open Mailbox with Lowered Flag
-        u"\U0001F4EE"  # Postbox
-        u"\U0001F4EF"  # Postal Horn
-        u"\U0001F4DC"  # Scroll
-        u"\U0001F4DD"  # Page with Curl
-        u"\U0001F4D6"  # Money with Wings
-        u"\U0001F4E2"  # Loudspeaker
-        u"\U0001F4E3"  # Right Speaker
-        u"\U0001F4E4"  # Right Speaker with One Sound Wave
-        u"\U0001F4E5"  # Right Speaker with Three Sound Waves
-        u"\U0001F4E6"  # Bullhorn
-        u"\U0001F4E7"  # Megaphone
-        u"\U0001F4E8"  # Postal Horn
-        u"\U0001F4E9"  # Bell
-        u"\U0001F4EA"  # Bell with Slash
-        u"\U0001F4EB"  # Bookmark
-        u"\U0001F4EC"  # Link Symbol
-        u"\U0001F4ED"  # Paperclip
-        u"\U0001F4EE"  # Linked Paperclips
-        u"\U0001F4EF"  # Black Pushpin
-        u"\U0001F4F0"  # White Pushpin
-        u"\U0001F4F1"  # Round Pushpin
-        u"\U0001F4F2"  # Triangular Pushpin
-        u"\U0001F4F3"  # Bookmark Tabs
-        u"\U0001F4F4"  # Ledger
-        u"\U0001F4F5"  # Notebook
-        u"\U0001F4F6"  # Notebook with Decorative Cover
-        u"\U0001F4F7"  # Closed Book
-        u"\U0001F4F8"  # Open Book
-        u"\U0001F4F9"  # Green Book
-        u"\U0001F4FA"  # Blue Book
-        u"\U0001F4FB"  # Orange Book
-        u"\U0001F4FC"  # Books
-        u"\U0001F4FD"  # Name Badge
-        u"\U0001F4FE"  # Scroll
-        u"\U0001F4FF"  # Memo
-        u"\U0001F52A"  # Closed Book
-        u"\U0001F52B"  # Open Book
-        u"\U0001F573"  # Newspaper
-        u"\U0001F58A"  # Money Bag
-        u"\U0001F58B"  # Currency Exchange
-        u"\U0001F58C"  # Heavy Dollar Sign
-        u"\U0001F58D"  # Credit Card
-        u"\U0001F58E"  # Dollar Banknote
-        "]+", flags=re.UNICODE)
-    return emoji_pattern.findall(text)
+    emoticon_dict = {
+        ":)": "smile ",
+        ":(": "sad ",
+        ":D": "laugh ",
+        "😊": "smiling face with smiling eyes ",
+        "😃": "grinning face with big eyes ",
+        "😉": "winking face ",
+        "👌": "OK hand ",
+        "👍": "Thumbs up ",
+        "😁": "beaming face with smiling eyes ",
+        "😂": "face with tears of joy ",
+        "😄": "grinning face with smiling eyes ",
+        "😅": "grinning face with sweat ",
+        "😆": "grinning squinting face ",
+        "😇": "smiling face with halo ",
+        "😞": "disappointed face ",
+        "😔": "pensive face ",
+        "😑": "expressionless face ",
+        "😒": "unamused face ",
+        "😓": "downcast face with sweat ",
+        "😕": "confused face ",
+        "😖": "confounded face ",
+        "💰": "Money Bag ",
+        "📈": "Up Trend ",
+        "🤣": "Rolling on the Floor Laughing ",
+        "🎊": "Confetti Ball ",
+        "😭": "Loudly Crying ",
+        "🙁": "Slightly frowning face ",
+        "💔": "Broken Heart ",
+        "😢": "Crying Face ",
+        "😮": "Face with Open Mouth ",
+        "😵": "Dizzy Face ",
+        "🙀": "Weary Cat ",
+        "😱": "Face Screaming in Fear ",
+        "❗": "Exclamation Mark ",
+        "😠": "Angry Face ",
+        "😡": "Pouting Face ",
+        "😤": "Face with Steam from Nose ",
+        "👎": "Thumbs Down ",
+        "🔪": "Hocho ",
+        "🌕": "Moon ",
+        "🚀": "Rocket ",
+        "💎": "Diamond ",
+        "👀": "Eyes ",
+        "💭": "Thought Balloon ",
+        "📉": "Down Trend ",
+        "😨": "Fearful Face ",
+        "😩": "Weary Face ",
+        "😰": "Anxious Face with Fear ",
+        "💸": "Money with Wings "
+    }
+
+    # Emoticon to word conversion function
+    def convert_emoticons_to_words(text):
+        changed_emoticons = 0  # Variable to count the number of changed emoticons
+        for emoticon, word in emoticon_dict.items():
+            while emoticon in text:
+                text = text.replace(emoticon, word + " ", 1)
+                changed_emoticons += 1
+        return text, changed_emoticons
 
 def analyze_sentiment(text):
     # Use TextBlob for polarity analysis
@@ -326,12 +294,11 @@ class Ui_OtherWindow(object):
                 for index, row in df.iterrows():
                     text = row['Tweets']  # Assuming 'Tweets' is the column name with the text data
 
-                            # Preprocess the text
+                    # Preprocess the text
                     text = preprocess_text(text)
                     # Detect emojis in the preprocessed text
                     emojis = detect_emojis(text)
-                    # Append detected emojis to the preprocessed text
-                    text_with_emojis = f"{text} {' '.join(emojis)}"
+                    
 
                     current_row_count = self.tableWidget.rowCount()
                     self.tableWidget.insertRow(current_row_count)
@@ -402,32 +369,35 @@ class Ui_OtherWindow(object):
         
  
     def updateTextInTable(self):
-
-        text = self.plainTextEdit.toPlainText()
+        # Get the original text
+        original_text = self.plainTextEdit.toPlainText()
 
         current_row_count = self.tableWidget.rowCount()
         self.tableWidget.insertRow(current_row_count)
+
         # Preprocess the text
-        text = preprocess_text(text)
-        # Detect emojis in the preprocessed text
-        emojis = detect_emojis(text)
-        # Append detected emojis to the preprocessed text
-        text_with_emojis = f"{text} {' '.join(emojis)}"
-    
-        # Perform sentiment analysis using TextBlob
-        blob = TextBlob(text)
+        preprocessed_text = preprocess_text(original_text)
+
+        # Perform sentiment analysis using TextBlob on the original text
+        blob = TextBlob(original_text)
         sentiment_score = blob.sentiment.polarity
 
         # Classify the intensity level
         intensity = classify_intensity(sentiment_score)
-        emotion = classify_emotion(text)
+        emotion = classify_emotion(original_text)
 
-        # Set the sentiment result in the first row of the table (row 0, column 1)
-        sentiment_item = QtWidgets.QTableWidgetItem(analyze_sentiment(text))
-        sentiment_item.setForeground(QtGui.QColor(0, 0, 0))
-        sentiment_item.setTextAlignment(QtCore.Qt.AlignCenter)  # Set text color to black
+        # Set the original text in the first row of the table (row 0, column 0)
+        original_text_item = QtWidgets.QTableWidgetItem(original_text)
+        original_text_item.setForeground(QtGui.QColor(0, 0, 0))  # Set text color to black
         font = QtGui.QFont()
         font.setPointSize(8)
+        original_text_item.setFont(font)
+        self.tableWidget.setItem(current_row_count, 0, original_text_item)
+
+        # Set the sentiment result in the first row of the table (row 0, column 1)
+        sentiment_item = QtWidgets.QTableWidgetItem(analyze_sentiment(original_text))
+        sentiment_item.setForeground(QtGui.QColor(0, 0, 0))
+        sentiment_item.setTextAlignment(QtCore.Qt.AlignCenter)  # Set text color to black
         sentiment_item.setFont(font)
         self.tableWidget.setItem(current_row_count, 1, sentiment_item)
 
@@ -438,19 +408,12 @@ class Ui_OtherWindow(object):
         emotion_item.setFont(font)
         self.tableWidget.setItem(current_row_count, 2, emotion_item)
 
-
         # Set the intensity result in the first row of the table (row 0, column 3)
         intensity_item = QtWidgets.QTableWidgetItem(intensity)
         intensity_item.setForeground(QtGui.QColor(0, 0, 0))
         intensity_item.setTextAlignment(QtCore.Qt.AlignCenter)  # Set text color to black
         intensity_item.setFont(font)
         self.tableWidget.setItem(current_row_count, 3, intensity_item)
-
-        # Set the text in the first row of the table (row 0, column 0)
-        text_item = QtWidgets.QTableWidgetItem(text)
-        text_item.setForeground(QtGui.QColor(0, 0, 0))  # Set text color to black
-        text_item.setFont(font)
-        self.tableWidget.setItem(current_row_count, 0, text_item)
 
 
 import design2
