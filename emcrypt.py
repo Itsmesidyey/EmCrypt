@@ -1,420 +1,377 @@
-import os
 import re
-import numpy as np
 import pandas as pd
-import tensorflow as tf
-from textblob import TextBlob 
+import pickle
 from PyQt5 import QtCore, QtGui, QtWidgets
 from PyQt5.QtWidgets import QFileDialog
 import nltk
 from nltk.corpus import stopwords
-from nltk.tokenize import word_tokenize
-
-
-# Function to clean and preprocess text
-def preprocess_text(text):
-    # Remove emojis
-    text = re.sub(r"(:\s?\)|:-\)|\(\s?:|\(-:|:\'\))", " ", text)
-    
-    # Remove special characters and punctuation
-    text = re.sub(r"[^a-zA-Z0-9\s]", "", text)
-    
-    # Convert text to lowercase
-    text = text.lower()
-    
-    # Tokenize the text
-    words = word_tokenize(text)
-    
-    # Remove stop words
-    stop_words = set(stopwords.words("english"))
-    filtered_words = [word for word in words if word not in stop_words]
-    
-    # Remove repeating characters (e.g., loooove -> love)
-    text = re.sub(r"(.)\1{2,}", r"\1", " ".join(filtered_words))
-    
-    return text
-
-def detect_emojis(text):
-    emoticon_dict = {
-        ":)": "smile ",
-        ":(": "sad ",
-        ":D": "laugh ",
-        "😊": "smiling face with smiling eyes ",
-        "😃": "grinning face with big eyes ",
-        "😉": "winking face ",
-        "👌": "OK hand ",
-        "👍": "Thumbs up ",
-        "😁": "beaming face with smiling eyes ",
-        "😂": "face with tears of joy ",
-        "😄": "grinning face with smiling eyes ",
-        "😅": "grinning face with sweat ",
-        "😆": "grinning squinting face ",
-        "😇": "smiling face with halo ",
-        "😞": "disappointed face ",
-        "😔": "pensive face ",
-        "😑": "expressionless face ",
-        "😒": "unamused face ",
-        "😓": "downcast face with sweat ",
-        "😕": "confused face ",
-        "😖": "confounded face ",
-        "💰": "Money Bag ",
-        "📈": "Up Trend ",
-        "🤣": "Rolling on the Floor Laughing ",
-        "🎊": "Confetti Ball ",
-        "😭": "Loudly Crying ",
-        "🙁": "Slightly frowning face ",
-        "💔": "Broken Heart ",
-        "😢": "Crying Face ",
-        "😮": "Face with Open Mouth ",
-        "😵": "Dizzy Face ",
-        "🙀": "Weary Cat ",
-        "😱": "Face Screaming in Fear ",
-        "❗": "Exclamation Mark ",
-        "😠": "Angry Face ",
-        "😡": "Pouting Face ",
-        "😤": "Face with Steam from Nose ",
-        "👎": "Thumbs Down ",
-        "🔪": "Hocho ",
-        "🌕": "Moon ",
-        "🚀": "Rocket ",
-        "💎": "Diamond ",
-        "👀": "Eyes ",
-        "💭": "Thought Balloon ",
-        "📉": "Down Trend ",
-        "😨": "Fearful Face ",
-        "😩": "Weary Face ",
-        "😰": "Anxious Face with Fear ",
-        "💸": "Money with Wings "
-    }
-
-    # Emoticon to word conversion function
-    def convert_emoticons_to_words(text):
-        changed_emoticons = 0  # Variable to count the number of changed emoticons
-        for emoticon, word in emoticon_dict.items():
-            while emoticon in text:
-                text = text.replace(emoticon, word + " ", 1)
-                changed_emoticons += 1
-        return text, changed_emoticons
-
-def analyze_sentiment(text):
-    # Use TextBlob for polarity analysis
-    blob = TextBlob(text)
-    polarity = blob.sentiment.polarity
-    if polarity > 0:
-        return "Positive"
-    elif polarity < 0:
-        return "Negative"
-    else:
-        return "Neutral"
-    
-def classify_intensity(sentiment_score):
-    if sentiment_score > 0.5:
-        return "High"
-    elif sentiment_score > 0:
-        return "Medium"
-    else:
-        return "Low"   
-
-def classify_emotion(text):
-    # Analyze emotion using TextBlob
-    blob = TextBlob(text)
-    
-    # Extract sentiment polarity scores
-    sentiment_score = blob.sentiment.polarity
-    
-    # Define emotion labels and their corresponding sentiment score ranges
-    emotion_mapping = {
-        "Happy": (0.5, 1.0),    # Positive sentiment
-        "Sad": (-1.0, -0.5),   # Negative sentiment
-        "Angry": (-0.5, 0.0),  # Negative sentiment
-        "Anticipation": (0.0, 0.5),  # Neutral sentiment
-        "Eagerness": (0.5, 1.0),    # Positive sentiment
-        "Fear": (-1.0, -0.5),       # Negative sentiment
-    }
-    
-    # Determine the emotion based on sentiment score
-    detected_emotion = "Neutral"  # Default to neutral
-    
-    for emotion, (min_score, max_score) in emotion_mapping.items():
-        if min_score <= sentiment_score <= max_score:
-            detected_emotion = emotion
-            break
-    
-    return detected_emotion
-
- 
+from nltk.tokenize import word_tokenize, RegexpTokenizer
+from spellchecker import SpellChecker
 
 class Ui_OtherWindow(object):
+    def __init__(self):
+        try:
+            self.polarity_model_combine = pickle.load(open('lstm_model_polarity_combine.pkl', 'rb'))
+            self.emotion_model_combine = pickle.load(open('svm_model_emotion_combine.pkl', 'rb'))
+            self.polarity_model_text = pickle.load(open('lstm_model_polarity_text.pkl', 'rb'))
+            self.emotion_model_text = pickle.load(open('svm_model_emotion_text.pkl', 'rb'))
+        except Exception as e:
+            print("Error loading models:", e)
+
+        self.emoticon_dict = {
+                    ":)": "smile ",
+                    ":(": "sad ",
+                    ":D": "laugh ",
+                    "😊": "smiling face with smiling eyes ",
+                    "😃": "grinning face with big eyes ",
+                    "😉": "winking face ",
+                    "👌": "OK hand ",
+                    "👍": "Thumbs up ",
+                    "😁": "beaming face with smiling eyes ",
+                    "😂": "face with tears of joy ",
+                    "😄": "grinning face with smiling eyes ",
+                    "😅": "grinning face with sweat ",
+                    "😆": "grinning squinting face ",
+                    "😇": "smiling face with halo ",
+                    "😞": "disappointed face ",
+                    "😔": "pensive face ",
+                    "😑": "expressionless face ",
+                    "😒": "unamused face ",
+                    "😓": "downcast face with sweat ",
+                    "😕": "confused face ",
+                    "😖": "confounded face ",
+                    "💰": "Money Bag ",
+                    "📈": "Up Trend ",
+                    "🤣": "Rolling on the Floor Laughing ",
+                    "🎊": "Confetti Ball ",
+                    "😭": "Loudly Crying ",
+                    "🙁": "Slightly frowning face ",
+                    "💔": "Broken Heart ",
+                    "😢": "Crying Face ",
+                    "😮": "Face with Open Mouth ",
+                    "😵": "Dizzy Face ",
+                    "🙀": "Weary Cat ",
+                    "😱": "Face Screaming in Fear ",
+                    "❗": "Exclamation Mark ",
+                    "😠": "Angry Face ",
+                    "😡": "Pouting Face ",
+                    "😤": "Face with Steam from Nose ",
+                    "👎": "Thumbs Down ",
+                    "🔪": "Hocho ",
+                    "🌕": "Moon ",
+                    "🚀": "Rocket ",
+                    "💎": "Diamond ",
+                    "👀": "Eyes ",
+                    "💭": "Thought Balloon ",
+                    "📉": "Down Trend ",
+                    "😨": "Fearful Face ",
+                    "😩": "Weary Face ",
+                    "😰": "Anxious Face with Fear ",
+                    "💸": "Money with Wings "
+                        }
+
     def setupUi(self, OtherWindow):
-        OtherWindow.setObjectName("OtherWindow")
-        OtherWindow.resize(1034, 1086)
-        self.centralwidget = QtWidgets.QWidget(OtherWindow)
-        self.centralwidget.setObjectName("centralwidget")
-        self.label = QtWidgets.QLabel(self.centralwidget)
-        self.label.setGeometry(QtCore.QRect(0, 0, 1051, 1061))
-        self.label.setStyleSheet("background-image: url(:/bgapp/Frame.png);")
-        self.label.setText("")
-        self.label.setPixmap(QtGui.QPixmap(":/bgapp/Frame.png"))
-        self.label.setScaledContents(True)
-        self.label.setObjectName("label")
+            OtherWindow.setObjectName("OtherWindow")
+            OtherWindow.resize(1034, 1086)
+            self.centralwidget = QtWidgets.QWidget(OtherWindow)
+            self.centralwidget.setObjectName("centralwidget")
+            self.label = QtWidgets.QLabel(self.centralwidget)
+            self.label.setGeometry(QtCore.QRect(0, 0, 1051, 1061))
+            self.label.setStyleSheet("background-image: url(:/bgapp/Frame.png);")
+            self.label.setText("")
+            self.label.setPixmap(QtGui.QPixmap(":/bgapp/Frame.png"))
+            self.label.setScaledContents(True)
+            self.label.setObjectName("label")
 
-        self.pushButton = QtWidgets.QPushButton(self.centralwidget)
-        self.pushButton.setGeometry(QtCore.QRect(140, 469, 181, 41))
-        font = QtGui.QFont()
-        font.setFamily("Poppins")
-        font.setPointSize(11)
-        font.setBold(True)
-        font.setWeight(75)
-        self.pushButton.setFont(font)
-        self.pushButton.setStyleSheet("background-color: rgb(126,217,87);\n"
-"color: white;\n"
-"border-radius:10px\n"
-"")
-        self.pushButton.setObjectName("pushButton")
-        self.radioButton1 = QtWidgets.QRadioButton(self.centralwidget)
-        self.radioButton1.setGeometry(QtCore.QRect(170, 383, 21, 20))
-        self.radioButton1.setText("")
-        self.radioButton1.setObjectName("radioButton1")
-        self.radioButton1.setChecked(True)
+            self.pushButton = QtWidgets.QPushButton(self.centralwidget)
+            self.pushButton.setGeometry(QtCore.QRect(140, 469, 181, 41))
+            font = QtGui.QFont()
+            font.setFamily("Poppins")
+            font.setPointSize(11)
+            font.setBold(True)
+            font.setWeight(75)
+            self.pushButton.setFont(font)
+            self.pushButton.setStyleSheet("background-color: rgb(126,217,87);\n"
+    "color: white;\n"
+    "border-radius:10px\n"
+    "")
+            self.pushButton.setObjectName("pushButton")
+            self.radioButton1 = QtWidgets.QRadioButton(self.centralwidget)
+            self.radioButton1.setGeometry(QtCore.QRect(170, 383, 21, 20))
+            self.radioButton1.setText("")
+            self.radioButton1.setObjectName("radioButton1")
+            self.radioButton1.setChecked(True)
 
-        self.radioButton2 = QtWidgets.QRadioButton(self.centralwidget)
-        self.radioButton2.setGeometry(QtCore.QRect(170, 415, 21, 21))
-        self.radioButton2.setText("")
-        self.radioButton2.setObjectName("radioButton2")
+            self.radioButton2 = QtWidgets.QRadioButton(self.centralwidget)
+            self.radioButton2.setGeometry(QtCore.QRect(170, 415, 21, 21))
+            self.radioButton2.setText("")
+            self.radioButton2.setObjectName("radioButton2")
 
-        self.pushButton.setObjectName("pushButton")
+            self.pushButton.setObjectName("pushButton")
 
-        self.plainTextEdit = QtWidgets.QPlainTextEdit(self.centralwidget)
-        self.plainTextEdit.setGeometry(QtCore.QRect(120, 180, 811, 171))
-        font = QtGui.QFont()
-        font.setFamily("Poppins")
-        font.setPointSize(11)
-        self.plainTextEdit.setFont(font)
-        self.plainTextEdit.setObjectName("plainTextEdit")
-        self.pushButton_2 = QtWidgets.QPushButton(self.centralwidget)
-        self.pushButton_2.setGeometry(QtCore.QRect(330, 469, 141, 41))
-        font = QtGui.QFont()
-        font.setFamily("Poppins")
-        font.setPointSize(11)
-        font.setBold(True)
-        font.setWeight(75)
-        self.pushButton_2.setFont(font)
-        self.pushButton_2.setStyleSheet("background-color: rgb(249,107,107);\n"
-"color: white;\n"
-"border-radius:10px\n"
-"")
-        self.pushButton_2.setObjectName("pushButton_2")
-        self.pushButton_3 = QtWidgets.QPushButton(self.centralwidget)
-        self.pushButton_3.setGeometry(QtCore.QRect(730, 470, 181, 41))
-        font = QtGui.QFont()
-        font.setFamily("Poppins")
-        font.setPointSize(11)
-        font.setBold(True)
-        font.setWeight(75)
-        self.pushButton_3.setFont(font)
-        self.pushButton_3.setStyleSheet("background-color: black;\n"
-"color: white;\n"
-"border-radius:10px\n"
-"")
-        self.pushButton_3.setObjectName("pushButton_3")
-        self.tableWidget = QtWidgets.QTableWidget(self.centralwidget)
-        self.tableWidget.setGeometry(QtCore.QRect(120, 560, 811, 421))
-        font = QtGui.QFont()
-        font.setFamily("Poppins")
-        font.setPointSize(14)
-        self.tableWidget.setFont(font)
-        self.tableWidget.setStyleSheet("QTableWidget{\n"
-"background-color: white;\n"
-"color: white;\n"
-"border-radius:10px\n"
-"\n"
-"}\n"
-"QHeaderView::section { background-color:rgb(126,217,87)}\");\n"
-"\n"
-"")
-        self.tableWidget.setShowGrid(True)
-        self.tableWidget.setGridStyle(QtCore.Qt.CustomDashLine)
-        
-        self.tableWidget.setObjectName("tableWidget")
-        self.tableWidget.setColumnCount(4)
-        item = QtWidgets.QTableWidgetItem()
-        font = QtGui.QFont()
-        font.setFamily("Poppins")
-        font.setPointSize(10)
-        item.setFont(font)
-        self.tableWidget.setHorizontalHeaderItem(0, item)
-        item = QtWidgets.QTableWidgetItem()
-        font = QtGui.QFont()
-        font.setFamily("Poppins")
-        font.setPointSize(10)
-        item.setFont(font)
-        self.tableWidget.setHorizontalHeaderItem(1, item)
-        item = QtWidgets.QTableWidgetItem()
-        font = QtGui.QFont()
-        font.setFamily("Poppins")
-        font.setPointSize(10)
-        item.setFont(font)
-        self.tableWidget.setHorizontalHeaderItem(2, item)
-        item = QtWidgets.QTableWidgetItem()
-        font = QtGui.QFont()
-        font.setFamily("Poppins")
-        font.setPointSize(10)
-        item.setFont(font)
-        self.tableWidget.setHorizontalHeaderItem(3, item)
-        self.tableWidget.horizontalHeader().setVisible(True)
-        self.tableWidget.horizontalHeader().setCascadingSectionResizes(False)
-        self.tableWidget.horizontalHeader().setDefaultSectionSize(192)
-        self.tableWidget.horizontalHeader().setHighlightSections(False)
-        self.tableWidget.horizontalHeader().setSortIndicatorShown(False)
-        self.tableWidget.verticalHeader().setDefaultSectionSize(40)
-        OtherWindow.setCentralWidget(self.centralwidget)
-        self.statusbar = QtWidgets.QStatusBar(OtherWindow)
-        self.statusbar.setObjectName("statusbar")
-        OtherWindow.setStatusBar(self.statusbar)
+            self.plainTextEdit = QtWidgets.QPlainTextEdit(self.centralwidget)
+            self.plainTextEdit.setGeometry(QtCore.QRect(120, 180, 811, 171))
+            font = QtGui.QFont()
+            font.setFamily("Poppins")
+            font.setPointSize(11)
+            self.plainTextEdit.setFont(font)
+            self.plainTextEdit.setObjectName("plainTextEdit")
+            self.pushButton_2 = QtWidgets.QPushButton(self.centralwidget)
+            self.pushButton_2.setGeometry(QtCore.QRect(330, 469, 141, 41))
+            font = QtGui.QFont()
+            font.setFamily("Poppins")
+            font.setPointSize(11)
+            font.setBold(True)
+            font.setWeight(75)
+            self.pushButton_2.setFont(font)
+            self.pushButton_2.setStyleSheet("background-color: rgb(249,107,107);\n"
+    "color: white;\n"
+    "border-radius:10px\n"
+    "")
+            self.pushButton_2.setObjectName("pushButton_2")
+            self.pushButton_3 = QtWidgets.QPushButton(self.centralwidget)
+            self.pushButton_3.setGeometry(QtCore.QRect(730, 470, 181, 41))
+            font = QtGui.QFont()
+            font.setFamily("Poppins")
+            font.setPointSize(11)
+            font.setBold(True)
+            font.setWeight(75)
+            self.pushButton_3.setFont(font)
+            self.pushButton_3.setStyleSheet("background-color: black;\n"
+    "color: white;\n"
+    "border-radius:10px\n"
+    "")
+            self.pushButton_3.setObjectName("pushButton_3")
+            self.tableWidget = QtWidgets.QTableWidget(self.centralwidget)
+            self.tableWidget.setGeometry(QtCore.QRect(120, 560, 811, 421))
+            font = QtGui.QFont()
+            font.setFamily("Poppins")
+            font.setPointSize(14)
+            self.tableWidget.setFont(font)
+            self.tableWidget.setStyleSheet("QTableWidget{\n"
+    "background-color: white;\n"
+    "color: white;\n"
+    "border-radius:10px\n"
+    "\n"
+    "}\n"
+    "QHeaderView::section { background-color:rgb(126,217,87)}\");\n"
+    "\n"
+    "")
+            self.tableWidget.setShowGrid(True)
+            self.tableWidget.setGridStyle(QtCore.Qt.CustomDashLine)
+            
+            self.tableWidget.setObjectName("tableWidget")
+            self.tableWidget.setColumnCount(4)
+            item = QtWidgets.QTableWidgetItem()
+            font = QtGui.QFont()
+            font.setFamily("Poppins")
+            font.setPointSize(10)
+            item.setFont(font)
+            self.tableWidget.setHorizontalHeaderItem(0, item)
+            item = QtWidgets.QTableWidgetItem()
+            font = QtGui.QFont()
+            font.setFamily("Poppins")
+            font.setPointSize(10)
+            item.setFont(font)
+            self.tableWidget.setHorizontalHeaderItem(1, item)
+            item = QtWidgets.QTableWidgetItem()
+            font = QtGui.QFont()
+            font.setFamily("Poppins")
+            font.setPointSize(10)
+            item.setFont(font)
+            self.tableWidget.setHorizontalHeaderItem(2, item)
+            item = QtWidgets.QTableWidgetItem()
+            font = QtGui.QFont()
+            font.setFamily("Poppins")
+            font.setPointSize(10)
+            item.setFont(font)
+            self.tableWidget.setHorizontalHeaderItem(3, item)
+            self.tableWidget.horizontalHeader().setVisible(True)
+            self.tableWidget.horizontalHeader().setCascadingSectionResizes(False)
+            self.tableWidget.horizontalHeader().setDefaultSectionSize(192)
+            self.tableWidget.horizontalHeader().setHighlightSections(False)
+            self.tableWidget.horizontalHeader().setSortIndicatorShown(False)
+            self.tableWidget.verticalHeader().setDefaultSectionSize(40)
+            OtherWindow.setCentralWidget(self.centralwidget)
+            self.statusbar = QtWidgets.QStatusBar(OtherWindow)
+            self.statusbar.setObjectName("statusbar")
+            OtherWindow.setStatusBar(self.statusbar)
 
-        self.retranslateUi(OtherWindow)
-        QtCore.QMetaObject.connectSlotsByName(OtherWindow)
-        
-    def clearPlainText(self):
-        self.plainTextEdit.setPlainText("") 
-   
-    def uploadFile(self):
-        options = QFileDialog.Options()
-        options |= QFileDialog.ReadOnly
-        file_name, _ = QFileDialog.getOpenFileName(None, "Upload File", "", "Excel Files (*.xlsx);;All Files (*)", options=options)
+            self.retranslateUi(OtherWindow)
+            QtCore.QMetaObject.connectSlotsByName(OtherWindow)
+    
+            def clearPlainText(self):
+                self.plainTextEdit.setPlainText("")
 
-        if file_name:
-            # Use pandas to read the Excel file
-            try:
-                df = pd.read_excel(file_name)
-                # Clear any previous data in the tableWidget
-                self.tableWidget.setRowCount(0)
+            def uploadFile(self):
+                options = QFileDialog.Options()
+                options |= QFileDialog.ReadOnly
+                file_name, _ = QFileDialog.getOpenFileName(None, "Upload File", "", "Excel Files (*.xlsx);;All Files (*)", options=options)
+                if file_name:
+                    try:
+                        df = pd.read_excel(file_name)
+                        self.tableWidget.setRowCount(0)
+                        for index, row in df.iterrows():
+                            text = row['Tweets']  # Assuming 'Tweets' is the column name with the text data
+                            pass
+                    except Exception as e:
+                        print("An error occurred:", e)
+
+            def cleaning_numbers(original_text):
+                return re.sub('[0-9]+', '', original_text)
+
+            def clean_tweet(original_text, emoticons_to_keep):
+                text = re.sub(r'https?://\S+|www\.\S+', '', original_text)  # Remove URLs
+                text = re.sub(r'@\w+|#\w+', '', text)  # Remove hashtags and mentions
+                text = re.sub(r'[^\w\s.!?{}]+'.format(''.join(emoticons_to_keep)), '', text)  # Remove special characters
+                return ' '.join(text.split())  # Remove extra whitespace
+
+            spell = SpellChecker()  # Initialize SpellChecker
+
+            def spell_correction(original_text, emoticons_to_keep):
+                words = original_text.split()
+                corrected_words = []
+                for word in words:
+                    if word not in emoticons_to_keep:
+                        corrected_word = spell.correction(word)
+                        corrected_words.append(corrected_word if corrected_word else word)
+                    else:
+                        corrected_words.append(word)
+                return ' '.join(corrected_words)
+
+            def cleaning_stopwords(original_text):
+                stopwordlist = ['a', 'about', 'above', 'after', 'again', 'ain', 'all', 'am', 'an',
+                        'and','any','are', 'as', 'at', 'be', 'because', 'been', 'before',
+                        'being', 'below', 'between','both', 'by', 'can', 'd', 'did', 'do',
+                        'does', 'doing', 'down', 'during', 'each','few', 'for', 'from',
+                        'further', 'had', 'has', 'have', 'having', 'he', 'her', 'here',
+                        'hers', 'herself', 'him', 'himself', 'his', 'how', 'i', 'if', 'in',
+                        'into','is', 'it', 'its', 'itself', 'just', 'll', 'm', 'ma',
+                        'me', 'more', 'most','my', 'myself', 'now', 'o', 'of', 'on', 'once',
+                        'only', 'or', 'other', 'our', 'ours','ourselves', 'out', 'own', 're','s', 'same', 'she', "shes", 'should', "shouldve",'so', 'some', 'such',
+                        't', 'than', 'that', "thatll", 'the', 'their', 'theirs', 'them',
+                        'themselves', 'then', 'there', 'these', 'they', 'this', 'those',
+                        'through', 'to', 'too','under', 'until', 'up', 've', 'very', 'was',
+                        'we', 'were', 'what', 'when', 'where','which','while', 'who', 'whom',
+                        'why', 'will', 'with', 'won', 'y', 'you', "youd","youll", "youre",
+                        "youve", 'your', 'yours', 'yourself', 'yourselves']
                 
-                # Iterate over rows in the Excel file
-                for index, row in df.iterrows():
-                    text = row['Tweets']  # Assuming 'Tweets' is the column name with the text data
+                return " ".join([word for word in str(original_text).split() if word not in stopwordlist])
 
-                    # Preprocess the text
-                    text = preprocess_text(text)
-                    # Detect emojis in the preprocessed text
-                    emojis = detect_emojis(text)
-                    
+            def cleaning_repeating_words(original_text):
+                return re.sub(r'\b(\w+)( \1\b)+', r'\1', original_text)
 
-                    current_row_count = self.tableWidget.rowCount()
-                    self.tableWidget.insertRow(current_row_count)
+            def stemming_on_text(original_text):
+                st = nltk.PorterStemmer()
+                return [st.stem(word) for word in original_text]
 
-                    # Perform sentiment analysis using TextBlob
-                    blob = TextBlob(text)
-                    sentiment_score = blob.sentiment.polarity
+            def lemmatizer_on_text(original_text):
+                lm = nltk.WordNetLemmatizer()
+                return [lm.lemmatize(word) for word in original_text]
 
-                    # Classify the intensity level
-                    intensity = classify_intensity(sentiment_score)
-                    #Emotion
-                    emotion = classify_emotion(text)
+            def classify_intensity(self, emoticons_count, original_text):
+                    question_marks = original_text.count('?')
+                    periods = original_text.count('.')
+                    exclamation_marks = original_text.count('!')
 
-                    # Set the sentiment result in the current row of the table (column 1)
-                    sentiment_item = QtWidgets.QTableWidgetItem(analyze_sentiment(text))
-                    sentiment_item.setForeground(QtGui.QColor(0, 0, 0))
-                    sentiment_item.setTextAlignment(QtCore.Qt.AlignCenter)  # Set text color to black
-                    font = QtGui.QFont()
-                    font.setPointSize(8)
-                    sentiment_item.setFont(font)
-                    self.tableWidget.setItem(current_row_count, 1, sentiment_item)
+                    if exclamation_marks > 1 or question_marks > 1 or emoticons_count > 1:
+                        return 'High'
+                    elif periods == 1 or question_marks == 1 or emoticons_count == 1 or exclamation_marks == 1:
+                        return 'Medium'
+                    elif question_marks == 0 and emoticons_count == 0:
+                        return 'Low'
+                    else:
+                        return 'Undetermined'
 
-                    # Set the emotion result in the first row of the table (row 0, column 2)
-                    emotion_item = QtWidgets.QTableWidgetItem(emotion)
-                    emotion_item.setForeground(QtGui.QColor(0, 0, 0))
-                    emotion_item.setTextAlignment(QtCore.Qt.AlignCenter)  # Set text color to black
-                    emotion_item.setFont(font)
-                    self.tableWidget.setItem(current_row_count, 2, emotion_item)
+            def analyze_text(self, original_text, emoticons_count):
+                # Implement text analysis logic
+                # Example:
+                polarity_result = "Positive" # Placeholder
+                emotion_result = "Happy" # Placeholder
+                intensity_result = "High" # Placeholder
+                return "Polarity: {}, Emotion: {}, Intensity: {}".format(polarity_result, emotion_result, intensity_result)
 
-                    # Set the intensity result in the current row of the table (column 3)
-                    intensity_item = QtWidgets.QTableWidgetItem(intensity)
-                    intensity_item.setForeground(QtGui.QColor(0, 0, 0))
-                    intensity_item.setTextAlignment(QtCore.Qt.AlignCenter)  # Set text color to black
-                    intensity_item.setFont(font)
-                    self.tableWidget.setItem(current_row_count, 3, intensity_item)
+            def convert_emoticons_to_words(self, original_text):
+                changed_emoticons = 0
+                for emoticon, word in self.emoticon_dict.items():
+                    while emoticon in text:
+                        text = text.replace(emoticon, word + " ", 1)
+                        changed_emoticons += 1
+                return text, changed_emoticons
 
-                    # Set the text in the current row of the table (column 0)
-                    text_item = QtWidgets.QTableWidgetItem(text)
-                    text_item.setForeground(QtGui.QColor(0, 0, 0))  # Set text color to black
-                    text_item.setFont(font)
-                    self.tableWidget.setItem(current_row_count, 0, text_item)
+            def remove_punctuations_and_known_emojis(self, original_text):
+                emoji_pattern = re.compile(r'(' + '|'.join(re.escape(key) for key in self.emoticon_dict.keys()) + r')')
+                return re.sub(emoji_pattern, '', original_text)
 
-            except Exception as e:
-                # Handle any errors that may occur while reading the Excel file
-                QtWidgets.QMessageBox.critical(None, "Error", f"An error occurred: {str(e)}")
+            def updateTextInTable(self):
+                original_text = self.plainTextEdit.toPlainText()
+                # Additional preprocessing
+                emoticons_to_keep = [
+                        '💰', '📈', '🤣', '🎊', '😂', '😭', '🙁', '😞', '💔', '😢', '😮', '😵', '🙀',
+                        '😱', '❗', '😠', '😡', '😤', '👎', '🔪', '🌕', '🚀', '💎', '👀', '💭', '📉',
+                        '😨', '😩', '😰', '💸']
 
-    def retranslateUi(self, OtherWindow):
-        _translate = QtCore.QCoreApplication.translate
-        OtherWindow.setWindowTitle(_translate("OtherWindow", "MainWindow"))
-        self.pushButton.setText(_translate("OtherWindow", "Upload File"))
-        self.plainTextEdit.setPlainText(_translate("OtherWindow", "   Enter the Cryptocurrency related tweets here..."))
-        self.pushButton_2.setText(_translate("OtherWindow", "Clear"))
-        self.pushButton_3.setText(_translate("OtherWindow", "Evaluate"))
-        self.tableWidget.setSortingEnabled(False)
-        item = self.tableWidget.horizontalHeaderItem(0)
-        item.setText(_translate("OtherWindow", "Tweets"))
-        item = self.tableWidget.horizontalHeaderItem(1)
-        item.setText(_translate("OtherWindow", "Polarity"))
-        item = self.tableWidget.horizontalHeaderItem(2)
-        item.setText(_translate("OtherWindow", "Emotion"))
-        item = self.tableWidget.horizontalHeaderItem(3)
-        item.setText(_translate("OtherWindow", "Intensity"))
-        
-        self.pushButton.clicked.connect(self.uploadFile)  # Connect the button to the function
-        self.pushButton_2.clicked.connect(self.clearPlainText)
-        
-        self.pushButton_3.clicked.connect(self.updateTextInTable)
-        
- 
-    def updateTextInTable(self):
-        # Get the original text
-        original_text = self.plainTextEdit.toPlainText()
+                text_no_numbers = cleaning_numbers(original_text)
+                text_cleaned = clean_tweet(text_no_numbers, emoticons_to_keep)
+                text_spell_checked = spell_correction(text_cleaned, emoticons_to_keep)
+                text_no_stopwords = cleaning_stopwords(text_spell_checked)
+                text_no_repeating_words = cleaning_repeating_words(text_no_stopwords)
+                text_lowercased = text_no_repeating_words.lower()
+                tokenizer = RegexpTokenizer(r'\w+|[^\w\s]')
+                text_tokenized = tokenizer.tokenize(text_lowercased)
+                text_stemmed = stemming_on_text(text_tokenized)
+                text_lemmatized = lemmatizer_on_text(text_stemmed)
 
-        current_row_count = self.tableWidget.rowCount()
-        self.tableWidget.insertRow(current_row_count)
+                # Check which radio button is selected and process the text accordingly
+                if self.radioButton1.isChecked():
+                            # Convert emoticons to words
+                            converted_text, emoticons_count = self.convert_emoticons_to_words(original_text)
+                elif self.radioButton2.isChecked():
+                            # Remove punctuations and known emojis
+                            converted_text = self.remove_punctuations_and_known_emojis(original_text)
+                            emoticons_count = 0
 
-        # Preprocess the text
-        preprocessed_text = preprocess_text(original_text)
+                # Analyze the text
+                analysis_result = self.analyze_text(converted_text, emoticons_count)
 
-        # Perform sentiment analysis using TextBlob on the original text
-        blob = TextBlob(original_text)
-        sentiment_score = blob.sentiment.polarity
+                # Calculate intensity
+                intensity_result = self.classify_intensity(emoticons_count, original_text)
+                
+                return "Polarity: {}, Emotion: {}, Intensity: {}".format(analysis_result, intensity_result)
 
-        # Classify the intensity level
-        intensity = classify_intensity(sentiment_score)
-        emotion = classify_emotion(original_text)
+                current_row_count = self.tableWidget.rowCount()
+                self.tableWidget.insertRow(0)
+                # Add items to the table
+                pass
 
-        # Set the original text in the first row of the table (row 0, column 0)
-        original_text_item = QtWidgets.QTableWidgetItem(original_text)
-        original_text_item.setForeground(QtGui.QColor(0, 0, 0))  # Set text color to black
-        font = QtGui.QFont()
-        font.setPointSize(8)
-        original_text_item.setFont(font)
-        self.tableWidget.setItem(current_row_count, 0, original_text_item)
+                # Set the original text in the first row of the table (row 0, column 0)
+                original_text_item = QtWidgets.QTableWidgetItem(original_text)
+                original_text_item.setForeground(QtGui.QColor(0, 0, 0))  # Set text color to black
+                font = QtGui.QFont()
+                font.setPointSize(8)
+                original_text_item.setFont(font)
+                self.tableWidget.setItem(current_row_count, 0, original_text_item)
 
-        # Set the sentiment result in the first row of the table (row 0, column 1)
-        sentiment_item = QtWidgets.QTableWidgetItem(analyze_sentiment(original_text))
-        sentiment_item.setForeground(QtGui.QColor(0, 0, 0))
-        sentiment_item.setTextAlignment(QtCore.Qt.AlignCenter)  # Set text color to black
-        sentiment_item.setFont(font)
-        self.tableWidget.setItem(current_row_count, 1, sentiment_item)
+                # Set the sentiment result in the first row of the table (row 0, column 1)
+                sentiment_item = QtWidgets.QTableWidgetItem(analyze_sentiment(original_text))
+                sentiment_item.setForeground(QtGui.QColor(0, 0, 0))
+                sentiment_item.setTextAlignment(QtCore.Qt.AlignCenter)  # Set text color to black
+                sentiment_item.setFont(font)
+                self.tableWidget.setItem(current_row_count, 1, sentiment_item)
 
-        # Set the emotion result in the first row of the table (row 0, column 2)
-        emotion_item = QtWidgets.QTableWidgetItem(emotion)
-        emotion_item.setForeground(QtGui.QColor(0, 0, 0))
-        emotion_item.setTextAlignment(QtCore.Qt.AlignCenter)  # Set text color to black
-        emotion_item.setFont(font)
-        self.tableWidget.setItem(current_row_count, 2, emotion_item)
+                # Set the emotion result in the first row of the table (row 0, column 2)
+                emotion_item = QtWidgets.QTableWidgetItem(emotion)
+                emotion_item.setForeground(QtGui.QColor(0, 0, 0))
+                emotion_item.setTextAlignment(QtCore.Qt.AlignCenter)  # Set text color to black
+                emotion_item.setFont(font)
+                self.tableWidget.setItem(current_row_count, 2, emotion_item)
 
-        # Set the intensity result in the first row of the table (row 0, column 3)
-        intensity_item = QtWidgets.QTableWidgetItem(intensity)
-        intensity_item.setForeground(QtGui.QColor(0, 0, 0))
-        intensity_item.setTextAlignment(QtCore.Qt.AlignCenter)  # Set text color to black
-        intensity_item.setFont(font)
-        self.tableWidget.setItem(current_row_count, 3, intensity_item)
-
+                # Set the intensity result in the first row of the table (row 0, column 3)
+                intensity_item = QtWidgets.QTableWidgetItem(intensity)
+                intensity_item.setForeground(QtGui.QColor(0, 0, 0))
+                intensity_item.setTextAlignment(QtCore.Qt.AlignCenter)  # Set text color to black
+                intensity_item.setFont(font)
+                self.tableWidget.setItem(current_row_count, 3, intensity_item)
 
 import design2
 
