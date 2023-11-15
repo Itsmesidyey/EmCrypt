@@ -196,7 +196,24 @@ class Ui_OtherWindow(object):
             self.statusbar = QtWidgets.QStatusBar(OtherWindow)
             self.statusbar.setObjectName("statusbar")
             OtherWindow.setStatusBar(self.statusbar)
+    
+            def clearPlainText(self):
+                self.plainTextEdit.setPlainText("")
 
+            def uploadFile(self):
+                options = QFileDialog.Options()
+                options |= QFileDialog.ReadOnly
+                file_name, _ = QFileDialog.getOpenFileName(None, "Upload File", "", "Excel Files (*.xlsx);;All Files (*)", options=options)
+                if file_name:
+                    try:
+                        df = pd.read_excel(file_name)
+                        self.tableWidget.setRowCount(0)
+                        for index, row in df.iterrows():
+                            text = row['Tweets']  # Assuming 'Tweets' is the column name with the text data
+                            pass
+                    except Exception as e:
+                        print("An error occurred:", e)
+                        
             self.retranslateUi(OtherWindow)
             QtCore.QMetaObject.connectSlotsByName(OtherWindow)
 
@@ -222,24 +239,6 @@ class Ui_OtherWindow(object):
                 
                 self.pushButton_3.clicked.connect(self.updateTextInTable)
                 pass
-    
-            def clearPlainText(self):
-                self.plainTextEdit.setPlainText("")
-
-            def uploadFile(self):
-                options = QFileDialog.Options()
-                options |= QFileDialog.ReadOnly
-                file_name, _ = QFileDialog.getOpenFileName(None, "Upload File", "", "Excel Files (*.xlsx);;All Files (*)", options=options)
-                if file_name:
-                    try:
-                        df = pd.read_excel(file_name)
-                        self.tableWidget.setRowCount(0)
-                        for index, row in df.iterrows():
-                            text = row['Tweets']  # Assuming 'Tweets' is the column name with the text data
-                            pass
-                    except Exception as e:
-                        print("An error occurred:", e)
-
             def cleaning_numbers(original_text):
                 return re.sub('[0-9]+', '', original_text)
 
