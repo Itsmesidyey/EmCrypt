@@ -13,7 +13,6 @@ class Ui_MainWindow(object):
         self.ui.setupUi(self.window)
         MainWindow.hide()
         self.window.show()
-
     def setupUi(self, MainWindow):
         MainWindow.setObjectName("MainWindow")
         MainWindow.resize(1121, 743)
@@ -95,16 +94,16 @@ class Ui_MainWindow(object):
         palette.setBrush(QtGui.QPalette.Disabled, QtGui.QPalette.Window, brush)
         self.pushButton.setPalette(palette)
         font = QtGui.QFont()
-        font.setFamily("Poppins")
+        font.setFamily("Arial")
         font.setPointSize(14)
         font.setBold(True)
         font.setWeight(75)
         self.pushButton.setFont(font)
         self.pushButton.setStyleSheet("background-color:green;\n"
-                                    "color:white;\n"
-                                    "border-style: outset;\n"
-                                    "border-radius:10px;\n"
-                                    "")
+"color:white;\n"
+"border-style: outset;\n"
+"border-radius:10px;\n"
+"")
         self.pushButton.setObjectName("pushButton")
         self.pushButton.clicked.connect(self.openWindow)
         MainWindow.setCentralWidget(self.centralwidget)
@@ -119,7 +118,6 @@ class Ui_MainWindow(object):
         _translate = QtCore.QCoreApplication.translate
         MainWindow.setWindowTitle(_translate("MainWindow", "MainWindow"))
         self.pushButton.setText(_translate("MainWindow", "Continue >"))
-        
 import design
 
 
