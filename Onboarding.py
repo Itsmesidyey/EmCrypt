@@ -13,6 +13,7 @@ class Ui_MainWindow(object):
         self.ui.setupUi(self.window)
         MainWindow.hide()
         self.window.show()
+
     def setupUi(self, MainWindow):
         MainWindow.setObjectName("MainWindow")
         MainWindow.resize(1121, 743)
@@ -100,10 +101,10 @@ class Ui_MainWindow(object):
         font.setWeight(75)
         self.pushButton.setFont(font)
         self.pushButton.setStyleSheet("background-color:green;\n"
-"color:white;\n"
-"border-style: outset;\n"
-"border-radius:10px;\n"
-"")
+                                    "color:white;\n"
+                                    "border-style: outset;\n"
+                                    "border-radius:10px;\n"
+                                    "")
         self.pushButton.setObjectName("pushButton")
         self.pushButton.clicked.connect(self.openWindow)
         MainWindow.setCentralWidget(self.centralwidget)
@@ -116,8 +117,9 @@ class Ui_MainWindow(object):
 
     def retranslateUi(self, MainWindow):
         _translate = QtCore.QCoreApplication.translate
-        MainWindow.setWindowTitle(_translate("MainWindow", "MainWindow"))
+        MainWindow.setWindowTitle(_translate("EmCrypt Sentiment Analyzer", "EmCrypt Sentiment Analyzer"))
         self.pushButton.setText(_translate("MainWindow", "Continue >"))
+        
 import design
 
 

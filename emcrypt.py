@@ -1,5 +1,3 @@
-
-# utilities
 import os
 import re
 import numpy as np
@@ -8,165 +6,95 @@ import tensorflow as tf
 from textblob import TextBlob 
 from PyQt5 import QtCore, QtGui, QtWidgets
 from PyQt5.QtWidgets import QFileDialog
+import nltk
+from nltk.corpus import stopwords
+from nltk.tokenize import word_tokenize
 
-# nltk
-from nltk.stem import WordNetLemmatizer
 
-#SpellCorrection
-from spellchecker import SpellChecker
-
-import string
-import emoji
-import chardet
-
-DATASET_COLUMNS = ['date', 'username', 'text', 'polarity', 'emotion']
-
-#Detect file encoding using chardet
-with open('data.csv', 'rb') as f:
-    result = chardet.detect(f.read())
-
-# Print the detected encoding
-print("Detected encoding:", result['encoding'])
-
-# Read the file using the detected encoding
-df = pd.read_csv('data.csv', encoding=result['encoding'], names=DATASET_COLUMNS)
-df.sample(5)
-
-#Data preprocessing
-data=df[['text','polarity', 'emotion']]
-data['polarity'].unique()
-data_pos = data[data['polarity'] == 1]
-data_neu = data[data['polarity'] == 0]
-data_neg = data[data['polarity'] == -1]
-data_pos = data_pos.iloc[:int(100)]
-data_neu = data_neu.iloc[:int(100)]
-data_neg = data_neg.iloc[:int(100)] 
-dataset = pd.concat([data_pos, data_neu, data_neg])
-
-def cleaning_numbers(data):
-    return re.sub('[0-9]+', '', data)
-dataset['text'] = dataset['text'].apply(lambda x: cleaning_numbers(x))
-dataset['text'].tail()
-
-emoticons_to_keep = [
-    '💰', '📈', '🤣', '🎊', '😂', '😭', '🙁', '😞', '💔', '😢', '😮', '😵', '🙀',
-    '😱', '❗', '😠', '😡', '😤', '👎', '🔪', '🌕', '🚀', '💎', '👀', '💭', '📉',
-    '😨', '😩', '😰', '💸'
-]
-
-def clean_tweet(text):
-    # Remove URLs
-    text = re.sub(r'https?://\S+|www\.\S+', '', text)
-
-    # Remove hashtags and mentions
-    text = re.sub(r'@\w+|#\w+', '', text)
-
-    # Remove special characters except for emoticons
-    text = re.sub(r'[^\w\s.!?{}]+'.format(''.join(emoticons_to_keep)), '', text)
-
-    # Remove extra whitespace
-    text = ' '.join(text.split())
-
+# Function to clean and preprocess text
+def preprocess_text(text):
+    # Remove emojis
+    text = re.sub(r"(:\s?\)|:-\)|\(\s?:|\(-:|:\'\))", " ", text)
+    
+    # Remove special characters and punctuation
+    text = re.sub(r"[^a-zA-Z0-9\s]", "", text)
+    
+    # Convert text to lowercase
+    text = text.lower()
+    
+    # Tokenize the text
+    words = word_tokenize(text)
+    
+    # Remove stop words
+    stop_words = set(stopwords.words("english"))
+    filtered_words = [word for word in words if word not in stop_words]
+    
+    # Remove repeating characters (e.g., loooove -> love)
+    text = re.sub(r"(.)\1{2,}", r"\1", " ".join(filtered_words))
+    
     return text
 
-# Apply the modified cleaning function to the 'text' column in your dataset
-dataset['text'] = dataset['text'].apply(clean_tweet)
+def detect_emojis(text):
+    emoticon_dict = {
+        ":)": "smile ",
+        ":(": "sad ",
+        ":D": "laugh ",
+        "😊": "smiling face with smiling eyes ",
+        "😃": "grinning face with big eyes ",
+        "😉": "winking face ",
+        "👌": "OK hand ",
+        "👍": "Thumbs up ",
+        "😁": "beaming face with smiling eyes ",
+        "😂": "face with tears of joy ",
+        "😄": "grinning face with smiling eyes ",
+        "😅": "grinning face with sweat ",
+        "😆": "grinning squinting face ",
+        "😇": "smiling face with halo ",
+        "😞": "disappointed face ",
+        "😔": "pensive face ",
+        "😑": "expressionless face ",
+        "😒": "unamused face ",
+        "😓": "downcast face with sweat ",
+        "😕": "confused face ",
+        "😖": "confounded face ",
+        "💰": "Money Bag ",
+        "📈": "Up Trend ",
+        "🤣": "Rolling on the Floor Laughing ",
+        "🎊": "Confetti Ball ",
+        "😭": "Loudly Crying ",
+        "🙁": "Slightly frowning face ",
+        "💔": "Broken Heart ",
+        "😢": "Crying Face ",
+        "😮": "Face with Open Mouth ",
+        "😵": "Dizzy Face ",
+        "🙀": "Weary Cat ",
+        "😱": "Face Screaming in Fear ",
+        "❗": "Exclamation Mark ",
+        "😠": "Angry Face ",
+        "😡": "Pouting Face ",
+        "😤": "Face with Steam from Nose ",
+        "👎": "Thumbs Down ",
+        "🔪": "Hocho ",
+        "🌕": "Moon ",
+        "🚀": "Rocket ",
+        "💎": "Diamond ",
+        "👀": "Eyes ",
+        "💭": "Thought Balloon ",
+        "📉": "Down Trend ",
+        "😨": "Fearful Face ",
+        "😩": "Weary Face ",
+        "😰": "Anxious Face with Fear ",
+        "💸": "Money with Wings "
+    }
 
-# Display the 'text' column in the entire dataset
-print(dataset['text'])
-
-# Initialize SpellChecker only once to avoid re-creation for each call
-spell = SpellChecker()
-
-# Function for spell correction
-def spell_correction(text):
-    words = text.split()
-    misspelled = spell.unknown(words)
-    corrected_words = []
-    for word in words:
-        if word in misspelled:
-            corrected_word = spell.correction(word)
-            # Check if the correction is not None, otherwise use the original word
-            corrected_words.append(corrected_word if corrected_word is not None else word)
-        else:
-            corrected_words.append(word)
-    return ' '.join(corrected_words)
-
-# Apply spell correction to the entire 'text' column
-dataset['text'] = dataset['text'].apply(spell_correction)
-
-#Define the emoticon dictionary outside the function for a wider scope
-emoticon_dict = {
-    ":)": "smile ",
-    ":(": "sad ",
-    ":D": "laugh ",
-    "😊": "smiling face with smiling eyes ",
-    "😃": "grinning face with big eyes ",
-    "😉": "winking face ",
-    "👌": "OK hand ",
-    "👍": "Thumbs up ",
-    "😁": "beaming face with smiling eyes ",
-    "😂": "face with tears of joy ",
-    "😄": "grinning face with smiling eyes ",
-    "😅": "grinning face with sweat ",
-    "😆": "grinning squinting face ",
-    "😇": "smiling face with halo ",
-    "😞": "disappointed face ",
-    "😔": "pensive face ",
-    "😑": "expressionless face ",
-    "😒": "unamused face ",
-    "😓": "downcast face with sweat ",
-    "😕": "confused face ",
-    "😖": "confounded face ",
-    "💰": "Money Bag ",
-    "📈": "Up Trend ",
-    "🤣": "Rolling on the Floor Laughing ",
-    "🎊": "Confetti Ball ",
-    "😭": "Loudly Crying ",
-    "🙁": "Slightly frowning face ",
-    "💔": "Broken Heart ",
-    "😢": "Crying Face ",
-    "😮": "Face with Open Mouth ",
-    "😵": "Dizzy Face ",
-    "🙀": "Weary Cat ",
-    "😱": "Face Screaming in Fear ",
-    "❗": "Exclamation Mark ",
-    "😠": "Angry Face ",
-    "😡": "Pouting Face ",
-    "😤": "Face with Steam from Nose ",
-    "👎": "Thumbs Down ",
-    "🔪": "Hocho ",
-    "🌕": "Moon ",
-    "🚀": "Rocket ",
-    "💎": "Diamond ",
-    "👀": "Eyes ",
-    "💭": "Thought Balloon ",
-    "📉": "Down Trend ",
-    "😨": "Fearful Face ",
-    "😩": "Weary Face ",
-    "😰": "Anxious Face with Fear ",
-    "💸": "Money with Wings "
-}
-
-# Emoticon to word conversion function
-def convert_emoticons_to_words(text):
-    changed_emoticons = 0  # Variable to count the number of changed emoticons
-    for emoticon, word in emoticon_dict.items():
-        while emoticon in text:
-            text = text.replace(emoticon, word + " ", 1)
-            changed_emoticons += 1
-    return text, changed_emoticons
-
-# Apply the function and count emoticons for each row
-def apply_conversion(text):
-    converted_text, count = convert_emoticons_to_words(text)
-    return pd.Series([converted_text, count], index=['converted_text', 'emoticons_count'])
-
-conversion_results = dataset['text'].apply(apply_conversion)
-dataset['converted_text'] = conversion_results['converted_text']
-dataset['emoticons_count'] = conversion_results['emoticons_count']
-
-
+    # Emoticon to word conversion function
+    def convert_emoticons_to_words(text):
+        changed_emoticons = 0  # Variable to count the number of changed emoticons
+        for emoticon, word in emoticon_dict.items():
+            while emoticon in text:
+                text = text.replace(emoticon, word + " ", 1)
+                changed_emoticons += 1
+        return text, changed_emoticons
 
 def analyze_sentiment(text):
     # Use TextBlob for polarity analysis
@@ -214,6 +142,8 @@ def classify_emotion(text):
     
     return detected_emotion
 
+ 
+
 class Ui_OtherWindow(object):
     def setupUi(self, OtherWindow):
         OtherWindow.setObjectName("OtherWindow")
@@ -245,6 +175,7 @@ class Ui_OtherWindow(object):
         self.radioButton1.setGeometry(QtCore.QRect(170, 383, 21, 20))
         self.radioButton1.setText("")
         self.radioButton1.setObjectName("radioButton1")
+        self.radioButton1.setChecked(True)
 
         self.radioButton2 = QtWidgets.QRadioButton(self.centralwidget)
         self.radioButton2.setGeometry(QtCore.QRect(170, 415, 21, 21))
@@ -363,6 +294,12 @@ class Ui_OtherWindow(object):
                 for index, row in df.iterrows():
                     text = row['Tweets']  # Assuming 'Tweets' is the column name with the text data
 
+                    # Preprocess the text
+                    text = preprocess_text(text)
+                    # Detect emojis in the preprocessed text
+                    emojis = detect_emojis(text)
+                    
+
                     current_row_count = self.tableWidget.rowCount()
                     self.tableWidget.insertRow(current_row_count)
 
@@ -429,30 +366,38 @@ class Ui_OtherWindow(object):
         self.pushButton_2.clicked.connect(self.clearPlainText)
         
         self.pushButton_3.clicked.connect(self.updateTextInTable)
-
         
+ 
     def updateTextInTable(self):
-        # Get the text from the plain text edit widget
-        text = self.plainTextEdit.toPlainText()
+        # Get the original text
+        original_text = self.plainTextEdit.toPlainText()
 
         current_row_count = self.tableWidget.rowCount()
         self.tableWidget.insertRow(current_row_count)
 
-        # Perform sentiment analysis using TextBlob
-        blob = TextBlob(text)
+        # Preprocess the text
+        preprocessed_text = preprocess_text(original_text)
+
+        # Perform sentiment analysis using TextBlob on the original text
+        blob = TextBlob(original_text)
         sentiment_score = blob.sentiment.polarity
 
         # Classify the intensity level
         intensity = classify_intensity(sentiment_score)
-        emotion = classify_emotion(text)
+        emotion = classify_emotion(original_text)
 
-
-        # Set the sentiment result in the first row of the table (row 0, column 1)
-        sentiment_item = QtWidgets.QTableWidgetItem(analyze_sentiment(text))
-        sentiment_item.setForeground(QtGui.QColor(0, 0, 0))
-        sentiment_item.setTextAlignment(QtCore.Qt.AlignCenter)  # Set text color to black
+        # Set the original text in the first row of the table (row 0, column 0)
+        original_text_item = QtWidgets.QTableWidgetItem(original_text)
+        original_text_item.setForeground(QtGui.QColor(0, 0, 0))  # Set text color to black
         font = QtGui.QFont()
         font.setPointSize(8)
+        original_text_item.setFont(font)
+        self.tableWidget.setItem(current_row_count, 0, original_text_item)
+
+        # Set the sentiment result in the first row of the table (row 0, column 1)
+        sentiment_item = QtWidgets.QTableWidgetItem(analyze_sentiment(original_text))
+        sentiment_item.setForeground(QtGui.QColor(0, 0, 0))
+        sentiment_item.setTextAlignment(QtCore.Qt.AlignCenter)  # Set text color to black
         sentiment_item.setFont(font)
         self.tableWidget.setItem(current_row_count, 1, sentiment_item)
 
@@ -463,19 +408,12 @@ class Ui_OtherWindow(object):
         emotion_item.setFont(font)
         self.tableWidget.setItem(current_row_count, 2, emotion_item)
 
-
         # Set the intensity result in the first row of the table (row 0, column 3)
         intensity_item = QtWidgets.QTableWidgetItem(intensity)
         intensity_item.setForeground(QtGui.QColor(0, 0, 0))
         intensity_item.setTextAlignment(QtCore.Qt.AlignCenter)  # Set text color to black
         intensity_item.setFont(font)
         self.tableWidget.setItem(current_row_count, 3, intensity_item)
-
-        # Set the text in the first row of the table (row 0, column 0)
-        text_item = QtWidgets.QTableWidgetItem(text)
-        text_item.setForeground(QtGui.QColor(0, 0, 0))  # Set text color to black
-        text_item.setFont(font)
-        self.tableWidget.setItem(current_row_count, 0, text_item)
 
 
 import design2
