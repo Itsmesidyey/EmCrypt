@@ -199,6 +199,28 @@ class Ui_OtherWindow(object):
 
             self.retranslateUi(OtherWindow)
             QtCore.QMetaObject.connectSlotsByName(OtherWindow)
+
+            def retranslateUi(self, OtherWindow):
+                _translate = QtCore.QCoreApplication.translate
+                OtherWindow.setWindowTitle(_translate("OtherWindow", "MainWindow"))
+                self.pushButton.setText(_translate("OtherWindow", "Upload File"))
+                self.plainTextEdit.setPlainText(_translate("OtherWindow", "   Enter the Cryptocurrency related tweets here..."))
+                self.pushButton_2.setText(_translate("OtherWindow", "Clear"))
+                self.pushButton_3.setText(_translate("OtherWindow", "Evaluate"))
+                self.tableWidget.setSortingEnabled(False)
+                item = self.tableWidget.horizontalHeaderItem(0)
+                item.setText(_translate("OtherWindow", "Tweets"))
+                item = self.tableWidget.horizontalHeaderItem(1)
+                item.setText(_translate("OtherWindow", "Polarity"))
+                item = self.tableWidget.horizontalHeaderItem(2)
+                item.setText(_translate("OtherWindow", "Emotion"))
+                item = self.tableWidget.horizontalHeaderItem(3)
+                item.setText(_translate("OtherWindow", "Intensity"))
+                
+                self.pushButton.clicked.connect(self.uploadFile)  # Connect the button to the function
+                self.pushButton_2.clicked.connect(self.clearPlainText)
+                
+                self.pushButton_3.clicked.connect(self.updateTextInTable)
     
             def clearPlainText(self):
                 self.plainTextEdit.setPlainText("")

@@ -117,7 +117,7 @@ class Ui_MainWindow(object):
 
     def retranslateUi(self, MainWindow):
         _translate = QtCore.QCoreApplication.translate
-        MainWindow.setWindowTitle(_translate("EmCrypt Sentiment Analyzer", "EmCrypt Sentiment Analyzer"))
+        MainWindow.setWindowTitle(_translate("MainWindow", "MainWindow"))
         self.pushButton.setText(_translate("MainWindow", "Continue >"))
         
 import design
