@@ -8,6 +8,12 @@ import nltk
 from nltk.corpus import stopwords
 from nltk.tokenize import word_tokenize, RegexpTokenizer
 from spellchecker import SpellChecker
+from keras.models import Sequential
+from keras.layers import Embedding, LSTM, Dropout, Dense
+from scikeras.wrappers import KerasClassifier
+from sklearn.svm import SVC
+from Emcrypt_Training_Combine import create_lstm_model
+from Emcrypt_Training_Text import create_lstm_model
 
 class Ui_OtherWindow(object):
     # Initialize class attributes
@@ -17,62 +23,146 @@ class Ui_OtherWindow(object):
             self.emotion_model_combine = pickle.load(open('svm_model_emotion_combine.pkl', 'rb'))
             self.polarity_model_text = pickle.load(open('lstm_model_polarity_text.pkl', 'rb'))
             self.emotion_model_text = pickle.load(open('svm_model_emotion_text.pkl', 'rb'))
+            print("Models loaded successfully")
         except Exception as e:
-            print("Error loading models:", e)
-        
-        self.emoticon_dict = {
-                    ":)": "smile ",
-                    ":(": "sad ",
-                    ":D": "laugh ",
-                    "😊": "smiling face with smiling eyes ",
-                    "😃": "grinning face with big eyes ",
-                    "😉": "winking face ",
-                    "👌": "OK hand ",
-                    "👍": "Thumbs up ",
-                    "😁": "beaming face with smiling eyes ",
-                    "😂": "face with tears of joy ",
-                    "😄": "grinning face with smiling eyes ",
-                    "😅": "grinning face with sweat ",
-                    "😆": "grinning squinting face ",
-                    "😇": "smiling face with halo ",
-                    "😞": "disappointed face ",
-                    "😔": "pensive face ",
-                    "😑": "expressionless face ",
-                    "😒": "unamused face ",
-                    "😓": "downcast face with sweat ",
-                    "😕": "confused face ",
-                    "😖": "confounded face ",
-                    "💰": "Money Bag ",
-                    "📈": "Up Trend ",
-                    "🤣": "Rolling on the Floor Laughing ",
-                    "🎊": "Confetti Ball ",
-                    "😭": "Loudly Crying ",
-                    "🙁": "Slightly frowning face ",
-                    "💔": "Broken Heart ",
-                    "😢": "Crying Face ",
-                    "😮": "Face with Open Mouth ",
-                    "😵": "Dizzy Face ",
-                    "🙀": "Weary Cat ",
-                    "😱": "Face Screaming in Fear ",
-                    "❗": "Exclamation Mark ",
-                    "😠": "Angry Face ",
-                    "😡": "Pouting Face ",
-                    "😤": "Face with Steam from Nose ",
-                    "👎": "Thumbs Down ",
-                    "🔪": "Hocho ",
-                    "🌕": "Moon ",
-                    "🚀": "Rocket ",
-                    "💎": "Diamond ",
-                    "👀": "Eyes ",
-                    "💭": "Thought Balloon ",
-                    "📉": "Down Trend ",
-                    "😨": "Fearful Face ",
-                    "😩": "Weary Face ",
-                    "😰": "Anxious Face with Fear ",
-                    "💸": "Money with Wings "
-                        }
-    
+            print(f"Error loading models: {e}")
 
+        # Initialize SpellChecker
+        self.spell = SpellChecker()
+
+        self.emoticon_dict = {
+                "🌈": "Rainbow",
+                "🌙": "Crescent Moon",
+                "🌚": "New Moon Face",
+                "🌞": "Sun with Face",
+                "🌟": "Glowing Star",
+                "🌷": "Tulip",
+                "🌸": "Cherry Blossom",
+                "🌹": "Rose",
+                "🌺": "Hibiscus",
+                "🍀": "Four Leaf Clover",
+                "🍕": "Pizza",
+                "🍻": "Clinking Beer Mugs",
+                "🎀": "Ribbon",
+                "🎈": "Balloon",
+                "🎉": "Party Popper",
+                "🎤": "Microphone",
+                "🎥": "Movie Camera",
+                "🎧": "Headphone",
+                "🎵": "Musical Note",
+                "🎶": "Musical Notes",
+                "👀": "Eyes",
+                "👅": "Tongue",
+                "👇": "Backhand Index Pointing Down",
+                "👈": "Backhand Index Pointing Left",
+                "👉": "Backhand Index Pointing Right",
+                "👋": "Waving Hand",
+                "👌": "OK Hand",
+                "👍": "Thumbs Up",
+                "👏": "Clapping Hands",
+                "👑": "Crown",
+                "💀": "Skull",
+                "💁": "Person Tipping Hand",
+                "💃": "Woman Dancing",
+                "💋": "Kiss Mark",
+                "💎": "Gem Stone",
+                "💐": "Bouquet",
+                "💓": "Beating Heart",
+                "💕": "Two Hearts",
+                "💖": "Sparkling Heart",
+                "💗": "Growing Heart",
+                "💘": "Heart with Arrow",
+                "💙": "Blue Heart",
+                "💚": "Green Heart",
+                "💛": "Yellow Heart",
+                "💜": "Purple Heart",
+                "💞": "Revolving Hearts",
+                "💤": "Zzz",
+                "💥": "Collision",
+                "💦": "Sweat Droplets",
+                "💪": "Flexed Biceps",
+                "💫": "Dizzy",
+                "💯": "Hundred Points",
+                "💰": "Money Bag",
+                "📷": "Camera",
+                "🔥": "Fire",
+                "😀": "Grinning Face",
+                "😁": "Beaming Face with Smiling Eyes",
+                "😂": "Face with Tears of Joy",
+                "😃": "Grinning Face with Big Eyes",
+                "😄": "Grinning Face with Smiling Eyes",
+                "😅": "Grinning Face with Sweat",
+                "😆": "Grinning Squinting Face",
+                "😇": "Smiling Face with Halo",
+                "😈": "Smiling Face with Horns",
+                "😉": "Winking Face",
+                "😊": "Smiling Face with Smiling Eyes",
+                "😋": "Face Savoring Food",
+                "😌": "Relieved Face",
+                "😍": "Smiling Face with Heart-Eyes",
+                "😎": "Smiling Face with Sunglasses",
+                "😏": "Smirking Face",
+                "😺": "Smiling Cat with Smiling Eyes",
+                "😻": "Smiling Cat with Heart-Eyes",
+                "😽": "Kissing Cat with Closed Eyes",
+                "🙀": "Weary Cat",
+                "🙏": "Folded Hands",
+                "☀": "Sun",
+                "☺": "Smiling Face",
+                "♥": "Heart Suit",
+                "✅": "Check Mark Button",
+                "✈": "Airplane",
+                "✊": "Raised Fist",
+                "✋": "Raised Hand",
+                "✌": "Victory Hand",
+                "✔": "Check Mark",
+                "✨": "Sparkles",
+                "❄": "Snowflake",
+                "❤": "Red Heart",
+                "⭐": "Star",
+                "😢": "Crying Face",
+                "😭": "Loudly Crying Face",
+                "😞": "Disappointed Face",
+                "😟": "Worried Face",
+                "😠": "Angry Face",
+                "😡": "Pouting Face",
+                "😔": "Pensive Face",
+                "😕": "Confused Face",
+                "😖": "Confounded Face",
+                "😨": "Fearful Face",
+                "😩": "Weary Face",
+                "😪": "Sleepy Face",
+                "😫": "Tired Face",
+                "😰": "Anxious Face with Sweat",
+                "😱": "Face Screaming in Fear",
+                "😳": "Flushed Face",
+                "😶": "Face Without Mouth",
+                "😷": "Face with Medical Mask",
+                "👊": "Oncoming Fist",
+                "👎": "Thumbs Down",
+                "❌": "Cross Mark",
+                "😲": "Astonished Face",
+                "😯": "Hushed Face",
+                "😮": "Face with Open Mouth",
+                "😵": "Dizzy Face",
+                "🙊": "Speak-No-Evil Monkey",
+                "🙉": "Hear-No-Evil Monkey",
+                "🙈": "See-No-Evil Monkey",
+                "💭": "Thought Balloon",
+                "❗": "Exclamation Mark",
+                "⚡": "High Voltage",
+                "🎊": "Confetti Ball",
+                "🙁": "Slightly frowning face",
+                "💔": "Broken Heart",
+                "😤": "Face with Steam from Nose",
+                "🔪": "Hocho",
+                "🌕": "Full Moon",
+                "🚀": "Rocket",
+                "📉": "Down Trend",
+                "🤣": "Rolling on the Floor Laughing",
+                "💸": "Money with Wings"
+                    }
+    
     def setupUi(self, OtherWindow):
         OtherWindow.setObjectName("OtherWindow")
         OtherWindow.resize(1034, 1086)
@@ -200,6 +290,9 @@ class Ui_OtherWindow(object):
         self.statusbar.setObjectName("statusbar")
         OtherWindow.setStatusBar(self.statusbar)
 
+        self.retranslateUi(OtherWindow)
+        QtCore.QMetaObject.connectSlotsByName(OtherWindow)
+
     # Utility methods for text processing
     @staticmethod
     def cleaning_numbers(original_text):
@@ -209,6 +302,18 @@ class Ui_OtherWindow(object):
         print("Text after removing numbers:", cleaned_text)
         
         return cleaned_text
+    
+    emoticons_to_keep = [
+            '🌈', '🌙', '🌚', '🌞', '🌟', '🌷', '🌸', '🌹', '🌺', '🍀', '🍕', '🍻', '🎀',
+            '🎈', '🎉', '🎤', '🎥', '🎧', '🎵', '🎶', '👅', '👇', '👈', '👉', '👋', '👌',
+            '👍', '👏', '👑', '💀', '💁', '💃', '💋', '💐', '💓', '💕', '💖', '💗', '💘',
+            '💙', '💚', '💛', '💜', '💞', '💤', '💥', '💦', '💪', '💫', '💯', '📷', '🔥',
+            '😀', '😁', '😃', '😄', '😅', '😆', '😇', '😈', '😉', '😊', '😋', '😌', '😍',
+            '😎', '😏', '😺', '😻', '😽', '🙏', '☀', '☺', '♥', '✅', '✈', '✊', '✋',
+            '✌', '✔', '✨', '❄', '❤', '⭐', '😢', '😞', '😟', '😠', '😡', '😔', '😕',
+            '😖', '😨', '😩', '😪', '😫', '😰', '😱', '😳', '😶', '😷', '👊', '👎', '❌',
+            '😲', '😯', '😮', '😵', '🙊', '🙉', '🙈', '💭', '❗', '⚡', '🎊', '🙁', '💔',
+            '😤', '🔪', '🌕', '🚀', '📉', '🤣', '💸']
 
     @staticmethod
     def clean_tweet(original_text, emoticons_to_keep):
@@ -222,6 +327,19 @@ class Ui_OtherWindow(object):
         
         return cleaned_text
     
+    emoticons_to_keep = [
+        '🌈', '🌙', '🌚', '🌞', '🌟', '🌷', '🌸', '🌹', '🌺', '🍀', '🍕', '🍻', '🎀',
+        '🎈', '🎉', '🎤', '🎥', '🎧', '🎵', '🎶', '👅', '👇', '👈', '👉', '👋', '👌',
+        '👍', '👏', '👑', '💀', '💁', '💃', '💋', '💐', '💓', '💕', '💖', '💗', '💘',
+        '💙', '💚', '💛', '💜', '💞', '💤', '💥', '💦', '💪', '💫', '💯', '📷', '🔥',
+        '😀', '😁', '😃', '😄', '😅', '😆', '😇', '😈', '😉', '😊', '😋', '😌', '😍',
+        '😎', '😏', '😺', '😻', '😽', '🙏', '☀', '☺', '♥', '✅', '✈', '✊', '✋',
+        '✌', '✔', '✨', '❄', '❤', '⭐', '😢', '😞', '😟', '😠', '😡', '😔', '😕',
+        '😖', '😨', '😩', '😪', '😫', '😰', '😱', '😳', '😶', '😷', '👊', '👎', '❌',
+        '😲', '😯', '😮', '😵', '🙊', '🙉', '🙈', '💭', '❗', '⚡', '🎊', '🙁', '💔',
+        '😤', '🔪', '🌕', '🚀', '📉', '🤣', '💸']
+
+    #@staticmethod
     def spell_correction(self, original_text, emoticons_to_keep):
         words = original_text.split()
         corrected_words = []
@@ -308,19 +426,21 @@ class Ui_OtherWindow(object):
 
     def analyze_text(self, original_text, emoticons_count):
         # Implement text analysis logic
-                # Example:
+        # Example:
         polarity_result = "Positive" # Placeholder
         emotion_result = "Happy" # Placeholder
         intensity_result = "High" # Placeholder
         return "Polarity: {}, Emotion: {}, Intensity: {}".format(polarity_result, emotion_result, intensity_result)
 
     def convert_emoticons_to_words(self, original_text):
+        text = original_text  # Initialize 'text' with 'original_text'
         emoticons_count = 0
         for emoticon, word in self.emoticon_dict.items():
             while emoticon in text:
-                        text = text.replace(emoticon, word + " ", 1)
-                        emoticons_count += 1
+                text = text.replace(emoticon, word + " ", 1)
+                emoticons_count += 1
         return text, emoticons_count
+
 
     def remove_punctuations_and_known_emojis(self, original_text):
         emoji_pattern = re.compile(r'(' + '|'.join(re.escape(key) for key in self.emoticon_dict.keys()) + r')')
@@ -347,16 +467,23 @@ class Ui_OtherWindow(object):
         text_lemmatized = self.lemmatizer_on_text(' '.join(text_stemmed))
 
         # Check which radio button is selected and process the text accordingly
-        emoticons_count = 0
         if self.radioButton1.isChecked():
-            # Convert emoticons to words
+            # Convert emoticons to words and use the 'combine' models
             converted_text, emoticons_count = self.convert_emoticons_to_words(original_text)
-        elif self.radioButton2.isChecked():
-            # Remove punctuations and known emojis
-            converted_text = self.remove_punctuations_and_known_emojis(original_text)
+            prepared_text = ' '.join(self.lemmatizer_on_text(' '.join(self.stemming_on_text(' '.join(RegexpTokenizer(r'\w+|[^\w\s]').tokenize(converted_text.lower()))))))
 
-        # Analyze the text
-        analysis_result = self.analyze_text(converted_text, emoticons_count)
+            # Use the 'combine' models for analysis
+            polarity_result = self.polarity_model_combine.predict([prepared_text])[0]
+            emotion_result = self.emotion_model_combine.predict([prepared_text])[0]
+
+        elif self.radioButton2.isChecked():
+            # Remove punctuations and known emojis and use the 'text' models
+            converted_text = self.remove_punctuations_and_known_emojis(original_text)
+            prepared_text = ' '.join(self.lemmatizer_on_text(' '.join(self.stemming_on_text(' '.join(RegexpTokenizer(r'\w+|[^\w\s]').tokenize(converted_text.lower()))))))
+
+            # Use the 'text' models for analysis
+            polarity_result = self.polarity_model_text.predict([prepared_text])[0]
+            emotion_result = self.emotion_model_text.predict([prepared_text])[0]
 
         # Calculate intensity
         intensity_result = self.classify_intensity(emoticons_count, original_text)
@@ -374,14 +501,14 @@ class Ui_OtherWindow(object):
         self.tableWidget.setItem(current_row_count, 0, original_text_item)
 
         # Set the analysis result in the table
-        analysis_item = QtWidgets.QTableWidgetItem(analysis_result)
+        analysis_item = QtWidgets.QTableWidgetItem(polarity_result)
         analysis_item.setForeground(QtGui.QColor(0, 0, 0))
         analysis_item.setTextAlignment(QtCore.Qt.AlignCenter)
         analysis_item.setFont(font)
         self.tableWidget.setItem(current_row_count, 1, analysis_item)
 
         # Set the emotion result in the table
-        emotion_item = QtWidgets.QTableWidgetItem("Emotion Placeholder")  # Replace with actual emotion
+        emotion_item = QtWidgets.QTableWidgetItem(emotion_result)  # Replace with actual emotion
         emotion_item.setForeground(QtGui.QColor(0, 0, 0))
         emotion_item.setTextAlignment(QtCore.Qt.AlignCenter)
         emotion_item.setFont(font)
@@ -412,8 +539,6 @@ class Ui_OtherWindow(object):
             except Exception as e:
                 print("An error occurred:", e)
                         
-                self.retranslateUi(OtherWindow)
-                QtCore.QMetaObject.connectSlotsByName(OtherWindow)
 
     def retranslateUi(self, OtherWindow):
         _translate = QtCore.QCoreApplication.translate
@@ -436,6 +561,8 @@ class Ui_OtherWindow(object):
         self.pushButton_2.clicked.connect(self.clearPlainText)
                 
         self.pushButton_3.clicked.connect(self.updateTextInTable)
+
+import design2
 
 # Main application execution
 if __name__ == "__main__":
