@@ -301,6 +301,9 @@ import joblib
 from sklearn.metrics import classification_report
 import numpy as np
 import pickle
+from keras.layers import Dropout
+from keras import regularizers
+
 
 # Assuming 'data' is your DataFrame with 'text', 'polarity', and 'emotion' columns
 texts = data['text']
@@ -313,14 +316,15 @@ tokenizer.fit_on_texts(texts)
 sequences = tokenizer.texts_to_sequences(texts)
 data_padded = pad_sequences(sequences, maxlen=100)
 
-# LSTM Model for Feature Extraction
+# Adjusting LSTM Model for Feature Extraction
 feature_model = Sequential()
-feature_model.add(Embedding(input_dim=5000, output_dim=64, input_length=100))
-feature_model.add(LSTM(64, return_sequences=True))
-feature_model.add(LSTM(32))
-feature_model.add(Dense(16, activation='relu'))
+feature_model.add(Embedding(input_dim=5000, output_dim=128, input_length=100))  # Increased output_dim
+feature_model.add(LSTM(128, return_sequences=True, dropout=0.2, recurrent_dropout=0.2))  # Added dropout
+feature_model.add(LSTM(64, dropout=0.2, recurrent_dropout=0.2))  # Adjusted LSTM units
+feature_model.add(Dense(16, activation='relu', kernel_regularizer=regularizers.l1_l2(l1=1e-5, l2=1e-4)))  # Added regularization
 feature_model.compile(optimizer='adam', loss='binary_crossentropy', metrics=['accuracy'])
-feature_model.fit(data_padded, polarity_labels, epochs=10, batch_size=32)
+feature_model.fit(data_padded, polarity_labels, epochs=15, batch_size=64, validation_split=0.1)  # Adjusted epochs, batch size, and added validation split
+
 
 # Save the feature model and tokenizer
 feature_model.save("lstm_feature_extractor.h5")
@@ -344,23 +348,31 @@ svm_polarity.fit(X_train, y_polarity_train)
 svm_emotion = SVC(kernel='linear')
 svm_emotion.fit(X_train, y_emotion_train)
 
-# Save the SVM models
-joblib.dump(svm_polarity, "svm_polarity_model_text.pkl")
-joblib.dump(svm_emotion, "svm_emotion_model_text.pkl")
+from sklearn.model_selection import GridSearchCV
+
+# Tuning SVM for Polarity
+param_grid = {'C': [0.1, 1, 10, 100], 'gamma': [1, 0.1, 0.01, 0.001], 'kernel': ['rbf', 'poly']}
+grid_polarity = GridSearchCV(SVC(), param_grid, refit=True, verbose=2)
+grid_polarity.fit(X_train, y_polarity_train)
+
+# Tuning SVM for Emotion
+grid_emotion = GridSearchCV(SVC(), param_grid, refit=True, verbose=2)
+grid_emotion.fit(X_train, y_emotion_train)
+
+# Save the best SVM models
+joblib.dump(grid_polarity.best_estimator_, "svm_polarity_text.pkl")
+joblib.dump(grid_emotion.best_estimator_, "svm_emotion_text.pkl")
+
+
 
 
 # In[ ]:
-# Evaluation on Test Set
-y_pred_polarity_test = svm_polarity.predict(X_test)
-polarity_report = classification_report(y_polarity_test, y_pred_polarity_test)
-print("Polarity Classification Report on Test Set:")
-print(polarity_report)
+# Evaluate Polarity SVM Model
+y_polarity_pred = grid_polarity.predict(X_test)
+print("Polarity Classification Report:")
+print(classification_report(y_polarity_test, y_polarity_pred))
 
-y_pred_emotion_test = svm_emotion.predict(X_test)
-emotion_report = classification_report(y_emotion_test, y_pred_emotion_test)
-print("Emotion Classification Report on Test Set:")
-print(emotion_report)
-
-
-
-
+# Evaluate Emotion SVM Model
+y_emotion_pred = grid_emotion.predict(X_test)
+print("Emotion Classification Report:")
+print(classification_report(y_emotion_test, y_emotion_pred))

@@ -11,30 +11,31 @@ from spellchecker import SpellChecker
 import joblib
 import keras
 import numpy as np
+from sklearn.metrics import accuracy_score, classification_report
 
 class Ui_OtherWindow(object):
     # Initialize class attributes
     def __init__(self):
         try:
-            self.polarity_model_combine = joblib.load('svm_polarity_model_combine.pkl')
+            self.polarity_model_combine = joblib.load('svm_polarity_combine.pkl')
         except Exception as e:
             print(f"1Error loading models: {e}")
             self.polarity_model_combine = None
 
         try:
-            self.emotion_model_combine = joblib.load('svm_emotion_model_combine.pkl')
+            self.emotion_model_combine = joblib.load('svm_emotion_combine.pkl')
         except Exception as e:
             print(f"2Error loading models: {e}")
             self.emotion_model_combine = None
 
         try:
-            self.polarity_model_text = joblib.load('svm_polarity_model_text.pkl')
+            self.polarity_model_text = joblib.load('svm_polarity_text.pkl')
         except Exception as e:
             print(f"3Error loading models: {e}")
             self.polarity_model_text= None
 
         try:
-            self.emotion_model_text = joblib.load('svm_emotion_model_text.pkl')
+            self.emotion_model_text = joblib.load('svm_emotion_text.pkl')
         except Exception as e:
             print(f"4Error loading models: {e}")
             self.emotion_model_text = None
