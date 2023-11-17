@@ -436,18 +436,18 @@ class Ui_OtherWindow(object):
         return text, emoticons_count
 
 
-    def remove_punctuations_and_known_emojis(self, original_text):
-        if isinstance(original_text, str):  # Check if text is a valid string
+    def remove_punctuations_and_known_emojis(self, text_no_stopwords):
+        if isinstance(text_no_stopwords, str):  # Check if text is a valid string
             # Define the regex pattern for known emojis
             emoji_pattern = r'(:\)|:\(|:D|😊|😃|😉|👌|👍|😁|😂|😄|😅|😆|😇|😞|😔|😑|😒|😓|😕|😖|💰|📈|🤣|🎊|😭|🙁|💔|😢|😮|😵|🙀|😱|❗|😠|😡|😤|👎|🔪|🌕|🚀|💎|👀|💭|📉|😨|😩|😰|💸)'
             # Construct the regex pattern to remove punctuation except specified characters and emojis
             punctuation_except_specified = r'[^\w\s]'
 
             # Replace all other punctuation marks except (. ! ?) and known emojis with an empty string
-            text = re.sub(punctuation_except_specified + '|' + emoji_pattern, '', original_text)
+            text = re.sub(punctuation_except_specified + '|' + emoji_pattern, '', text_no_stopwords)
             return text
         else:
-            return original_text
+            return text
     
     def transform_text_to_features(self, text):
         # Load the tokenizer and LSTM feature extractor model
@@ -496,7 +496,7 @@ class Ui_OtherWindow(object):
         elif self.radioButton2.isChecked():
             print("Option 2")
             # Remove punctuations and known emojis and use the 'text' models
-            converted_text = self.remove_punctuations_and_known_emojis(original_text)
+            converted_text = self.remove_punctuations_and_known_emojis(text_no_stopwords)
             # Print the text after lemmatization
             print("Plain Text Only :", ' '.join(converted_text))
 
