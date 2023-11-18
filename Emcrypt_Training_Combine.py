@@ -154,6 +154,16 @@ dataset['text'] = dataset['text'].apply(spell_correction)
 # Display the entire dataset
 print(dataset)
 
+# Function to clean repeating words
+def cleaning_repeating_words(text):
+    # This regex pattern targets whole words that are repeated
+    return re.sub(r'\b(\w+)( \1\b)+', r'\1', text)
+
+# Assuming 'dataset' is a pandas DataFrame and 'text' is a column in it
+# Apply the cleaning function for repeating words to each row in the 'text' column
+dataset['text'] = dataset['text'].apply(cleaning_repeating_words)
+print("Repeating words cleaned from 'text' column.")
+print(dataset['text'].head())
 
 # In[ ]:
 
@@ -347,20 +357,6 @@ print("Stopwords removed from 'text' column.")
 print(dataset['text'].head())
 
 
-# In[44]:
-
-
-# Function to clean repeating words
-def cleaning_repeating_words(text):
-    # This regex pattern targets whole words that are repeated
-    return re.sub(r'\b(\w+)( \1\b)+', r'\1', text)
-
-# Assuming 'dataset' is a pandas DataFrame and 'text' is a column in it
-# Apply the cleaning function for repeating words to each row in the 'text' column
-dataset['text'] = dataset['text'].apply(cleaning_repeating_words)
-print("Repeating words cleaned from 'text' column.")
-print(dataset['text'].head())
-
 
 # In[45]:
 
@@ -377,12 +373,12 @@ import pandas as pd
 # Assuming 'dataset' is your DataFrame
 
 # Replace 'output_file.xlsx' with the desired file name
-output_file = 'Feature1_file.xlsx'
+#output_file = 'Feature1_file.xlsx'
 
 # Save the dataset to an Excel file
-dataset.to_excel(output_file, index=False)
+#dataset.to_excel(output_file, index=False)
 
-print(f'Dataset saved to {output_file}')
+#print(f'Dataset saved to {output_file}')
 
 
 # In[25]:
@@ -444,14 +440,14 @@ polarity_labels = data['polarity']
 emotion_labels = data['emotion']
 
 # Tokenize and pad sequences
-tokenizer = Tokenizer(num_words=5000)
+tokenizer = Tokenizer(num_words=10000)
 tokenizer.fit_on_texts(texts)
 sequences = tokenizer.texts_to_sequences(texts)
 data_padded = pad_sequences(sequences, maxlen=100)
 
 # Adjusting LSTM Model for Feature Extraction
 feature_model = Sequential()
-feature_model.add(Embedding(input_dim=5000, output_dim=128, input_length=100))  # Increased output_dim
+feature_model.add(Embedding(input_dim=5000, output_dim=256, input_length=100))  # Increased output_dim 128 dati
 feature_model.add(LSTM(128, return_sequences=True, dropout=0.2, recurrent_dropout=0.2))  # Added dropout
 feature_model.add(LSTM(64, dropout=0.2, recurrent_dropout=0.2))  # Adjusted LSTM units
 feature_model.add(Dense(16, activation='relu', kernel_regularizer=regularizers.l1_l2(l1=1e-5, l2=1e-4)))  # Added regularization

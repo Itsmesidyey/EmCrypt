@@ -155,6 +155,17 @@ dataset['text'] = dataset['text'].apply(spell_correction)
 print(dataset)
 
 
+# Function to clean repeating words
+def cleaning_repeating_words(text):
+    # This regex pattern targets whole words that are repeated
+    return re.sub(r'\b(\w+)( \1\b)+', r'\1', text)
+
+# Assuming 'dataset' is a pandas DataFrame and 'text' is a column in it
+# Apply the cleaning function for repeating words to each row in the 'text' column
+dataset['text'] = dataset['text'].apply(cleaning_repeating_words)
+print("Repeating words cleaned from 'text' column.")
+print(dataset['text'].head())
+
 # In[10]:
 
 
@@ -214,20 +225,6 @@ print("Stopwords removed from 'text' column.")
 print(dataset['text'].head())
 
 
-# In[13]:
-
-
-# Function to clean repeating words
-def cleaning_repeating_words(text):
-    # This regex pattern targets whole words that are repeated
-    return re.sub(r'\b(\w+)( \1\b)+', r'\1', text)
-
-# Assuming 'dataset' is a pandas DataFrame and 'text' is a column in it
-# Apply the cleaning function for repeating words to each row in the 'text' column
-dataset['text'] = dataset['text'].apply(cleaning_repeating_words)
-print("Repeating words cleaned from 'text' column.")
-print(dataset['text'].head())
-
 
 # In[14]:
 
@@ -236,20 +233,15 @@ dataset['text']=dataset['text'].str.lower()
 dataset['text'].head()
 
 
-# In[15]:
-
-
-import pandas as pd
-
 # Assuming 'dataset' is your DataFrame
 
 # Replace 'output_file.xlsx' with the desired file name
-output_file = 'Feature2_file.xlsx'
+#output_file = 'Feature2_file.xlsx'
 
 # Save the dataset to an Excel file
-dataset.to_excel(output_file, index=False)
+#dataset.to_excel(output_file, index=False)
 
-print(f'Dataset saved to {output_file}')
+#print(f'Dataset saved to {output_file}')
 
 
 # In[54]:

@@ -307,6 +307,7 @@ class Ui_OtherWindow(object):
         self.retranslateUi(OtherWindow)
         QtCore.QMetaObject.connectSlotsByName(OtherWindow)
 
+
     # Utility methods for text processing
     @staticmethod
     def cleaning_numbers(original_text):
