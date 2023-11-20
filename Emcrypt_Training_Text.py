@@ -1,9 +1,3 @@
-#!/usr/bin/env python
-# coding: utf-8
-
-# In[1]:
-
-
 #utilities
 import re
 import numpy as np
@@ -15,11 +9,8 @@ from nltk.stem import WordNetLemmatizer
 #SpellCorrection
 from spellchecker import SpellChecker
 
-import string
-import emoji
+import os
 
-
-# In[2]:
 
 
 import chardet
@@ -37,42 +28,24 @@ df = pd.read_csv('Emcrypt-dataset.csv', encoding=result['encoding'], names=DATAS
 df.sample(5)
 
 
-# In[3]:
-
-
 #Data preprocessing
 data=df[['text','polarity', 'emotion']]
-
-
-# In[4]:
-
-
-data['polarity'].unique()
-
-
-# In[5]:
 
 
 data_pos = data[data['polarity'] == 1]
 data_neg = data[data['polarity'] == 0]
 
 
-# In[6]:
 
 
 dataset = pd.concat([data_pos, data_neg])
 
-
-# In[7]:
 
 
 def cleaning_numbers(data):
     return re.sub('[0-9]+', '', data)
 dataset['text'] = dataset['text'].apply(lambda x: cleaning_numbers(x))
 dataset['text'].head()
-
-
-# In[8]:
 
 
 emoticons_to_keep = [
@@ -110,7 +83,6 @@ dataset['text'] = dataset['text'].apply(clean_tweet)
 print(dataset['text'])
 
 
-# In[9]:
 
 
 from spellchecker import SpellChecker
@@ -191,7 +163,6 @@ print("Output after removing punctuation and known emojis:")
 print(dataset)
 
 
-# In[11]:
 
 
 stopwordlist = ['a', 'about', 'above', 'after', 'again', 'ain', 'all', 'am', 'an',
@@ -211,7 +182,6 @@ stopwordlist = ['a', 'about', 'above', 'after', 'again', 'ain', 'all', 'am', 'an
              "youve", 'your', 'yours', 'yourself', 'yourselves']
 
 
-# In[12]:
 
 
 # Stopwords removal applied separately after the option has been chosen and processed
@@ -226,25 +196,9 @@ print(dataset['text'].head())
 
 
 
-# In[14]:
-
-
 dataset['text']=dataset['text'].str.lower()
 dataset['text'].head()
 
-
-# Assuming 'dataset' is your DataFrame
-
-# Replace 'output_file.xlsx' with the desired file name
-#output_file = 'Feature2_file.xlsx'
-
-# Save the dataset to an Excel file
-#dataset.to_excel(output_file, index=False)
-
-#print(f'Dataset saved to {output_file}')
-
-
-# In[54]:
 
 
 from nltk.tokenize import RegexpTokenizer
@@ -258,7 +212,6 @@ dataset['text'] = dataset['text'].apply(tokenizer.tokenize)
 dataset['text'].head()
 
 
-# In[55]:
 
 
 import nltk
@@ -281,9 +234,9 @@ dataset['text'] = dataset['text'].apply(lambda x: lemmatizer_on_text(x))
 dataset['text'].head()
 
 
-# In[57]:
+
 from keras.models import Sequential
-from keras.layers import LSTM, Dense, Embedding
+from keras.layers import LSTM, Dense, Embedding, Flatten
 from keras.preprocessing.text import Tokenizer
 from keras.preprocessing.sequence import pad_sequences
 import pandas as pd
@@ -303,68 +256,96 @@ polarity_labels = data['polarity']
 emotion_labels = data['emotion']
 
 # Tokenize and pad sequences
-tokenizer = Tokenizer(num_words=5000)
+tokenizer = Tokenizer(num_words=10000)
 tokenizer.fit_on_texts(texts)
 sequences = tokenizer.texts_to_sequences(texts)
 data_padded = pad_sequences(sequences, maxlen=100)
 
-# Adjusting LSTM Model for Feature Extraction
+# Adjusted LSTM Model for Feature Extraction
 feature_model = Sequential()
-feature_model.add(Embedding(input_dim=5000, output_dim=128, input_length=100))  # Increased output_dim
-feature_model.add(LSTM(128, return_sequences=True, dropout=0.2, recurrent_dropout=0.2))  # Added dropout
-feature_model.add(LSTM(64, dropout=0.2, recurrent_dropout=0.2))  # Adjusted LSTM units
-feature_model.add(Dense(16, activation='relu', kernel_regularizer=regularizers.l1_l2(l1=1e-5, l2=1e-4)))  # Added regularization
+feature_model.add(Embedding(input_dim=10000, output_dim=256, input_length=100))
+feature_model.add(LSTM(128, return_sequences=True))
+feature_model.add(LSTM(64))  # Last LSTM layer should not return sequences
+feature_model.add(Dense(16, activation='relu'))
+feature_model.add(Flatten())  # Flatten the output
 feature_model.compile(optimizer='adam', loss='binary_crossentropy', metrics=['accuracy'])
-feature_model.fit(data_padded, polarity_labels, epochs=15, batch_size=64, validation_split=0.1)  # Adjusted epochs, batch size, and added validation split
+feature_model.fit(data_padded, np.array(polarity_labels), epochs=10, batch_size=64, validation_split=0.1)
 
+# Extract features
+features = feature_model.predict(data_padded)
 
 # Save the feature model and tokenizer
 feature_model.save("lstm_feature_extractor.h5")
 with open('tokenizer.pkl', 'wb') as handle:
     pickle.dump(tokenizer, handle, protocol=pickle.HIGHEST_PROTOCOL)
 
+# Save model and tokenizer
+output_dir = 'model_output'
+if not os.path.exists(output_dir):
+    os.makedirs(output_dir)
 # Extract features
 features = feature_model.predict(data_padded)
 
 # Splitting the data: 60% training, 30% evaluation, and 10% testing
+# For polarity labels
 X_train, X_temp, y_polarity_train, y_polarity_temp = train_test_split(features, polarity_labels, test_size=0.4, random_state=42)
 X_eval, X_test, y_polarity_eval, y_polarity_test = train_test_split(X_temp, y_polarity_temp, test_size=0.25, random_state=42)
+
+# For emotion labels
 X_train, X_temp, y_emotion_train, y_emotion_temp = train_test_split(features, emotion_labels, test_size=0.4, random_state=42)
 X_eval, X_test, y_emotion_eval, y_emotion_test = train_test_split(X_temp, y_emotion_temp, test_size=0.25, random_state=42)
 
-# Train SVM for Polarity
-svm_polarity = SVC(kernel='linear')
-svm_polarity.fit(X_train, y_polarity_train)
-
-# Train SVM for Emotion
-svm_emotion = SVC(kernel='linear')
-svm_emotion.fit(X_train, y_emotion_train)
-
+# Importing necessary libraries for Grid Search
 from sklearn.model_selection import GridSearchCV
+from sklearn.metrics import classification_report, confusion_matrix
+import seaborn as sns
+import matplotlib.pyplot as plt
 
-# Tuning SVM for Polarity
-param_grid = {'C': [0.1, 1, 10, 100], 'gamma': [1, 0.1, 0.01, 0.001], 'kernel': ['rbf', 'poly']}
+# Define the parameter grid
+param_grid = {
+    'C': [0.1, 1, 10, 100],
+    'gamma': [1, 0.1, 0.01, 0.001],
+    'kernel': ['rbf', 'poly', 'sigmoid']
+}
+
+# Grid Search for Polarity SVM
 grid_polarity = GridSearchCV(SVC(), param_grid, refit=True, verbose=2)
 grid_polarity.fit(X_train, y_polarity_train)
+print("Best Polarity SVM Parameters:", grid_polarity.best_params_)
 
-# Tuning SVM for Emotion
+# Grid Search for Emotion SVM
 grid_emotion = GridSearchCV(SVC(), param_grid, refit=True, verbose=2)
 grid_emotion.fit(X_train, y_emotion_train)
+print("Best Emotion SVM Parameters:", grid_emotion.best_params_)
 
 # Save the best SVM models
 joblib.dump(grid_polarity.best_estimator_, "svm_polarity_text.pkl")
 joblib.dump(grid_emotion.best_estimator_, "svm_emotion_text.pkl")
 
-
-
-
-# In[ ]:
-# Evaluate Polarity SVM Model
+# Evaluate and visualize the performance of the Polarity SVM Model
 y_polarity_pred = grid_polarity.predict(X_test)
 print("Polarity Classification Report:")
 print(classification_report(y_polarity_test, y_polarity_pred))
 
-# Evaluate Emotion SVM Model
+# Confusion Matrix for Polarity
+cm_polarity = confusion_matrix(y_polarity_test, y_polarity_pred)
+plt.figure(figsize=(10, 7))
+sns.heatmap(cm_polarity, annot=True, fmt='d')
+plt.title('Confusion Matrix for Polarity Classification')
+plt.ylabel('Actual Label')
+plt.xlabel('Predicted Label')
+plt.show()
+
+# Evaluate and visualize the performance of the Emotion SVM Model
 y_emotion_pred = grid_emotion.predict(X_test)
 print("Emotion Classification Report:")
 print(classification_report(y_emotion_test, y_emotion_pred))
+
+# Confusion Matrix for Emotion
+cm_emotion = confusion_matrix(y_emotion_test, y_emotion_pred)
+plt.figure(figsize=(10, 7))
+sns.heatmap(cm_emotion, annot=True, fmt='d')
+plt.title('Confusion Matrix for Emotion Classification')
+plt.ylabel('Actual Label')
+plt.xlabel('Predicted Label')
+plt.show()
