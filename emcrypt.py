@@ -40,7 +40,6 @@ class Ui_OtherWindow(object):
             print(f"4Error loading models: {e}")
             self.emotion_model_text = None
 
-
         # Initialize SpellChecker
         self.spell = SpellChecker()
 
@@ -211,7 +210,7 @@ class Ui_OtherWindow(object):
         "💸": "Money with Wings"
 }
 
-emoticon_weights = {
+        self.emoticon_weights = {
             '🌈': {'angry': 0.0, 'anticipation': 0.28, 'fear': 0.0, 'happy': 0.69, 'sad': 0.06, 'surprise': 0.22 },
             '🌙': {'angry': 0.0, 'anticipation': 0.31, 'fear': 0.0, 'happy': 0.25, 'sad': 0.0, 'surprise': 0.06},
             '🌚': {'angry': 0.06, 'anticipation': 0.08, 'fear': 0.06, 'happy': 0.42, 'sad': 0.19, 'surprise': 0.06},
@@ -629,19 +628,14 @@ emoticon_weights = {
         else:
             return 'Undetermined'
     
-    def convert_and_calculate(text):
-            emotional_scores = {emotion: 0.0 for emotion in ['angry', 'anticipation', 'fear', 'happy', 'sad', 'surprise']}
-            changed_emoticons = 0
-            for emoticon, word in emoticon_dict.items():
-                while emoticon in text:
-                    text = text.replace(emoticon, word + " ", 1)
-                    changed_emoticons += 1
-                    scores = emoticon_weights.get(emoticon, {'angry': 0.0, 'anticipation': 0.0, 'fear': 0.0, 'happy': 0.0, 'sad': 0.0, 'surprise': 0.0})
-                    for emotion, score in scores.items():
-                        emotional_scores[emotion] += score
-            return text, changed_emoticons, emotional_scores
-
-
+    def convert_emoticons_to_words(self, text_no_stopwords):
+        text = text_no_stopwords  # Initialize 'text' with 'original_text'
+        emoticons_count = 0
+        for emoticon, word in self.emoticon_dict.items():
+            while emoticon in text:
+                text = text.replace(emoticon, word + " ", 1)
+                emoticons_count += 1
+        return text, emoticons_count
 
 
     def remove_punctuations_and_known_emojis(self, text_no_stopwords):
@@ -697,29 +691,33 @@ emoticon_weights = {
 
         # Check radio button selection
         if self.radioButton1.isChecked():
-            print("Option 1")
+
+            print("Combination of Keywords, Ending Puctuation Marks, and Emoticons")
             converted_text, emoticons_count = self.convert_emoticons_to_words(text_no_stopwords)  # Use the processed text
+
             # Print the text after coverting
             print("Combination of Keywords, Ending Punctuation Marks, and Emoticons :", ' '.join(converted_text))
+
         elif self.radioButton2.isChecked():
-            print("Option 2")
+            print("Plain-text Only")
+
             # Remove punctuations and known emojis and use the 'text' models
             converted_text = self.remove_punctuations_and_known_emojis(text_no_stopwords)
+
             # Print the text after lemmatization
             print("Plain Text Only :", ' '.join(converted_text))
 
         text_no_repeating_words = self.cleaning_repeating_words(converted_text)
         text_lowercased = text_no_repeating_words.lower()
-        
         tokenizer = RegexpTokenizer(r'\w+|[^\w\s]')
         text_tokenized = tokenizer.tokenize(text_lowercased)
         print("Text after Tokenization:", ' '.join(text_tokenized))
 
-        text_stemmed = self.stemming_on_text(' '.join(text_tokenized))
-        text_lemmatized = self.lemmatizer_on_text(' '.join(text_stemmed))
+        text_lemmatized = self.lemmatizer_on_text(' '.join(text_tokenized))
+        #text_stemmed = self.stemming_on_text(' '.join(text_lemmatized))
 
         emoticons_count = 0
-
+        
         # Check radio button selection
         if self.radioButton1.isChecked():
             print("Option 1")
@@ -739,7 +737,7 @@ emoticon_weights = {
         elif self.radioButton2.isChecked():
             print("Option 2")
             # Similar processing for radioButton2, if different
-            prepared_text = text_lemmatized     # Use the processed text
+            prepared_text = text_lemmatized    # Use the processed text
             features = self.transform_text_to_features(prepared_text)
             if self.polarity_model_text is not None:
                 polarity_result = self.polarity_model_text.predict(features)
@@ -824,6 +822,16 @@ emoticon_weights = {
                 pass
             except Exception as e:
                 print("An error occurred:", e)
+
+class CustomPlainTextEdit(QtWidgets.QPlainTextEdit):
+    def __init__(self, parent=None):
+        super(CustomPlainTextEdit, self).__init__(parent)
+        self.defaultText = " Enter the Cryptocurrency related tweets here..."
+
+    def focusInEvent(self, event):
+        if self.toPlainText() == self.defaultText:
+            self.setPlainText('')
+        super(CustomPlainTextEdit, self).focusInEvent(event)
 
     def retranslateUi(self, OtherWindow):
         _translate = QtCore.QCoreApplication.translate

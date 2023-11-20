@@ -215,13 +215,12 @@ dataset['text'].head()
 
 
 import nltk
-st = nltk.PorterStemmer()
-def stemming_on_text(data):
-    text = [st.stem(word) for word in data]
-    return data
-dataset['text']= dataset['text'].apply(lambda x: stemming_on_text(x))
-dataset['text'].head()
-
+#st = nltk.PorterStemmer()
+#def stemming_on_text(data):
+ #   text = [st.stem(word) for word in data]
+ #   return data
+#dataset['text']= dataset['text'].apply(lambda x: stemming_on_text(x))
+#dataset['text'].head()
 
 # In[56]:
 
