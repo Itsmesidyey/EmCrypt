@@ -4,15 +4,15 @@
 
 from PyQt5 import QtCore, QtGui, QtWidgets
 
-from emcrypt import Ui_OtherWindow
+from emcrypt import Ui_Manual
 
 class Ui_MainWindow(object):
     def openWindow(self):
         self.window = QtWidgets.QMainWindow()
-        self.ui = Ui_OtherWindow()
+        self.ui = Ui_Manual()
         self.ui.setupUi(self.window)
-        MainWindow.hide()
         self.window.show()
+        self.window.hide()
     def setupUi(self, MainWindow):
         MainWindow.setObjectName("MainWindow")
         MainWindow.resize(1121, 743)
