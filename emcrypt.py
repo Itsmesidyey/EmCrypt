@@ -1,44 +1,40 @@
-import os
 import re
 import pandas as pd
 import pickle
 from PyQt5 import QtCore, QtGui, QtWidgets
 from PyQt5.QtWidgets import QFileDialog
 import nltk
-from nltk.corpus import stopwords
 from nltk.tokenize import word_tokenize, RegexpTokenizer
 from spellchecker import SpellChecker
 import joblib
 import keras
 import numpy as np
-from sklearn.metrics import accuracy_score, classification_report
+from PyQt5.QtWidgets import QLabel, QDialog, QVBoxLayout, QPushButton
+from PyQt5.QtGui import QPixmap
+from PyQt5.QtCore import Qt
+from PyQt5.QtWidgets import QPlainTextEdit
+
+class ClearablePlainTextEdit(QPlainTextEdit):
+    def __init__(self, parent=None):
+        super(ClearablePlainTextEdit, self).__init__(parent)
+        self.placeholder_text = " Enter the Cryptocurrency related tweets here..."
+        self.setPlainText(self.placeholder_text)
+
+    def focusInEvent(self, event):
+        if self.toPlainText() == self.placeholder_text:
+            self.setPlainText("")
+        super(ClearablePlainTextEdit, self).focusInEvent(event)
 
 class Ui_OtherWindow(object):
     # Initialize class attributes
     def __init__(self):
         try:
             self.polarity_model_combine = joblib.load('svm_polarity_combine.pkl')
-        except Exception as e:
-            print(f"1Error loading models: {e}")
-            self.polarity_model_combine = None
-
-        try:
             self.emotion_model_combine = joblib.load('svm_emotion_combine.pkl')
-        except Exception as e:
-            print(f"2Error loading models: {e}")
-            self.emotion_model_combine = None
-
-        try:
             self.polarity_model_text = joblib.load('svm_polarity_text.pkl')
-        except Exception as e:
-            print(f"3Error loading models: {e}")
-            self.polarity_model_text= None
-
-        try:
             self.emotion_model_text = joblib.load('svm_emotion_text.pkl')
         except Exception as e:
-            print(f"4Error loading models: {e}")
-            self.emotion_model_text = None
+            print(f"Error loading models: {e}")
 
         # Initialize SpellChecker
         self.spell = SpellChecker()
@@ -254,7 +250,7 @@ class Ui_OtherWindow(object):
             '💓': {'angry': 0.0, 'anticipation': 0.47,  'fear': 0.08, 'happy': 0.61, 'sad': 0.0, 'surprise': 0.19},
             '💔': {'angry': 0.39, 'anticipation': 0.19,  'fear': 0.14, 'happy': 0.0, 'sad': 0.94, 'surprise': 0.08},
             '💕': {'angry': 0.0, 'anticipation': 0.31, 'fear': 0.0, 'happy': 0.83, 'sad': 0.0, 'surprise': 0.11},
-                '💖': {'angry': 0.0, 'anticipation': 0.33, 'fear': 0.0, 'happy': 0.89, 'sad': 0.0, 'surprise': 0.25},
+            '💖': {'angry': 0.0, 'anticipation': 0.33, 'fear': 0.0, 'happy': 0.89, 'sad': 0.0, 'surprise': 0.25},
             '💗': {'angry': 0.0, 'anticipation': 0.36, 'fear': 0.0, 'happy': 0.89, 'sad': 0.0, 'surprise': 0.22},
             '💘': {'angry': 0.03, 'anticipation': 0.31, 'fear': 0.06, 'happy': 0.67, 'sad': 0.14, 'surprise': 0.06},
             '💙': {'angry': 0.0, 'anticipation': 0.25, 'fear': 0.0, 'happy': 0.61, 'sad': 0.17, 'surprise': 0.17},
@@ -390,6 +386,10 @@ class Ui_OtherWindow(object):
         self.label.setScaledContents(True)
         self.label.setObjectName("label")
 
+        self.scrollArea = QtWidgets.QScrollArea(self.centralwidget)
+        self.scrollArea.setGeometry(QtCore.QRect(120, 560, 811, 421))  # Set the geometry as needed
+        self.scrollArea.setWidgetResizable(True)
+
         self.pushButton = QtWidgets.QPushButton(self.centralwidget)
         self.pushButton.setGeometry(QtCore.QRect(140, 469, 181, 41))
         font = QtGui.QFont()
@@ -416,13 +416,14 @@ class Ui_OtherWindow(object):
 
         self.pushButton.setObjectName("pushButton")
 
-        self.plainTextEdit = QtWidgets.QPlainTextEdit(self.centralwidget)
+        self.plainTextEdit = ClearablePlainTextEdit(self.centralwidget)
         self.plainTextEdit.setGeometry(QtCore.QRect(120, 180, 811, 171))
         font = QtGui.QFont()
         font.setFamily("Poppins")
         font.setPointSize(11)
         self.plainTextEdit.setFont(font)
         self.plainTextEdit.setObjectName("plainTextEdit")
+        
         self.pushButton_2 = QtWidgets.QPushButton(self.centralwidget)
         self.pushButton_2.setGeometry(QtCore.QRect(330, 469, 141, 41))
         font = QtGui.QFont()
@@ -449,56 +450,53 @@ class Ui_OtherWindow(object):
     "border-radius:10px\n"
     "")
         self.pushButton_3.setObjectName("pushButton_3")
-        self.tableWidget = QtWidgets.QTableWidget(self.centralwidget)
-        self.tableWidget.setGeometry(QtCore.QRect(120, 560, 811, 421))
+
+            # Create and set up the QScrollArea
+        self.scrollArea = QtWidgets.QScrollArea(self.centralwidget)
+        self.scrollArea.setGeometry(QtCore.QRect(120, 560, 811, 421))  # Adjust size and position as needed
+        self.scrollArea.setWidgetResizable(True)
+
+        # Create the QTableWidget
+        self.tableWidget = QtWidgets.QTableWidget()
+        self.tableWidget.setColumnCount(4)
+        self.tableWidget.setObjectName("tableWidget")
+        
+        # Set the headers
+        headers = ["Tweets", "Polarity", "Emotion", "Intensity"]
+        self.tableWidget.setHorizontalHeaderLabels(headers)
+
+        # Table Widget font and style settings
         font = QtGui.QFont()
         font.setFamily("Poppins")
-        font.setPointSize(14)
+        font.setPointSize(10)
         self.tableWidget.setFont(font)
         self.tableWidget.setStyleSheet("QTableWidget{\n"
-    "background-color: white;\n"
-    "color: white;\n"
-    "border-radius:10px\n"
-    "\n"
-    "}\n"
-    "QHeaderView::section { background-color:rgb(126,217,87)}\");\n"
-    "\n"
-    "")
+                                    "background-color: white;\n"
+                                    "color: black;\n"  # Changed color to black for visibility
+                                    "border-radius:10px\n"
+                                    "}\n"
+                                    "QHeaderView::section { background-color:rgb(126,217,87)}\");\n")
+
         self.tableWidget.setShowGrid(True)
         self.tableWidget.setGridStyle(QtCore.Qt.CustomDashLine)
-            
-        self.tableWidget.setObjectName("tableWidget")
-        self.tableWidget.setColumnCount(4)
-        item = QtWidgets.QTableWidgetItem()
-        font = QtGui.QFont()
-        font.setFamily("Poppins")
-        font.setPointSize(10)
-        item.setFont(font)
-        self.tableWidget.setHorizontalHeaderItem(0, item)
-        item = QtWidgets.QTableWidgetItem()
-        font = QtGui.QFont()
-        font.setFamily("Poppins")
-        font.setPointSize(10)
-        item.setFont(font)
-        self.tableWidget.setHorizontalHeaderItem(1, item)
-        item = QtWidgets.QTableWidgetItem()
-        font = QtGui.QFont()
-        font.setFamily("Poppins")
-        font.setPointSize(10)
-        item.setFont(font)
-        self.tableWidget.setHorizontalHeaderItem(2, item)
-        item = QtWidgets.QTableWidgetItem()
-        font = QtGui.QFont()
-        font.setFamily("Poppins")
-        font.setPointSize(10)
-        item.setFont(font)
-        self.tableWidget.setHorizontalHeaderItem(3, item)
-        self.tableWidget.horizontalHeader().setVisible(True)
-        self.tableWidget.horizontalHeader().setCascadingSectionResizes(False)
         self.tableWidget.horizontalHeader().setDefaultSectionSize(192)
-        self.tableWidget.horizontalHeader().setHighlightSections(False)
-        self.tableWidget.horizontalHeader().setSortIndicatorShown(False)
         self.tableWidget.verticalHeader().setDefaultSectionSize(40)
+
+        # Add the QTableWidget to the QScrollArea
+        self.scrollArea.setWidget(self.tableWidget)
+
+
+        self.iconButton = QtWidgets.QPushButton(self.centralwidget)
+        self.iconButton.setGeometry(QtCore.QRect(980, 10, 40, 40))  # Position in the upper right corner
+        icon = QtGui.QIcon()
+        icon.addPixmap(QtGui.QPixmap("/Users/cjcasinsinan/Documents/GitHub/EmCrypt/assets/manual-icon.png"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
+        self.iconButton.setIcon(icon)
+        self.iconButton.setIconSize(QtCore.QSize(30, 30))  # Set size of the icon
+        self.iconButton.setObjectName("iconButton")
+
+        # Connect the icon button to the function to show the pop-up
+        self.iconButton.clicked.connect(self.showPopup)
+
         OtherWindow.setCentralWidget(self.centralwidget)
         self.statusbar = QtWidgets.QStatusBar(OtherWindow)
         self.statusbar.setObjectName("statusbar")
@@ -506,7 +504,7 @@ class Ui_OtherWindow(object):
 
         self.retranslateUi(OtherWindow)
         QtCore.QMetaObject.connectSlotsByName(OtherWindow)
-
+        
 
     # Utility methods for text processing
     @staticmethod
@@ -652,20 +650,40 @@ class Ui_OtherWindow(object):
             return text
     
     def transform_text_to_features(self, text):
-        # Load the tokenizer and LSTM feature extractor model
-        with open('tokenizer.pkl', 'rb') as handle:
-            tokenizer = pickle.load(handle)
-        feature_model = keras.models.load_model('lstm_feature_extractor.h5')
+        # Check radio button selection
+        if self.radioButton1.isChecked():
+            print("Option 1")
+            # Load the tokenizer and LSTM feature extractor model
+            with open('tokenizer.pkl', 'rb') as handle:
+                tokenizer = pickle.load(handle)
+            feature_model = keras.models.load_model('lstm_feature_extractor.h5')
 
-        # Preprocess the text (tokenization and padding)
-        # Assuming 'text' is a single string of input text
-        seq = tokenizer.texts_to_sequences([text])
-        padded_seq = keras.preprocessing.sequence.pad_sequences(seq, maxlen=100)  # Use the same maxlen as used during training
+            # Preprocess the text (tokenization and padding)
+            # Assuming 'text' is a single string of input text
+            seq = tokenizer.texts_to_sequences([text])
+            padded_seq = keras.preprocessing.sequence.pad_sequences(seq, maxlen=100)  # Use the same maxlen as used during training
 
-        # Use the LSTM model to get the feature vector
-        features = feature_model.predict(padded_seq)
+            # Use the LSTM model to get the feature vector
+            features = feature_model.predict(padded_seq)
 
-        return features
+            return features
+        
+        elif self.radioButton2.isChecked():
+            print("Option 2")
+            # Load the tokenizer and LSTM feature extractor model
+            with open('tokenizer_text.pkl', 'rb') as handle:
+                tokenizer = pickle.load(handle)
+            feature_model = keras.models.load_model('lstm_feature_extractor_text.h5')
+
+            # Preprocess the text (tokenization and padding)
+            # Assuming 'text' is a single string of input text
+            seq = tokenizer.texts_to_sequences([text])
+            padded_seq = keras.preprocessing.sequence.pad_sequences(seq, maxlen=100)  # Use the same maxlen as used during training
+
+            # Use the LSTM model to get the feature vector
+            features = feature_model.predict(padded_seq)
+
+            return features
 
     def updateTextInTable(self):
         original_text = self.plainTextEdit.toPlainText()
@@ -810,6 +828,22 @@ class Ui_OtherWindow(object):
         self.plainTextEdit.setPlainText("")
 
     def uploadFile(self):
+        # Create and set up the pop-up dialog
+        dialog = QDialog()
+        dialog.setWindowTitle("Upload File Instructions")
+        dialog.setWindowModality(Qt.ApplicationModal)  # Make the dialog modal
+
+        layout = QVBoxLayout(dialog)
+
+        # Create and set the image label
+        label = QLabel(dialog)
+        pixmap = QPixmap("/Users/cjcasinsinan/Documents/GitHub/EmCrypt/assets/upload-file-instructions1.png")
+        label.setPixmap(pixmap)
+        layout.addWidget(label)
+
+        dialog.exec_()  # Show the dialog
+
+        # Proceed to the file upload process after closing the dialog
         options = QFileDialog.Options()
         options |= QFileDialog.ReadOnly
         file_name, _ = QFileDialog.getOpenFileName(None, "Upload File", "", "Excel Files (*.xlsx);;All Files (*)", options=options)
@@ -818,20 +852,26 @@ class Ui_OtherWindow(object):
                 df = pd.read_excel(file_name)
                 self.tableWidget.setRowCount(0)
                 for index, row in df.iterrows():
-                    text = row['Tweets']  # Assuming 'Tweets' is the column name with the text data
-                pass
+                    self.plainTextEdit.setPlainText(row['Tweets'])  # Set the text in the plainTextEdit widget
+                    self.updateTextInTable()  # Process and update the table
             except Exception as e:
                 print("An error occurred:", e)
+        
+    def showPopup(self):
+        # Create and set up the pop-up dialog
+        dialog = QDialog()
+        dialog.setWindowTitle("User Manual")
+        dialog.setWindowModality(Qt.ApplicationModal)
 
-class CustomPlainTextEdit(QtWidgets.QPlainTextEdit):
-    def __init__(self, parent=None):
-        super(CustomPlainTextEdit, self).__init__(parent)
-        self.defaultText = " Enter the Cryptocurrency related tweets here..."
+        layout = QVBoxLayout(dialog)
 
-    def focusInEvent(self, event):
-        if self.toPlainText() == self.defaultText:
-            self.setPlainText('')
-        super(CustomPlainTextEdit, self).focusInEvent(event)
+        # Create and set the image label
+        label = QLabel(dialog)
+        pixmap = QPixmap("/Users/cjcasinsinan/Documents/GitHub/EmCrypt/assets/user-manual.png")  # Set the path to your popup image
+        label.setPixmap(pixmap)
+        layout.addWidget(label)
+
+        dialog.exec_()  # Show the dialog
 
     def retranslateUi(self, OtherWindow):
         _translate = QtCore.QCoreApplication.translate
@@ -840,15 +880,21 @@ class CustomPlainTextEdit(QtWidgets.QPlainTextEdit):
         self.plainTextEdit.setPlainText(_translate("OtherWindow", " Enter the Cryptocurrency related tweets here..."))
         self.pushButton_2.setText(_translate("OtherWindow", "Clear"))
         self.pushButton_3.setText(_translate("OtherWindow", "Evaluate"))
-        self.tableWidget.setSortingEnabled(False)
-        item = self.tableWidget.horizontalHeaderItem(0)
-        item.setText(_translate("OtherWindow", "Tweets"))
-        item = self.tableWidget.horizontalHeaderItem(1)
-        item.setText(_translate("OtherWindow", "Polarity"))
-        item = self.tableWidget.horizontalHeaderItem(2)
-        item.setText(_translate("OtherWindow", "Emotion"))
-        item = self.tableWidget.horizontalHeaderItem(3)
-        item.setText(_translate("OtherWindow", "Intensity"))
+        self.tableWidget.setSortingEnabled(True)
+        self.tableWidget.setHorizontalHeaderLabels([
+        _translate("OtherWindow", "Tweets"),
+        _translate("OtherWindow", "Polarity"),
+        _translate("OtherWindow", "Emotion"),
+        _translate("OtherWindow", "Intensity")
+        ])
+        #item = self.tableWidget.horizontalHeaderItem(0)
+        #item.setText(_translate("OtherWindow", "Tweets"))
+        #item = self.tableWidget.horizontalHeaderItem(1)
+        #item.setText(_translate("OtherWindow", "Polarity"))
+        #item = self.tableWidget.horizontalHeaderItem(2)
+        #item.setText(_translate("OtherWindow", "Emotion"))
+        #item = self.tableWidget.horizontalHeaderItem(3)
+        #item.setText(_translate("OtherWindow", "Intensity"))
                 
         self.pushButton.clicked.connect(self.uploadFile)  # Connect the button to the function
         self.pushButton_2.clicked.connect(self.clearPlainText)

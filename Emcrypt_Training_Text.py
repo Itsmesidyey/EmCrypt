@@ -2,16 +2,12 @@
 import re
 import numpy as np
 import pandas as pd
-
-#nltk
-from nltk.stem import WordNetLemmatizer
+import os
+import nltk
 
 #SpellCorrection
 from spellchecker import SpellChecker
-
-import os
-
-
+from nltk.tokenize import RegexpTokenizer
 
 import chardet
 DATASET_COLUMNS = ['date', 'username', 'text', 'polarity', 'emotion']
@@ -30,18 +26,12 @@ df.sample(5)
 
 #Data preprocessing
 data=df[['text','polarity', 'emotion']]
-
-
 data_pos = data[data['polarity'] == 1]
 data_neg = data[data['polarity'] == 0]
-
-
-
-
 dataset = pd.concat([data_pos, data_neg])
 
 
-
+# First step: Remove numbers
 def cleaning_numbers(data):
     return re.sub('[0-9]+', '', data)
 dataset['text'] = dataset['text'].apply(lambda x: cleaning_numbers(x))
@@ -61,6 +51,7 @@ emoticons_to_keep = [
     '😤', '🔪', '🌕', '🚀', '📉', '🤣', '💸'
 ]
 
+# Second step: Remove URLs, hashtags, mention, and special characters except for emoticons, and white spaces
 def clean_tweet(text):
     # Remove URLs
     text = re.sub(r'https?://\S+|www\.\S+', '', text)
@@ -82,27 +73,10 @@ dataset['text'] = dataset['text'].apply(clean_tweet)
 # Display the 'text' column in the entire dataset
 print(dataset['text'])
 
-
-
-
-from spellchecker import SpellChecker
+# Third Step: Spell Checker
 
 # Initialize SpellChecker only once to avoid re-creation for each call
 spell = SpellChecker()
-
-# List of emoticons to keep
-emoticons_to_keep = [
-    '🌈', '🌙', '🌚', '🌞', '🌟', '🌷', '🌸', '🌹', '🌺', '🍀', '🍕', '🍻', '🎀',
-    '🎈', '🎉', '🎤', '🎥', '🎧', '🎵', '🎶', '👅', '👇', '👈', '👉', '👋', '👌',
-    '👍', '👏', '👑', '💀', '💁', '💃', '💋', '💐', '💓', '💕', '💖', '💗', '💘',
-    '💙', '💚', '💛', '💜', '💞', '💤', '💥', '💦', '💪', '💫', '💯', '📷', '🔥',
-    '😀', '😁', '😃', '😄', '😅', '😆', '😇', '😈', '😉', '😊', '😋', '😌', '😍',
-    '😎', '😏', '😺', '😻', '😽', '🙏', '☀', '☺', '♥', '✅', '✈', '✊', '✋',
-    '✌', '✔', '✨', '❄', '❤', '⭐', '😢', '😞', '😟', '😠', '😡', '😔', '😕',
-    '😖', '😨', '😩', '😪', '😫', '😰', '😱', '😳', '😶', '😷', '👊', '👎', '❌',
-    '😲', '😯', '😮', '😵', '🙊', '🙉', '🙈', '💭', '❗', '⚡', '🎊', '🙁', '💔',
-    '😤', '🔪', '🌕', '🚀', '📉', '🤣', '💸'
-]
 
 # Function for spell correction
 def spell_correction(text):
@@ -127,20 +101,6 @@ dataset['text'] = dataset['text'].apply(spell_correction)
 print(dataset)
 
 
-# Function to clean repeating words
-def cleaning_repeating_words(text):
-    # This regex pattern targets whole words that are repeated
-    return re.sub(r'\b(\w+)( \1\b)+', r'\1', text)
-
-# Assuming 'dataset' is a pandas DataFrame and 'text' is a column in it
-# Apply the cleaning function for repeating words to each row in the 'text' column
-dataset['text'] = dataset['text'].apply(cleaning_repeating_words)
-print("Repeating words cleaned from 'text' column.")
-print(dataset['text'].head())
-
-# In[10]:
-
-
 def remove_punctuations_and_known_emojis(text):
             if isinstance(text, str):  # Check if text is a valid string
                 # Define the regex pattern for known emojis
@@ -162,7 +122,16 @@ print("Output after removing punctuation and known emojis:")
 #Display the entire dataset
 print(dataset)
 
+# Function to clean repeating words
+def cleaning_repeating_words(text):
+    # This regex pattern targets whole words that are repeated
+    return re.sub(r'\b(\w+)( \1\b)+', r'\1', text)
 
+# Assuming 'dataset' is a pandas DataFrame and 'text' is a column in it
+# Apply the cleaning function for repeating words to each row in the 'text' column
+dataset['text'] = dataset['text'].apply(cleaning_repeating_words)
+print("Repeating words cleaned from 'text' column.")
+print(dataset['text'].head())
 
 
 stopwordlist = ['a', 'about', 'above', 'after', 'again', 'ain', 'all', 'am', 'an',
@@ -182,8 +151,6 @@ stopwordlist = ['a', 'about', 'above', 'after', 'again', 'ain', 'all', 'am', 'an
              "youve", 'your', 'yours', 'yourself', 'yourselves']
 
 
-
-
 # Stopwords removal applied separately after the option has been chosen and processed
 STOPWORDS = set(stopwordlist)
 def cleaning_stopwords(text):
@@ -194,37 +161,20 @@ dataset['text'] = dataset['text'].apply(cleaning_stopwords)
 print("Stopwords removed from 'text' column.")
 print(dataset['text'].head())
 
-
-
+#lowercase
 dataset['text']=dataset['text'].str.lower()
 dataset['text'].head()
-
-
-
-from nltk.tokenize import RegexpTokenizer
 
 # The pattern matches word characters (\w) and punctuation marks ([^\w\s])
 tokenizer = RegexpTokenizer(r'\w+|[^\w\s]')
 
+#Tokenizatio
 # Applying the modified tokenizer to the dataset
 dataset['text'] = dataset['text'].apply(lambda x: ' '.join(x) if isinstance(x, list) else x)
 dataset['text'] = dataset['text'].apply(tokenizer.tokenize)
 dataset['text'].head()
 
-
-
-
-import nltk
-#st = nltk.PorterStemmer()
-#def stemming_on_text(data):
- #   text = [st.stem(word) for word in data]
- #   return data
-#dataset['text']= dataset['text'].apply(lambda x: stemming_on_text(x))
-#dataset['text'].head()
-
-# In[56]:
-
-
+#Lemmatization
 lm = nltk.WordNetLemmatizer()
 def lemmatizer_on_text(data):
     text = [lm.lemmatize(word) for word in data]
@@ -233,21 +183,15 @@ dataset['text'] = dataset['text'].apply(lambda x: lemmatizer_on_text(x))
 dataset['text'].head()
 
 
-
 from keras.models import Sequential
 from keras.layers import LSTM, Dense, Embedding, Flatten
 from keras.preprocessing.text import Tokenizer
 from keras.preprocessing.sequence import pad_sequences
-import pandas as pd
 from sklearn.model_selection import train_test_split
 from sklearn.svm import SVC
 import joblib
 from sklearn.metrics import classification_report
-import numpy as np
 import pickle
-from keras.layers import Dropout
-from keras import regularizers
-
 
 # Assuming 'data' is your DataFrame with 'text', 'polarity', and 'emotion' columns
 texts = data['text']
@@ -274,8 +218,8 @@ feature_model.fit(data_padded, np.array(polarity_labels), epochs=10, batch_size=
 features = feature_model.predict(data_padded)
 
 # Save the feature model and tokenizer
-feature_model.save("lstm_feature_extractor.h5")
-with open('tokenizer.pkl', 'wb') as handle:
+feature_model.save("lstm_feature_extractor_text.h5")
+with open('tokenizer_text.pkl', 'wb') as handle:
     pickle.dump(tokenizer, handle, protocol=pickle.HIGHEST_PROTOCOL)
 
 # Save model and tokenizer
