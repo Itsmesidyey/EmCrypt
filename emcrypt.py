@@ -593,16 +593,6 @@ class Ui_OtherWindow(object):
         return cleaned_text
 
     @staticmethod
-    def stemming_on_text(original_text):
-        st = nltk.PorterStemmer()
-        stemmed_text = [st.stem(word) for word in original_text.split()]
-        
-        # Print the text after stemming
-        print("Text after stemming:", ' '.join(stemmed_text))
-        
-        return stemmed_text
-
-    @staticmethod
     def lemmatizer_on_text(original_text):
         lm = nltk.WordNetLemmatizer()
         lemmatized_text = [lm.lemmatize(word) for word in original_text.split()]
@@ -626,20 +616,30 @@ class Ui_OtherWindow(object):
         else:
             return 'Undetermined'
     
-    def convert_emoticons_to_words(self, text_no_stopwords):
-        text = text_no_stopwords  # Initialize 'text' with 'original_text'
-        emoticons_count = 0
+    #Emoticon Convertion
+    def convert_and_calculate(self, text_no_stopwords, polarity_result):
+        emotional_scores = {emotion: 0.0 for emotion in ['angry', 'anticipation', 'fear', 'happy', 'sad', 'surprise']}
+        changed_emoticons = 0
         for emoticon, word in self.emoticon_dict.items():
-            while emoticon in text:
-                text = text.replace(emoticon, word + " ", 1)
-                emoticons_count += 1
-        return text, emoticons_count
+            while emoticon in text_no_stopwords:
+                text_no_stopwords = text_no_stopwords.replace(emoticon, word + " ", 1)
+                changed_emoticons += 1
+                scores = self.emoticon_weights.get(emoticon, {'angry': 0.0, 'anticipation': 0.0, 'fear': 0.0, 'happy': 0.0, 'sad': 0.0, 'surprise': 0.0})
+                for emotion, score in scores.items():
+                    # Adjust scores based on polarity
+                    if polarity_result == 1 and emotion in ['happy', 'surprise', 'anticipation']:
+                        emotional_scores[emotion] += score
+                    elif polarity_result == 0 and emotion in ['sad', 'fear', 'angry']:
+                        emotional_scores[emotion] += score
+
+        return text_no_stopwords, changed_emoticons, emotional_scores
+    
 
 
     def remove_punctuations_and_known_emojis(self, text_no_stopwords):
         if isinstance(text_no_stopwords, str):  # Check if text is a valid string
             # Define the regex pattern for known emojis
-            emoji_pattern = r'(:\)|:\(|:D|😊|😃|😉|👌|👍|😁|😂|😄|😅|😆|😇|😞|😔|😑|😒|😓|😕|😖|💰|📈|🤣|🎊|😭|🙁|💔|😢|😮|😵|🙀|😱|❗|😠|😡|😤|👎|🔪|🌕|🚀|💎|👀|💭|📉|😨|😩|😰|💸)'
+            emoji_pattern = r'(🌈|🌙|🌚|🌞|🌟|🌷|🌸|🌹|🌺|🍀|🍕|🍻|🎀|🎈|🎉|🎤|🎥|🎧|🎵|🎶|👅|👇|👈|👉|👋|👌|👍|👏|👑|💀|💁|💃|💋|💐|💓|💕|💖|💗|💘|💙|💚|💛|💜|💞|💤|💥|💦|💪|💫|💯|📷|🔥|😀|😁|😃|😄|😅|😆|😇|😈|😉|😊|😋|😌|😍|😎|😏|😺|😻|😽|🙏|☀|☺|♥|✅|✈|✊|✋|✌|✔|✨|❄|❤|⭐|😢|😞|😟|😠|😡|😔|😕|😖|😨|😩|😪|😫|😰|😱|😳|😶|😷|👊|👎|❌|😲|😯|😮|😵|🙊|🙉|🙈|💭|❗|⚡|🎊|🙁|💔|😤|🔪|🌕|🚀|📉|🤣|💸)'
             # Construct the regex pattern to remove punctuation except specified characters and emojis
             punctuation_except_specified = r'[^\w\s]'
 
@@ -648,6 +648,12 @@ class Ui_OtherWindow(object):
             return text
         else:
             return text
+        
+    def assign_emotion_based_on_polarity(self, polarity):
+        if polarity == 1:  # Positive polarity
+            return np.random.choice(['happy', 'surprise', 'anticipation'])
+        else:  # Negative polarity
+            return np.random.choice(['sad', 'fear', 'angry'])
     
     def transform_text_to_features(self, text):
         # Check radio button selection
@@ -711,7 +717,10 @@ class Ui_OtherWindow(object):
         if self.radioButton1.isChecked():
 
             print("Combination of Keywords, Ending Puctuation Marks, and Emoticons")
-            converted_text, emoticons_count = self.convert_emoticons_to_words(text_no_stopwords)  # Use the processed text
+            converted_text, emoticons_count = self.convert_and_calculate(text_no_stopwords)  # Use the processed text
+             # Convert and Calculate
+            # Assuming 'convert_and_calculate' is a method in your class and 'text_lemmatized' is the final processed text
+        
 
             # Print the text after coverting
             print("Combination of Keywords, Ending Punctuation Marks, and Emoticons :", ' '.join(converted_text))
@@ -743,6 +752,10 @@ class Ui_OtherWindow(object):
             features = self.transform_text_to_features(prepared_text)
             if self.polarity_model_combine is not None:
                 polarity_result = self.polarity_model_combine.predict(features)
+                result = self.convert_and_calculate(polarity_result)  # Ensure polarity_result is defined before this call
+                converted_text = result[0]
+                emoticons_count = result[1]
+                emotional_scores = result[2]
             else:
                 polarity_result = "Model not loaded"
 
@@ -769,6 +782,7 @@ class Ui_OtherWindow(object):
             # Assuming classify_intensity requires emoticons_count and text
             intensity_result = self.classify_intensity(emoticons_count, prepared_text)  # Assuming classify_intensity requires emoticons_count and text
 
+
         # Convert the NumPy array to a string
         polarity_result_str = np.array2string(polarity_result)
         emotion_result_str = np.array2string(emotion_result)
@@ -777,6 +791,20 @@ class Ui_OtherWindow(object):
         polarity_result_str = 'negative' if polarity_result == 0 else 'positive'
         # Convert emotion_result to a string
         emotion_result_str = emotion_result[0] if emotion_result else 'unknown'
+
+
+        if self.polarity_model_text is not None:
+            polarity_result = self.polarity_model_text.predict(features)
+            # Convert the NumPy array to a string
+            polarity_result_str = np.array2string(polarity_result)
+            # Map polarity_result 0 to 'negative' and 1 to 'positive'
+            polarity_result_str = 'negative' if polarity_result == 0 else 'positive'
+
+            # Assign emotion based on the predicted polarity
+            emotion_result_str = self.assign_emotion_based_on_polarity(polarity_result)
+        else:
+            polarity_result_str = "Model not loaded"
+            emotion_result_str = "Model not loaded"
 
         # Define a dictionary for emotion mappings
         emotion_mappings = {
