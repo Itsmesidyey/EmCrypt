@@ -1,14 +1,14 @@
 import re
 import pandas as pd
 import pickle
-from PyQt5 import QtCore, QtGui, QtWidgets
-from PyQt5.QtWidgets import QFileDialog
-import nltk
-from nltk.tokenize import word_tokenize, RegexpTokenizer
-from spellchecker import SpellChecker
 import joblib
 import keras
 import numpy as np
+import nltk
+from nltk.tokenize import word_tokenize, RegexpTokenizer
+from spellchecker import SpellChecker
+from PyQt5 import QtCore, QtGui, QtWidgets
+from PyQt5.QtWidgets import QFileDialog
 from PyQt5.QtWidgets import QLabel, QDialog, QVBoxLayout, QPushButton
 from PyQt5.QtGui import QPixmap
 from PyQt5.QtCore import Qt
@@ -40,7 +40,7 @@ class Ui_OtherWindow(object):
         self.spell = SpellChecker()
 
         self.emoticon_dict = {
-                        "🌈": "Rainbow",
+        "🌈": "Rainbow",
         "🌙": "Crescent Moon",
         "🌚": "New Moon Face",
         "🌞": "Sun with Face",
@@ -846,31 +846,36 @@ class Ui_OtherWindow(object):
         # Proceed to the file upload process after closing the dialog
         options = QFileDialog.Options()
         options |= QFileDialog.ReadOnly
-        file_name, _ = QFileDialog.getOpenFileName(None, "Upload File", "", "Excel Files (*.xlsx);;All Files (*)", options=options)
+        file_name, _ = QFileDialog.getOpenFileName(None, "Upload File", "", "Excel Files (*.xlsx);;CSV Files (*.csv);;All Files (*)", options=options)
         if file_name:
             try:
-                df = pd.read_excel(file_name)
+                if file_name.endswith('.xlsx'):
+                    df = pd.read_excel(file_name)
+                elif file_name.endswith('.csv'):
+                    df = pd.read_csv(file_name)
+                else:
+                    raise ValueError("Unsupported file format")
+
                 self.tableWidget.setRowCount(0)
                 for index, row in df.iterrows():
                     self.plainTextEdit.setPlainText(row['Tweets'])  # Set the text in the plainTextEdit widget
                     self.updateTextInTable()  # Process and update the table
             except Exception as e:
                 print("An error occurred:", e)
+
         
     def showPopup(self):
         # Create and set up the pop-up dialog
         dialog = QDialog()
         dialog.setWindowTitle("User Manual")
         dialog.setWindowModality(Qt.ApplicationModal)
-
         layout = QVBoxLayout(dialog)
 
         # Create and set the image label
         label = QLabel(dialog)
-        pixmap = QPixmap("/Users/cjcasinsinan/Documents/GitHub/EmCrypt/assets/user-manual.png")  # Set the path to your popup image
+        pixmap = QPixmap("/Users/cjcasinsinan/Documents/GitHub/EmCrypt/assets/user-manual.png")
         label.setPixmap(pixmap)
         layout.addWidget(label)
-
         dialog.exec_()  # Show the dialog
 
     def retranslateUi(self, OtherWindow):
@@ -887,18 +892,9 @@ class Ui_OtherWindow(object):
         _translate("OtherWindow", "Emotion"),
         _translate("OtherWindow", "Intensity")
         ])
-        #item = self.tableWidget.horizontalHeaderItem(0)
-        #item.setText(_translate("OtherWindow", "Tweets"))
-        #item = self.tableWidget.horizontalHeaderItem(1)
-        #item.setText(_translate("OtherWindow", "Polarity"))
-        #item = self.tableWidget.horizontalHeaderItem(2)
-        #item.setText(_translate("OtherWindow", "Emotion"))
-        #item = self.tableWidget.horizontalHeaderItem(3)
-        #item.setText(_translate("OtherWindow", "Intensity"))
-                
+
         self.pushButton.clicked.connect(self.uploadFile)  # Connect the button to the function
-        self.pushButton_2.clicked.connect(self.clearPlainText)
-                
+        self.pushButton_2.clicked.connect(self.clearPlainText)  
         self.pushButton_3.clicked.connect(self.updateTextInTable)
 
 import design2

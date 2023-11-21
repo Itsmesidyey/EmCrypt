@@ -437,7 +437,7 @@ emoticon_weights = {
 }
 
 #Emoticon Convertion
-def convert_and_calculate(text):
+def convert_and_calculate(text, polarity):
     emotional_scores = {emotion: 0.0 for emotion in ['angry', 'anticipation', 'fear', 'happy', 'sad', 'surprise']}
     changed_emoticons = 0
     for emoticon, word in emoticon_dict.items():
@@ -446,11 +446,15 @@ def convert_and_calculate(text):
             changed_emoticons += 1
             scores = emoticon_weights.get(emoticon, {'angry': 0.0, 'anticipation': 0.0, 'fear': 0.0, 'happy': 0.0, 'sad': 0.0, 'surprise': 0.0})
             for emotion, score in scores.items():
-                emotional_scores[emotion] += score
+                # Adjust scores based on polarity
+                if polarity == 1 and emotion in ['happy', 'surprise', 'anticipation']:
+                    emotional_scores[emotion] += score
+                elif polarity == 0 and emotion in ['sad', 'fear', 'angry']:
+                    emotional_scores[emotion] += score
     return text, changed_emoticons, emotional_scores
 
-# Apply the combined function
-result = dataset['text'].apply(convert_and_calculate)
+# Apply the combined function with polarity
+result = dataset.apply(lambda x: convert_and_calculate(x['text'], x['polarity']), axis=1)
 dataset['converted_text'] = result.apply(lambda x: x[0])
 dataset['emoticons_count'] = result.apply(lambda x: x[1])
 dataset['emotional_scores'] = result.apply(lambda x: x[2])

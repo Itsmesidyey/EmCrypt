@@ -112,6 +112,12 @@ def remove_punctuations_and_known_emojis(text):
                 text = re.sub(punctuation_except_specified + '|' + emoji_pattern, '', text)
                 return text
             
+def assign_emotion_based_on_polarity(polarity):
+    if polarity == 1:  # Positive polarity
+        return np.random.choice(['happy', 'surprise', 'anticipation'])
+    else:  # Negative polarity
+        return np.random.choice(['sad', 'fear', 'angry'])
+            
 # Apply the defined function to the 'text' column
 dataset['text'] = dataset['text'].apply(remove_punctuations_and_known_emojis)
 print("Punctuation and known emojis removed from 'text' column.")
@@ -279,16 +285,27 @@ plt.ylabel('Actual Label')
 plt.xlabel('Predicted Label')
 plt.show()
 
-# Evaluate and visualize the performance of the Emotion SVM Model
-y_emotion_pred = grid_emotion.predict(X_test)
+# Apply emotion assignment based on polarity predictions
+y_emotion_pred = [assign_emotion_based_on_polarity(p) for p in y_polarity_pred]
+
+# Assuming you have true emotion labels in 'y_emotion_test', you can create a classification report
 print("Emotion Classification Report:")
 print(classification_report(y_emotion_test, y_emotion_pred))
 
+# Since the emotions are assigned based on polarity, a confusion matrix may not be as informative
+# However, you can still plot it if you have a mapping between predicted and true emotion labels
+# This requires that y_emotion_test contains actual emotion labels corresponding to the dataset
+
+# Mapping predicted emotions to integer labels (if necessary)
+emotion_to_int = {'happy': 0, 'surprise': 1, 'anticipation': 2, 'sad': 3, 'fear': 4, 'angry': 5}
+y_emotion_pred_int = [emotion_to_int[emotion] for emotion in y_emotion_pred]
+y_emotion_test_int = [emotion_to_int[emotion] for emotion in y_emotion_test]  # Replace with actual labels
+
 # Confusion Matrix for Emotion
-cm_emotion = confusion_matrix(y_emotion_test, y_emotion_pred)
+cm_emotion = confusion_matrix(y_emotion_test_int, y_emotion_pred_int)
 plt.figure(figsize=(10, 7))
 sns.heatmap(cm_emotion, annot=True, fmt='d')
-plt.title('Confusion Matrix for Emotion Classification')
+plt.title('Confusion Matrix for Emotion Assignment')
 plt.ylabel('Actual Label')
 plt.xlabel('Predicted Label')
 plt.show()
