@@ -5,7 +5,7 @@ import joblib
 import keras
 import numpy as np
 import nltk
-from nltk.tokenize import word_tokenize, RegexpTokenizer
+from nltk.tokenize import RegexpTokenizer
 from spellchecker import SpellChecker
 from PyQt5 import QtCore, QtGui, QtWidgets
 from PyQt5.QtWidgets import QFileDialog
@@ -29,8 +29,8 @@ class Ui_OtherWindow(object):
     # Initialize class attributes
     def __init__(self):
         try:
-            self.polarity_model_combine = joblib.load('svm_polarity_combine.pkl')
-            self.emotion_model_combine = joblib.load('svm_emotion_combine.pkl')
+            self.polarity_model_combine = joblib.load('svm_polarity.pkl')
+            self.emotion_model_combine = joblib.load('svm_emotion.pkl')
             self.polarity_model_text = joblib.load('svm_polarity_text.pkl')
             self.emotion_model_text = joblib.load('svm_emotion_text.pkl')
         except Exception as e:
@@ -616,23 +616,14 @@ class Ui_OtherWindow(object):
         else:
             return 'Undetermined'
     
-    #Emoticon Convertion
-    def convert_and_calculate(self, text_no_stopwords, polarity_result):
-        emotional_scores = {emotion: 0.0 for emotion in ['angry', 'anticipation', 'fear', 'happy', 'sad', 'surprise']}
-        changed_emoticons = 0
+    def convert_emoticons_to_words(self, text_no_stopwords):
+        text = text_no_stopwords  # Initialize 'text' with 'original_text'
+        emoticons_count = 0
         for emoticon, word in self.emoticon_dict.items():
-            while emoticon in text_no_stopwords:
-                text_no_stopwords = text_no_stopwords.replace(emoticon, word + " ", 1)
-                changed_emoticons += 1
-                scores = self.emoticon_weights.get(emoticon, {'angry': 0.0, 'anticipation': 0.0, 'fear': 0.0, 'happy': 0.0, 'sad': 0.0, 'surprise': 0.0})
-                for emotion, score in scores.items():
-                    # Adjust scores based on polarity
-                    if polarity_result == 1 and emotion in ['happy', 'surprise', 'anticipation']:
-                        emotional_scores[emotion] += score
-                    elif polarity_result == 0 and emotion in ['sad', 'fear', 'angry']:
-                        emotional_scores[emotion] += score
-
-        return text_no_stopwords, changed_emoticons, emotional_scores
+            while emoticon in text:
+                text = text.replace(emoticon, word + " ", 1)
+                emoticons_count += 1
+        return text, emoticons_count
     
 
 
@@ -667,10 +658,10 @@ class Ui_OtherWindow(object):
             # Preprocess the text (tokenization and padding)
             # Assuming 'text' is a single string of input text
             seq = tokenizer.texts_to_sequences([text])
-            padded_seq = keras.preprocessing.sequence.pad_sequences(seq, maxlen=100)  # Use the same maxlen as used during training
+            data_padded = keras.preprocessing.sequence.pad_sequences(seq, maxlen=100)  # Use the same maxlen as used during training
 
-            # Use the LSTM model to get the feature vector
-            features = feature_model.predict(padded_seq)
+            # Extract features for emotion recognition
+            features = feature_model.predict(data_padded)
 
             return features
         
@@ -717,7 +708,7 @@ class Ui_OtherWindow(object):
         if self.radioButton1.isChecked():
 
             print("Combination of Keywords, Ending Puctuation Marks, and Emoticons")
-            converted_text, emoticons_count = self.convert_and_calculate(text_no_stopwords)  # Use the processed text
+            converted_text, emoticons_count = self.convert_emoticons_to_words(text_no_stopwords)  # Use the processed text
              # Convert and Calculate
             # Assuming 'convert_and_calculate' is a method in your class and 'text_lemmatized' is the final processed text
         
@@ -752,10 +743,6 @@ class Ui_OtherWindow(object):
             features = self.transform_text_to_features(prepared_text)
             if self.polarity_model_combine is not None:
                 polarity_result = self.polarity_model_combine.predict(features)
-                result = self.convert_and_calculate(polarity_result)  # Ensure polarity_result is defined before this call
-                converted_text = result[0]
-                emoticons_count = result[1]
-                emotional_scores = result[2]
             else:
                 polarity_result = "Model not loaded"
 

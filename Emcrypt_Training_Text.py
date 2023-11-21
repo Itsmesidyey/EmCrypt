@@ -189,66 +189,61 @@ dataset['text'] = dataset['text'].apply(lambda x: lemmatizer_on_text(x))
 dataset['text'].head()
 
 
+import os
+import numpy as np
+import pandas as pd
+import joblib
+import pickle
+import matplotlib.pyplot as plt
+import seaborn as sns
+from sklearn.model_selection import train_test_split, GridSearchCV
+from sklearn.metrics import classification_report, confusion_matrix, accuracy_score
+from sklearn.svm import SVC
 from keras.models import Sequential
-from keras.layers import LSTM, Dense, Embedding, Flatten
+from keras.layers import LSTM, Dense, Embedding, Dropout
 from keras.preprocessing.text import Tokenizer
 from keras.preprocessing.sequence import pad_sequences
-from sklearn.model_selection import train_test_split
-from sklearn.svm import SVC
-import joblib
-from sklearn.metrics import classification_report
-import pickle
 
 # Assuming 'data' is your DataFrame with 'text', 'polarity', and 'emotion' columns
+# Preprocess the text data here (if needed)
 texts = data['text']
 polarity_labels = data['polarity']
 emotion_labels = data['emotion']
 
 # Tokenize and pad sequences
-tokenizer = Tokenizer(num_words=10000)
+tokenizer = Tokenizer(num_words=20000)
 tokenizer.fit_on_texts(texts)
 sequences = tokenizer.texts_to_sequences(texts)
 data_padded = pad_sequences(sequences, maxlen=100)
 
-# Adjusted LSTM Model for Feature Extraction
-feature_model = Sequential()
-feature_model.add(Embedding(input_dim=10000, output_dim=256, input_length=100))
-feature_model.add(LSTM(128, return_sequences=True))
-feature_model.add(LSTM(64))  # Last LSTM layer should not return sequences
-feature_model.add(Dense(16, activation='relu'))
-feature_model.add(Flatten())  # Flatten the output
-feature_model.compile(optimizer='adam', loss='binary_crossentropy', metrics=['accuracy'])
-feature_model.fit(data_padded, np.array(polarity_labels), epochs=10, batch_size=64, validation_split=0.1)
+# LSTM Model for Feature Extraction
+model = Sequential()
+model.add(Embedding(input_dim=20000, output_dim=256, input_length=100))  # Updated input_dim to match num_words
+model.add(LSTM(128, return_sequences=True))
+model.add(Dropout(0.5))  # Increased dropout
+model.add(LSTM(64))
+model.add(Dropout(0.5))  # Additional dropout layer
+model.add(Dense(8, activation='relu'))  # Updated output size to 8
+num_emotions = data['emotion'].nunique()  # Number of unique emotions
+model.add(Dense(num_emotions, activation='softmax'))  # Adjust for multi-class classification
+model.compile(optimizer='adam', loss='categorical_crossentropy', metrics=['accuracy'])
+model.fit(data_padded, pd.get_dummies(emotion_labels).values, epochs=15, batch_size=32, validation_split=0.2)  # Adjusted training
 
-# Extract features
-features = feature_model.predict(data_padded)
-
-# Save the feature model and tokenizer
-feature_model.save("lstm_feature_extractor_text.h5")
-with open('tokenizer_text.pkl', 'wb') as handle:
+# Save the LSTM model and tokenizer
+model.save("lstm_model.h5")
+with open('tokenizer.pkl', 'wb') as handle:
     pickle.dump(tokenizer, handle, protocol=pickle.HIGHEST_PROTOCOL)
 
-# Save model and tokenizer
-output_dir = 'model_output'
-if not os.path.exists(output_dir):
-    os.makedirs(output_dir)
-# Extract features
-features = feature_model.predict(data_padded)
+# Extract features for emotion recognition
+features = model.predict(data_padded)
 
-# Splitting the data: 60% training, 30% evaluation, and 10% testing
-# For polarity labels
-X_train, X_temp, y_polarity_train, y_polarity_temp = train_test_split(features, polarity_labels, test_size=0.4, random_state=42)
-X_eval, X_test, y_polarity_eval, y_polarity_test = train_test_split(X_temp, y_polarity_temp, test_size=0.25, random_state=42)
+# Splitting the data for polarity and emotion
+X_train, X_temp, y_train_polarity, y_temp_polarity = train_test_split(features, polarity_labels, test_size=0.4, random_state=42)
+X_eval_polarity, X_test_polarity, y_eval_polarity, y_test_polarity = train_test_split(X_temp, y_temp_polarity, test_size=0.25, random_state=42)
 
-# For emotion labels
-X_train, X_temp, y_emotion_train, y_emotion_temp = train_test_split(features, emotion_labels, test_size=0.4, random_state=42)
-X_eval, X_test, y_emotion_eval, y_emotion_test = train_test_split(X_temp, y_emotion_temp, test_size=0.25, random_state=42)
-
-# Importing necessary libraries for Grid Search
-from sklearn.model_selection import GridSearchCV
-from sklearn.metrics import classification_report, confusion_matrix
-import seaborn as sns
-import matplotlib.pyplot as plt
+# Adjusted data splitting for emotion recognition
+X_train_emotion, X_temp_emotion, y_train_emotion, y_temp_emotion = train_test_split(features, emotion_labels, test_size=0.4, random_state=42)
+X_eval_emotion, X_test_emotion, y_eval_emotion, y_test_emotion = train_test_split(X_temp_emotion, y_temp_emotion, test_size=0.25, random_state=42)
 
 # Define the parameter grid
 param_grid = {
@@ -259,53 +254,35 @@ param_grid = {
 
 # Grid Search for Polarity SVM
 grid_polarity = GridSearchCV(SVC(), param_grid, refit=True, verbose=2)
-grid_polarity.fit(X_train, y_polarity_train)
+grid_polarity.fit(X_train, y_train_polarity)
 print("Best Polarity SVM Parameters:", grid_polarity.best_params_)
 
 # Grid Search for Emotion SVM
 grid_emotion = GridSearchCV(SVC(), param_grid, refit=True, verbose=2)
-grid_emotion.fit(X_train, y_emotion_train)
+grid_emotion.fit(X_train_emotion, y_train_emotion)  # Use X_train_emotion for emotion classification
 print("Best Emotion SVM Parameters:", grid_emotion.best_params_)
 
 # Save the best SVM models
-joblib.dump(grid_polarity.best_estimator_, "svm_polarity_text.pkl")
-joblib.dump(grid_emotion.best_estimator_, "svm_emotion_text.pkl")
+joblib.dump(grid_polarity.best_estimator_, "svm_polarity.pkl")
+joblib.dump(grid_emotion.best_estimator_, "svm_emotion.pkl")
 
-# Evaluate and visualize the performance of the Polarity SVM Model
-y_polarity_pred = grid_polarity.predict(X_test)
-print("Polarity Classification Report:")
-print(classification_report(y_polarity_test, y_polarity_pred))
+# Evaluation functions
+def evaluate_model(grid, X_test, y_test, title):
+    y_pred = grid.predict(X_test)
+    accuracy = accuracy_score(y_test, y_pred)
+    print(f"{title} Classification Report:")
+    print(classification_report(y_test, y_pred))
+    print(f"{title} Model Accuracy: {accuracy * 100:.2f}%\n")
 
-# Confusion Matrix for Polarity
-cm_polarity = confusion_matrix(y_polarity_test, y_polarity_pred)
-plt.figure(figsize=(10, 7))
-sns.heatmap(cm_polarity, annot=True, fmt='d')
-plt.title('Confusion Matrix for Polarity Classification')
-plt.ylabel('Actual Label')
-plt.xlabel('Predicted Label')
-plt.show()
+    # Confusion Matrix
+    cm = confusion_matrix(y_test, y_pred)
+    plt.figure(figsize=(10, 7))
+    sns.heatmap(cm, annot=True, fmt='d')
+    plt.title(f'Confusion Matrix for {title} Classification')
+    plt.ylabel('Actual Label')
+    plt.xlabel('Predicted Label')
+    plt.show()
 
-# Apply emotion assignment based on polarity predictions
-y_emotion_pred = [assign_emotion_based_on_polarity(p) for p in y_polarity_pred]
-
-# Assuming you have true emotion labels in 'y_emotion_test', you can create a classification report
-print("Emotion Classification Report:")
-print(classification_report(y_emotion_test, y_emotion_pred))
-
-# Since the emotions are assigned based on polarity, a confusion matrix may not be as informative
-# However, you can still plot it if you have a mapping between predicted and true emotion labels
-# This requires that y_emotion_test contains actual emotion labels corresponding to the dataset
-
-# Mapping predicted emotions to integer labels (if necessary)
-emotion_to_int = {'happy': 0, 'surprise': 1, 'anticipation': 2, 'sad': 3, 'fear': 4, 'angry': 5}
-y_emotion_pred_int = [emotion_to_int[emotion] for emotion in y_emotion_pred]
-y_emotion_test_int = [emotion_to_int[emotion] for emotion in y_emotion_test]  # Replace with actual labels
-
-# Confusion Matrix for Emotion
-cm_emotion = confusion_matrix(y_emotion_test_int, y_emotion_pred_int)
-plt.figure(figsize=(10, 7))
-sns.heatmap(cm_emotion, annot=True, fmt='d')
-plt.title('Confusion Matrix for Emotion Assignment')
-plt.ylabel('Actual Label')
-plt.xlabel('Predicted Label')
-plt.show()
+# Evaluate and visualize the performance of the Polarity and Emotion SVM Models
+evaluate_model(grid_polarity, X_test_polarity, y_test_polarity, "Polarity")
+evaluate_model(grid_emotion, X_test_emotion, y_test_emotion, "Emotion")
