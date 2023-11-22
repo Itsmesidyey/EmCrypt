@@ -1,5 +1,5 @@
 from PyQt5 import QtCore, QtGui, QtWidgets
-from emcrypt import Ui_OtherWindow
+from Emcrypt import Ui_OtherWindow
 
 
 class Ui_Manual(object):

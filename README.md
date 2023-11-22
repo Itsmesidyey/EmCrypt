@@ -12,7 +12,7 @@ EmCrypt utilizes a state-of-the-art LSTM-SVM model to perform sentiment analysis
 
 - **Polarity Analysis**: EmCrypt classifies tweets as either positive or negative, helping users understand whether the sentiment expressed is favorable or unfavorable towards cryptocurrencies.
 
-- **Emotion Detection**: EmCrypt identifies various emotions in tweets, including happy, surprise, anticipation, sad, fear, and angry. This additional dimension provides a deeper understanding of the emotional context within tweets.
+- **Emotion Detection**: EmCrypt identifies various emotions in tweets, including Happy, surprise, Anticipation, Sad, fear, and angry. This additional dimension provides a deeper understanding of the emotional context within tweets.
 
 - **Intensity Level Recognition**: EmCrypt categorizes the intensity level of sentiment as low, medium, or high. This helps users gauge the strength of the sentiment expressed in tweets.
 
