@@ -4,16 +4,18 @@
 
 from PyQt5 import QtCore, QtGui, QtWidgets
 
-from emcrypt import Ui_Manual
+from Manual import Ui_Manual
 
 class Ui_MainWindow(object):
-    def openWindow(self):
+    def openWindow(self, MainWindow):  # Accept MainWindow as a parameter
         self.window = QtWidgets.QMainWindow()
         self.ui = Ui_Manual()
         self.ui.setupUi(self.window)
         self.window.show()
-        self.window.hide()
+        self.MainWindow.close()
+
     def setupUi(self, MainWindow):
+        self.MainWindow = MainWindow
         MainWindow.setObjectName("MainWindow")
         MainWindow.resize(1121, 743)
         self.centralwidget = QtWidgets.QWidget(MainWindow)
@@ -28,6 +30,8 @@ class Ui_MainWindow(object):
         self.label.setObjectName("label")
         self.pushButton = QtWidgets.QPushButton(self.centralwidget)
         self.pushButton.setGeometry(QtCore.QRect(70, 550, 151, 41))
+        # Ensure this lambda captures the MainWindow instance from the method's scope
+        self.pushButton.clicked.connect(self.openWindow)
         palette = QtGui.QPalette()
         brush = QtGui.QBrush(QtGui.QColor(255, 255, 255))
         brush.setStyle(QtCore.Qt.SolidPattern)

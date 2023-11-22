@@ -7,10 +7,11 @@ class Ui_Manual(object):
         self.window = QtWidgets.QMainWindow()
         self.ui = Ui_OtherWindow()
         self.ui.setupUi(self.window)
-        Manual.hide()
+        self.Manual.hide()  # Hide the Manual window using the stored reference
         self.window.show()
 
     def setupUi(self, Manual):
+        self.Manual = Manual
         Manual.setObjectName("Manual")
         Manual.resize(912, 671)
         self.centralwidget = QtWidgets.QWidget(Manual)
@@ -26,6 +27,7 @@ class Ui_Manual(object):
         self.label_2.setObjectName("label_2")
         self.pushButton_2 = QtWidgets.QPushButton(self.centralwidget)
         self.pushButton_2.setGeometry(QtCore.QRect(80, 540, 151, 41))
+        self.pushButton_2.clicked.connect(self.openWindow)
         palette = QtGui.QPalette()
         brush = QtGui.QBrush(QtGui.QColor(255, 255, 255))
         brush.setStyle(QtCore.Qt.SolidPattern)
