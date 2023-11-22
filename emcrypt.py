@@ -917,7 +917,7 @@ class Ui_OtherWindow(object):
 
     def retranslateUi(self, OtherWindow):
         _translate = QtCore.QCoreApplication.translate
-        OtherWindow.setWindowTitle(_translate("OtherWindow", "MainWindow"))
+        OtherWindow.setWindowTitle(_translate("OtherWindow", "Emcrypt"))
         self.pushButton.setText(_translate("OtherWindow", "Upload File"))
         self.plainTextEdit.setPlainText(_translate("OtherWindow", " Enter the Cryptocurrency related tweets here..."))
         self.pushButton_2.setText(_translate("OtherWindow", "Clear"))
