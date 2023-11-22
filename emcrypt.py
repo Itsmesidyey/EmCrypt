@@ -12,6 +12,7 @@ from PyQt5.QtWidgets import QFileDialog
 from PyQt5.QtWidgets import QLabel, QDialog, QVBoxLayout, QPushButton
 from PyQt5.QtGui import QPixmap
 from PyQt5.QtCore import Qt
+from PyQt5.QtGui import QFont
 from PyQt5.QtWidgets import QPlainTextEdit
 from keras.models import Model  # Import the Model class
 
@@ -465,7 +466,17 @@ class Ui_OtherWindow(object):
         # Set the headers
         headers = ["Tweets", "Polarity", "Emotion", "Intensity"]
         self.tableWidget.setHorizontalHeaderLabels(headers)
-        
+
+        # Change font size of headers
+        font = QFont()
+        font.setPointSize(12)  # Set your desired font size here
+        self.tableWidget.horizontalHeader().setFont(font)
+        self.tableWidget.horizontalHeader().setDefaultSectionSize(203)
+        self.tableWidget.verticalHeader().setDefaultSectionSize(50)
+
+        # Set header font color to white
+        header_stylesheet = "QHeaderView::section { bbackground-color:rgb(126,217,87); color: #000000; }"
+        self.tableWidget.horizontalHeader().setStyleSheet(header_stylesheet)
 
         # Table Widget font and style settings
         font = QtGui.QFont()
@@ -481,8 +492,7 @@ class Ui_OtherWindow(object):
 
         self.tableWidget.setShowGrid(True)
         self.tableWidget.setGridStyle(QtCore.Qt.CustomDashLine)
-        self.tableWidget.horizontalHeader().setDefaultSectionSize(203)
-        self.tableWidget.verticalHeader().setDefaultSectionSize(50)
+
 
         # Add the QTableWidget to the QScrollArea
         self.scrollArea.setWidget(self.tableWidget)
