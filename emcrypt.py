@@ -13,6 +13,7 @@ from PyQt5.QtWidgets import QLabel, QDialog, QVBoxLayout, QPushButton
 from PyQt5.QtGui import QPixmap
 from PyQt5.QtCore import Qt
 from PyQt5.QtWidgets import QPlainTextEdit
+from keras.models import Model  # Import the Model class
 
 class ClearablePlainTextEdit(QPlainTextEdit):
     def __init__(self, parent=None):
@@ -649,36 +650,46 @@ class Ui_OtherWindow(object):
     def transform_text_to_features(self, text):
         # Check radio button selection
         if self.radioButton1.isChecked():
-            print("Option 1")
-            # Load the tokenizer and LSTM feature extractor model
-            with open('tokenizer.pkl', 'rb') as handle:
-                tokenizer = pickle.load(handle)
-            feature_model = keras.models.load_model('lstm_feature_extractor.h5')
+                print("Option 1")
 
-            # Preprocess the text (tokenization and padding)
-            # Assuming 'text' is a single string of input text
-            seq = tokenizer.texts_to_sequences([text])
-            data_padded = keras.preprocessing.sequence.pad_sequences(seq, maxlen=100)  # Use the same maxlen as used during training
+                # Load the tokenizer
+                with open('tokenizer.pkl', 'rb') as handle:
+                    tokenizer = pickle.load(handle)
 
-            # Extract features for emotion recognition
-            features = feature_model.predict(data_padded)
+                # Load the original LSTM model
+                lstm_model = keras.models.load_model('lstm_model.h5')
 
-            return features
+                # Preprocess the text (tokenization and padding)
+                seq = tokenizer.texts_to_sequences([text])
+                data_padded = keras.preprocessing.sequence.pad_sequences(seq, maxlen=100)  # Use the same maxlen as used during training
+
+                # Create a new model for feature extraction
+                # This model uses the original model's input and the output of the second-to-last Dense layer
+                feature_extraction_model = Model(inputs=lstm_model.input, outputs=lstm_model.layers[-2].output)
+
+                # Use the new model to extract features
+                features = feature_extraction_model.predict(data_padded)
+
+                return features
         
         elif self.radioButton2.isChecked():
             print("Option 2")
             # Load the tokenizer and LSTM feature extractor model
             with open('tokenizer_text.pkl', 'rb') as handle:
                 tokenizer = pickle.load(handle)
-            feature_model = keras.models.load_model('lstm_feature_extractor_text.h5')
+                            # Load the original LSTM model
+                lstm_model = keras.models.load_model('lstm_model_text.h5')
 
-            # Preprocess the text (tokenization and padding)
-            # Assuming 'text' is a single string of input text
-            seq = tokenizer.texts_to_sequences([text])
-            padded_seq = keras.preprocessing.sequence.pad_sequences(seq, maxlen=100)  # Use the same maxlen as used during training
+                # Preprocess the text (tokenization and padding)
+                seq = tokenizer.texts_to_sequences([text])
+                data_padded = keras.preprocessing.sequence.pad_sequences(seq, maxlen=100)  # Use the same maxlen as used during training
 
-            # Use the LSTM model to get the feature vector
-            features = feature_model.predict(padded_seq)
+                # Create a new model for feature extraction
+                # This model uses the original model's input and the output of the second-to-last Dense layer
+                feature_extraction_model = Model(inputs=lstm_model.input, outputs=lstm_model.layers[-2].output)
+
+                # Use the new model to extract features
+                features = feature_extraction_model.predict(data_padded)
 
             return features
 

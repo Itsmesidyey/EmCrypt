@@ -10,17 +10,17 @@ from spellchecker import SpellChecker
 from nltk.tokenize import RegexpTokenizer
 
 import chardet
-DATASET_COLUMNS = ['date', 'username', 'text', 'polarity', 'emotion']
+DATASET_COLUMNS = ['text', 'polarity', 'emotion', 'intensity']
 
 #Detect file encoding using chardet
-with open('Emcrypt-dataset.csv', 'rb') as f:
+with open('dataset_text.csv', 'rb') as f:
     result = chardet.detect(f.read())
 
 # Print the detected encoding
 print("Detected encoding:", result['encoding'])
 
 # Read the file using the detected encoding
-df = pd.read_csv('Emcrypt-dataset.csv', encoding=result['encoding'], names=DATASET_COLUMNS)
+df = pd.read_csv('dataset_text.csv', encoding=result['encoding'], names=DATASET_COLUMNS)
 df.sample(5)
 
 
@@ -203,6 +203,7 @@ from keras.models import Sequential
 from keras.layers import LSTM, Dense, Embedding, Dropout
 from keras.preprocessing.text import Tokenizer
 from keras.preprocessing.sequence import pad_sequences
+from keras.models import Model  # Import the Model class
 
 # Assuming 'data' is your DataFrame with 'text', 'polarity', and 'emotion' columns
 # Preprocess the text data here (if needed)
@@ -223,7 +224,7 @@ model.add(LSTM(128, return_sequences=True))
 model.add(Dropout(0.5))  # Increased dropout
 model.add(LSTM(64))
 model.add(Dropout(0.5))  # Additional dropout layer
-model.add(Dense(8, activation='relu'))  # Updated output size to 8
+model.add(Dense(7, activation='relu'))  # Updated output size to 8
 num_emotions = data['emotion'].nunique()  # Number of unique emotions
 model.add(Dense(num_emotions, activation='softmax'))  # Adjust for multi-class classification
 model.compile(optimizer='adam', loss='categorical_crossentropy', metrics=['accuracy'])
@@ -234,8 +235,12 @@ model.save("lstm_model.h5")
 with open('tokenizer.pkl', 'wb') as handle:
     pickle.dump(tokenizer, handle, protocol=pickle.HIGHEST_PROTOCOL)
 
-# Extract features for emotion recognition
-features = model.predict(data_padded)
+
+# Create a new model for feature extraction
+feature_extraction_model = Model(inputs=model.input, outputs=model.layers[-2].output)
+
+# Use the new model to extract features
+features = feature_extraction_model.predict(data_padded)
 
 # Splitting the data for polarity and emotion
 X_train, X_temp, y_train_polarity, y_temp_polarity = train_test_split(features, polarity_labels, test_size=0.4, random_state=42)
