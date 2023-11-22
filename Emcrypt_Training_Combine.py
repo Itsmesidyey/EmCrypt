@@ -523,6 +523,38 @@ def lemmatizer_on_text(data):
 dataset['text'] = dataset['text'].apply(lambda x: lemmatizer_on_text(x))
 dataset['text'].head()
 
+import mysql.connector
+from mysql.connector import Error
+
+# Function to connect to MySQL database and insert data
+def insert_into_database(data, table_name):
+    try:
+        connection = mysql.connector.connect(
+            host='your_host',  # usually 'localhost' or an IP address
+            user='your_username',
+            password='your_password',
+            database='your_database_name'
+        )
+        if connection.is_connected():
+            cursor = connection.cursor()
+            # Creating a query to insert data
+            insert_query = f"""INSERT INTO {table_name} (text, polarity, emotion) VALUES (%s, %s, %s)"""
+            # Loop through the DataFrame and insert each row
+            for i, row in data.iterrows():
+                cursor.execute(insert_query, (row['text'], row['polarity'], row['emotion']))
+            connection.commit()
+            print("Data inserted successfully")
+    except Error as e:
+        print("Error while connecting to MySQL", e)
+    finally:
+        if connection.is_connected():
+            cursor.close()
+            connection.close()
+            print("MySQL connection is closed")
+
+# Call the function to insert data into MySQL
+insert_into_database(dataset, 'your_table_name')
+
 import os
 import numpy as np
 import pandas as pd
