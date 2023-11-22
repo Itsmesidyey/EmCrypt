@@ -122,7 +122,7 @@ class Ui_MainWindow(object):
         _translate = QtCore.QCoreApplication.translate
         MainWindow.setWindowTitle(_translate("MainWindow", "MainWindow"))
         self.pushButton.setText(_translate("MainWindow", "Start >"))
-import design
+import dsg1
 
 
 if __name__ == "__main__":

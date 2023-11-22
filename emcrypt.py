@@ -452,7 +452,7 @@ class Ui_OtherWindow(object):
     "")
         self.pushButton_3.setObjectName("pushButton_3")
 
-            # Create and set up the QScrollArea
+        # Create and set up the QScrollArea
         self.scrollArea = QtWidgets.QScrollArea(self.centralwidget)
         self.scrollArea.setGeometry(QtCore.QRect(120, 560, 811, 421))  # Adjust size and position as needed
         self.scrollArea.setWidgetResizable(True)
@@ -465,23 +465,24 @@ class Ui_OtherWindow(object):
         # Set the headers
         headers = ["Tweets", "Polarity", "Emotion", "Intensity"]
         self.tableWidget.setHorizontalHeaderLabels(headers)
+        
 
         # Table Widget font and style settings
         font = QtGui.QFont()
         font.setFamily("Poppins")
-        font.setPointSize(10)
+        font.setPointSize(16)
         self.tableWidget.setFont(font)
         self.tableWidget.setStyleSheet("QTableWidget{\n"
                                     "background-color: white;\n"
                                     "color: black;\n"  # Changed color to black for visibility
-                                    "border-radius:10px\n"
+                                    "border-radius:20px\n"
                                     "}\n"
                                     "QHeaderView::section { background-color:rgb(126,217,87)}\");\n")
 
         self.tableWidget.setShowGrid(True)
         self.tableWidget.setGridStyle(QtCore.Qt.CustomDashLine)
-        self.tableWidget.horizontalHeader().setDefaultSectionSize(192)
-        self.tableWidget.verticalHeader().setDefaultSectionSize(40)
+        self.tableWidget.horizontalHeader().setDefaultSectionSize(203)
+        self.tableWidget.verticalHeader().setDefaultSectionSize(50)
 
         # Add the QTableWidget to the QScrollArea
         self.scrollArea.setWidget(self.tableWidget)
@@ -923,7 +924,7 @@ class Ui_OtherWindow(object):
         self.pushButton_2.clicked.connect(self.clearPlainText)  
         self.pushButton_3.clicked.connect(self.updateTextInTable)
 
-import design2
+import dsg2
 
 # Main application execution
 if __name__ == "__main__":
