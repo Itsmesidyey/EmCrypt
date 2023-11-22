@@ -13,21 +13,19 @@ class Ui_Manual(object):
     def setupUi(self, Manual):
         self.Manual = Manual
         Manual.setObjectName("Manual")
-        Manual.resize(912, 671)
+        Manual.resize(1105, 743)
         self.centralwidget = QtWidgets.QWidget(Manual)
         self.centralwidget.setObjectName("centralwidget")
         self.label = QtWidgets.QLabel(self.centralwidget)
-        self.label.setGeometry(QtCore.QRect(320, 210, 55, 16))
+        self.label.setGeometry(QtCore.QRect(-20, 0, 1121, 721))
+        self.label.setStyleSheet("background-image: url(:/manual/Downloads/Frame 7 (3).png)")
         self.label.setText("")
+        self.label.setTextFormat(QtCore.Qt.AutoText)
+        self.label.setPixmap(QtGui.QPixmap(":/manual/Downloads/Frame 7 (3).png"))
+        self.label.setScaledContents(True)
         self.label.setObjectName("label")
-        self.label_2 = QtWidgets.QLabel(self.centralwidget)
-        self.label_2.setGeometry(QtCore.QRect(0, 0, 911, 691))
-        self.label_2.setStyleSheet("background-image:url(:/manual/Downloads/manualzz.jpg)")
-        self.label_2.setText("")
-        self.label_2.setObjectName("label_2")
-        self.pushButton_2 = QtWidgets.QPushButton(self.centralwidget)
-        self.pushButton_2.setGeometry(QtCore.QRect(80, 540, 151, 41))
-        self.pushButton_2.clicked.connect(self.openWindow)
+        self.pushButton = QtWidgets.QPushButton(self.centralwidget)
+        self.pushButton.setGeometry(QtCore.QRect(70, 550, 151, 41))
         palette = QtGui.QPalette()
         brush = QtGui.QBrush(QtGui.QColor(255, 255, 255))
         brush.setStyle(QtCore.Qt.SolidPattern)
@@ -92,20 +90,20 @@ class Ui_Manual(object):
         brush = QtGui.QBrush(QtGui.QColor(0, 128, 0))
         brush.setStyle(QtCore.Qt.SolidPattern)
         palette.setBrush(QtGui.QPalette.Disabled, QtGui.QPalette.Window, brush)
-        self.pushButton_2.setPalette(palette)
+        self.pushButton.setPalette(palette)
         font = QtGui.QFont()
         font.setFamily("Poppins")
         font.setPointSize(14)
         font.setBold(True)
         font.setWeight(75)
-        self.pushButton_2.setFont(font)
-        self.pushButton_2.setStyleSheet("background-color:green;\n"
+        self.pushButton.setFont(font)
+        self.pushButton.setStyleSheet("background-color:green;\n"
 "color:white;\n"
 "border-style: outset;\n"
 "border-radius:10px;\n"
 "")
-        self.pushButton_2.setObjectName("pushButton_2")
-        self.pushButton_2.clicked.connect(self.openWindow)
+        self.pushButton.setObjectName("pushButton")
+        self.pushButton.clicked.connect(self.openWindow)
         Manual.setCentralWidget(self.centralwidget)
         self.statusbar = QtWidgets.QStatusBar(Manual)
         self.statusbar.setObjectName("statusbar")
@@ -117,7 +115,7 @@ class Ui_Manual(object):
     def retranslateUi(self, Manual):
         _translate = QtCore.QCoreApplication.translate
         Manual.setWindowTitle(_translate("Manual", "MainWindow"))
-        self.pushButton_2.setText(_translate("Manual", "Continue >"))
+        self.pushButton.setText(_translate("Manual", "Continue >"))
 import dsg3
 
 
