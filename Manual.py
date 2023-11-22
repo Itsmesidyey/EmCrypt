@@ -1,5 +1,5 @@
 from PyQt5 import QtCore, QtGui, QtWidgets
-from Emcrypt import Ui_OtherWindow
+from emcrypt import Ui_OtherWindow
 
 
 class Ui_Manual(object):
@@ -115,7 +115,7 @@ class Ui_Manual(object):
     def retranslateUi(self, Manual):
         _translate = QtCore.QCoreApplication.translate
         Manual.setWindowTitle(_translate("Manual", "Manual"))
-        self.pushButton.setText(_translate("Manual", "Continue >"))
+        self.pushButton.setText(_translate("Manual", "Continue"))
 import dsg3
 
 
