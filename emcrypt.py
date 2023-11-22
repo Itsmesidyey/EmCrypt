@@ -713,13 +713,12 @@ class Ui_OtherWindow(object):
         text_no_numbers = self.cleaning_numbers(original_text)
         text_cleaned = self.clean_tweet(text_no_numbers, self.emoticons_to_keep)  # Use class attribute for emoticons_to_keep
         text_spell_checked = self.spell_correction(text_cleaned, self.emoticons_to_keep)  # Removed the emoticons_to_keep parameter if not used in spell_correction
-        text_no_stopwords = self.cleaning_stopwords(text_spell_checked)
 
         # Check radio button selection
         if self.radioButton1.isChecked():
 
             print("Combination of Keywords, Ending Puctuation Marks, and Emoticons")
-            converted_text, emoticons_count = self.convert_emoticons_to_words(text_no_stopwords)  # Use the processed text
+            converted_text, emoticons_count = self.convert_emoticons_to_words(text_spell_checked)  # Use the processed text
              # Convert and Calculate
             # Assuming 'convert_and_calculate' is a method in your class and 'text_lemmatized' is the final processed text
         
@@ -731,13 +730,14 @@ class Ui_OtherWindow(object):
             print("Plain-text Only")
 
             # Remove punctuations and known emojis and use the 'text' models
-            converted_text = self.remove_punctuations_and_known_emojis(text_no_stopwords)
+            converted_text = self.remove_punctuations_and_known_emojis(text_spell_checked)
 
             # Print the text after lemmatization
             print("Plain Text Only :", ' '.join(converted_text))
 
         text_no_repeating_words = self.cleaning_repeating_words(converted_text)
-        text_lowercased = text_no_repeating_words.lower()
+        text_no_stopwords = self.cleaning_stopwords(text_no_repeating_words)
+        text_lowercased = text_no_stopwords.lower()
         tokenizer = RegexpTokenizer(r'\w+|[^\w\s]')
         text_tokenized = tokenizer.tokenize(text_lowercased)
         print("Text after Tokenization:", ' '.join(text_tokenized))
