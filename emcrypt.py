@@ -755,9 +755,54 @@ class Ui_OtherWindow(object):
 
         text_lemmatized = self.lemmatizer_on_text(' '.join(text_tokenized))
         #text_stemmed = self.stemming_on_text(' '.join(text_lemmatized))
-
+        text_lemmatized = self.lemmatizer_on_text(' '.join(text_tokenized))
         emoticons_count = 0
         
+        # Import necessary libraries
+        import mysql.connector
+        from mysql.connector import Error
+
+        # Prepare a DataFrame for insertion into the database
+        # Assuming that text_lemmatized is a list of preprocessed text strings
+        data = pd.DataFrame({
+            'text': text_lemmatized,
+        })
+
+        # Function to connect to MySQL database and insert data
+        def insert_into_database(lemmatized_text, table_name):
+            try:
+                # Establish connection to the MySQL database
+                connection = mysql.connector.connect(
+                    host='localhost',
+                    user='emcrypt',
+                    password='sentiment123*',
+                    database='emcrypt_database'
+                )
+
+                if connection.is_connected():
+                    cursor = connection.cursor()
+                    # Prepare the insert query
+                    insert_query = f"INSERT INTO {table_name} (text) VALUES (%s)"
+                    # Execute the insert query with the lemmatized text
+                    cursor.execute(insert_query, (lemmatized_text,))
+                    # Commit the transaction
+                    connection.commit()
+                    print("Data inserted successfully")
+
+            except Error as e:
+                print("Error while connecting to MySQL", e)
+
+            finally:
+                # Close the cursor and the connection
+                if connection.is_connected():
+                    cursor.close()
+                    connection.close()
+                    print("MySQL connection is closed")
+
+        # Use this function to insert the lemmatized text into your database
+        lemmatized_text_string = ' '.join(text_lemmatized)  # Assuming text_lemmatized is your list of lemmatized words
+        insert_into_database(lemmatized_text_string, 'emcrypt')
+
         # Check radio button selection
         if self.radioButton1.isChecked():
             print("Option 1")

@@ -1,8 +1,6 @@
 #utilities
 import re
-import numpy as np
 import pandas as pd
-import os
 import nltk
 
 #SpellCorrection
@@ -102,6 +100,7 @@ print(dataset)
 
 # Combination of Keywords, Ending Punctuation Marks, and Emojis : Emoticon Convertion
 #Define the emoticon dictionary outside the function for a wider scope
+
 emoticon_dict = {
         "🌈": "Rainbow",
         "🌙": "Crescent Moon",
@@ -313,7 +312,7 @@ emoticon_weights = {
             '💓': {'angry': 0.0, 'anticipation': 0.47,  'fear': 0.08, 'happy': 0.61, 'sad': 0.0, 'surprise': 0.19},
             '💔': {'angry': 0.39, 'anticipation': 0.19,  'fear': 0.14, 'happy': 0.0, 'sad': 0.94, 'surprise': 0.08},
             '💕': {'angry': 0.0, 'anticipation': 0.31, 'fear': 0.0, 'happy': 0.83, 'sad': 0.0, 'surprise': 0.11},
-                '💖': {'angry': 0.0, 'anticipation': 0.33, 'fear': 0.0, 'happy': 0.89, 'sad': 0.0, 'surprise': 0.25},
+            '💖': {'angry': 0.0, 'anticipation': 0.33, 'fear': 0.0, 'happy': 0.89, 'sad': 0.0, 'surprise': 0.25},
             '💗': {'angry': 0.0, 'anticipation': 0.36, 'fear': 0.0, 'happy': 0.89, 'sad': 0.0, 'surprise': 0.22},
             '💘': {'angry': 0.03, 'anticipation': 0.31, 'fear': 0.06, 'happy': 0.67, 'sad': 0.14, 'surprise': 0.06},
             '💙': {'angry': 0.0, 'anticipation': 0.25, 'fear': 0.0, 'happy': 0.61, 'sad': 0.17, 'surprise': 0.17},
@@ -436,21 +435,25 @@ emoticon_weights = {
             "💸": { 'angry': 0.2, 'anticipation': 0.5, 'fear': 0.1, 'happy': 0.3, 'sad': 0.4, 'surprise': 0.4 }
 }
 
-#Emoticon Convertion
+# Emoticon Conversion
 def convert_and_calculate(text, polarity):
     emotional_scores = {emotion: 0.0 for emotion in ['angry', 'anticipation', 'fear', 'happy', 'sad', 'surprise']}
     changed_emoticons = 0
+
     for emoticon, word in emoticon_dict.items():
-        while emoticon in text:
-            text = text.replace(emoticon, word + " ", 1)
-            changed_emoticons += 1
-            scores = emoticon_weights.get(emoticon, {'angry': 0.0, 'anticipation': 0.0, 'fear': 0.0, 'happy': 0.0, 'sad': 0.0, 'surprise': 0.0})
-            for emotion, score in scores.items():
-                # Adjust scores based on polarity
-                if polarity == 1 and emotion in ['happy', 'surprise', 'anticipation']:
-                    emotional_scores[emotion] += score
-                elif polarity == 0 and emotion in ['sad', 'fear', 'angry']:
-                    emotional_scores[emotion] += score
+        if emoticon in text:
+            text = text.replace(emoticon, word + " ")
+            changed_emoticons += text.count(word)  # Count how many times the emoticon was replaced
+
+    for emoticon, word in emoticon_dict.items():
+        scores = emoticon_weights.get(emoticon, {'angry': 0.0, 'anticipation': 0.0, 'fear': 0.0, 'happy': 0.0, 'sad': 0.0, 'surprise': 0.0})
+        for emotion, score in scores.items():
+            # Adjust scores based on polarity
+            if polarity == 1 and emotion in ['happy', 'surprise', 'anticipation']:
+                emotional_scores[emotion] += score * text.count(word)
+            elif polarity == 0 and emotion in ['sad', 'fear', 'angry']:
+                emotional_scores[emotion] += score * text.count(word)
+
     return text, changed_emoticons, emotional_scores
 
 # Apply the combined function with polarity
@@ -487,8 +490,6 @@ stopwordlist = ['a', 'about', 'above', 'after', 'again', 'ain', 'all', 'am', 'an
              'why', 'will', 'with', 'won', 'y', 'you', "youd","youll", "youre",
              "youve", 'your', 'yours', 'yourself', 'yourselves']
 
-
-
 # Stopwords removal applied separately after the option has been chosen and processed
 STOPWORDS = set(stopwordlist)
 def cleaning_stopwords(text):
@@ -513,7 +514,6 @@ tokenizer = RegexpTokenizer(r'\w+|[^\w\s]')
 # Applying the modified tokenizer to the dataset
 dataset['text'] = dataset['text'].apply(lambda x: ' '.join(x) if isinstance(x, list) else x)
 dataset['text'] = dataset['text'].apply(tokenizer.tokenize)
-dataset['text'].head()
 
 #Lemmatization
 lm = nltk.WordNetLemmatizer()
@@ -521,7 +521,9 @@ def lemmatizer_on_text(data):
     text = [lm.lemmatize(word) for word in data]
     return data
 dataset['text'] = dataset['text'].apply(lambda x: lemmatizer_on_text(x))
-dataset['text'].head()
+
+# Convert list to string for database insertion
+dataset['text'] = dataset['text'].apply(lambda x: ' '.join(x) if isinstance(x, list) else x)
 
 import mysql.connector
 from mysql.connector import Error
@@ -530,18 +532,25 @@ from mysql.connector import Error
 def insert_into_database(data, table_name):
     try:
         connection = mysql.connector.connect(
-            host='your_host',  # usually 'localhost' or an IP address
-            user='your_username',
-            password='your_password',
-            database='your_database_name'
+            host='localhost',  # usually 'localhost' or an IP address
+            user='emcrypt',
+            password='sentiment123*',
+            database= 'emcrypt_database'
         )
         if connection.is_connected():
             cursor = connection.cursor()
-            # Creating a query to insert data
-            insert_query = f"""INSERT INTO {table_name} (text, polarity, emotion) VALUES (%s, %s, %s)"""
-            # Loop through the DataFrame and insert each row
+            insert_query = f"INSERT INTO {table_name} (text, polarity, emotion, intensity) VALUES (%s, %s, %s, %s)"
+
             for i, row in data.iterrows():
-                cursor.execute(insert_query, (row['text'], row['polarity'], row['emotion']))
+                # Assuming 'text' column contains the preprocessed and lemmatized text
+                text_value = row['text']
+                # If 'text' is a list, convert it to string
+                if isinstance(text_value, list):
+                    text_value = ' '.join(text_value)
+                intensity_value = row['intensity'] if 'intensity' in row else None
+
+                cursor.execute(insert_query, (text_value, row['polarity'], row['emotion'], intensity_value))
+            
             connection.commit()
             print("Data inserted successfully")
     except Error as e:
@@ -553,10 +562,10 @@ def insert_into_database(data, table_name):
             print("MySQL connection is closed")
 
 # Call the function to insert data into MySQL
-insert_into_database(dataset, 'your_table_name')
+insert_into_database(dataset, 'combine')
 
-import os
-import numpy as np
+#Sentiment Analysis Stage
+
 import pandas as pd
 import joblib
 import pickle

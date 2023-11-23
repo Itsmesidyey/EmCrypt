@@ -188,6 +188,47 @@ def lemmatizer_on_text(data):
 dataset['text'] = dataset['text'].apply(lambda x: lemmatizer_on_text(x))
 dataset['text'].head()
 
+# Convert list to string for database insertion
+dataset['text'] = dataset['text'].apply(lambda x: ' '.join(x) if isinstance(x, list) else x)
+
+import mysql.connector
+from mysql.connector import Error
+
+# Function to connect to MySQL database and insert data
+def insert_into_database(data, table_name):
+    try:
+        connection = mysql.connector.connect(
+            host='localhost',  # usually 'localhost' or an IP address
+            user='emcrypt',
+            password='sentiment123*',
+            database= 'emcrypt_database'
+        )
+        if connection.is_connected():
+            cursor = connection.cursor()
+            insert_query = f"INSERT INTO {table_name} (text, polarity, emotion, intensity) VALUES (%s, %s, %s, %s)"
+
+            for i, row in data.iterrows():
+                # Assuming 'text' column contains the preprocessed and lemmatized text
+                text_value = row['text']
+                # If 'text' is a list, convert it to string
+                if isinstance(text_value, list):
+                    text_value = ' '.join(text_value)
+                intensity_value = row['intensity'] if 'intensity' in row else None
+
+                cursor.execute(insert_query, (text_value, row['polarity'], row['emotion'], intensity_value))
+            
+            connection.commit()
+            print("Data inserted successfully")
+    except Error as e:
+        print("Error while connecting to MySQL", e)
+    finally:
+        if connection.is_connected():
+            cursor.close()
+            connection.close()
+            print("MySQL connection is closed")
+
+# Call the function to insert data into MySQL
+insert_into_database(dataset, 'text')
 
 import os
 import numpy as np
