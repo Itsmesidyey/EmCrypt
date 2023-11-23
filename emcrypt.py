@@ -703,6 +703,15 @@ class Ui_OtherWindow(object):
                 features = feature_extraction_model.predict(data_padded)
 
             return features
+        
+    def showInputWarning(self):
+        # Create and set up the pop-up dialog
+        msgBox = QtWidgets.QMessageBox()
+        msgBox.setIcon(QtWidgets.QMessageBox.Warning)
+        msgBox.setText("Please input a tweet")
+        msgBox.setWindowTitle("Input Required")
+        msgBox.setStandardButtons(QtWidgets.QMessageBox.Ok)
+        msgBox.exec_()
 
     def updateTextInTable(self):
         original_text = self.plainTextEdit.toPlainText()
@@ -870,6 +879,11 @@ class Ui_OtherWindow(object):
             'Angry': 'Angry'
         }
 
+        # Check if the original text is empty and show the popup
+        if not original_text or original_text == self.plainTextEdit.placeholder_text:
+            self.showInputWarning()
+            return
+        
         # Get the emotion from the dictionary with a default value of 'unknown'
         emotion_result_str = emotion_mappings.get(emotion_result_str, 'unknown')
 
@@ -919,7 +933,7 @@ class Ui_OtherWindow(object):
 
         # Create and set the image label
         label = QLabel(dialog)
-        pixmap = QPixmap("/Users/cjcasinsinan/Documents/GitHub/EmCrypt/assets/upload-file-instructions1.png")
+        pixmap = QPixmap("/Users/cjcasinsinan/Documents/GitHub/EmCrypt/assets/upload-file-instruction.png")
         label.setPixmap(pixmap)
         layout.addWidget(label)
 
