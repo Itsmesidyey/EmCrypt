@@ -229,8 +229,8 @@ def insert_into_database(data, table_name):
 # Call the function to insert data into MySQL
 insert_into_database(dataset, 'text')
 
-import os
-import numpy as np
+#Sentiment Analysis Stage
+
 import pandas as pd
 import joblib
 import pickle
@@ -244,6 +244,21 @@ from keras.layers import LSTM, Dense, Embedding, Dropout
 from keras.preprocessing.text import Tokenizer
 from keras.preprocessing.sequence import pad_sequences
 from keras.models import Model  # Import the Model class
+from sklearn.utils import resample
+
+# Balancing the dataset
+data_majority = data[data.polarity == 1]
+data_minority = data[data.polarity == 0]
+
+data_minority_upsampled = resample(data_minority, 
+                                   replace=True,     # sample with replacement
+                                   n_samples=len(data_majority),    # to match majority class
+                                   random_state=123) # reproducible results
+
+data_balanced = pd.concat([data_majority, data_minority_upsampled])
+
+# Shuffling the dataset
+data_balanced = data_balanced.sample(frac=1).reset_index(drop=True)
 
 # Assuming 'data' is your DataFrame with 'text', 'polarity', and 'emotion' columns
 # Preprocess the text data here (if needed)
@@ -259,15 +274,17 @@ data_padded = pad_sequences(sequences, maxlen=100)
 
 # LSTM Model for Feature Extraction
 model = Sequential()
-model.add(Embedding(input_dim=20000, output_dim=256, input_length=100))  # Updated input_dim to match num_words
+model.add(Embedding(input_dim=20000, output_dim=256, input_length=100))  # Adjust 'input_dim' and 'input_length' as needed
 model.add(LSTM(128, return_sequences=True))
-model.add(Dropout(0.5))  # Increased dropout
+model.add(Dropout(0.5))
 model.add(LSTM(64))
-model.add(Dropout(0.5))  # Additional dropout layer
-model.add(Dense(7, activation='relu'))  # Updated output size to 8
+model.add(Dropout(0.5))
+model.add(Dense(7, activation='relu'))  # Added an extra Dense layer
 num_emotions = data['emotion'].nunique()  # Number of unique emotions
-model.add(Dense(num_emotions, activation='softmax'))  # Adjust for multi-class classification
+model.add(Dense(num_emotions, activation='softmax'))  # 'num_emotions' should be set to the number of emotion classes
+
 model.compile(optimizer='adam', loss='categorical_crossentropy', metrics=['accuracy'])
+
 model.fit(data_padded, pd.get_dummies(emotion_labels).values, epochs=15, batch_size=32, validation_split=0.2)  # Adjusted training
 
 # Save the LSTM model and tokenizer
@@ -275,12 +292,13 @@ model.save("lstm_model.h5")
 with open('tokenizer.pkl', 'wb') as handle:
     pickle.dump(tokenizer, handle, protocol=pickle.HIGHEST_PROTOCOL)
 
-
 # Create a new model for feature extraction
 feature_extraction_model = Model(inputs=model.input, outputs=model.layers[-2].output)
 
 # Use the new model to extract features
 features = feature_extraction_model.predict(data_padded)
+print(features.shape)
+
 
 # Splitting the data for polarity and emotion
 X_train, X_temp, y_train_polarity, y_temp_polarity = train_test_split(features, polarity_labels, test_size=0.4, random_state=42)
@@ -297,9 +315,9 @@ param_grid = {
     'kernel': ['rbf', 'poly', 'sigmoid']
 }
 
-# Grid Search for Polarity SVM
 grid_polarity = GridSearchCV(SVC(), param_grid, refit=True, verbose=2)
 grid_polarity.fit(X_train, y_train_polarity)
+
 print("Best Polarity SVM Parameters:", grid_polarity.best_params_)
 
 # Grid Search for Emotion SVM

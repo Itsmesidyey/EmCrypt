@@ -389,7 +389,7 @@ class Ui_OtherWindow(object):
         self.label.setObjectName("label")
 
         self.scrollArea = QtWidgets.QScrollArea(self.centralwidget)
-        self.scrollArea.setGeometry(QtCore.QRect(120, 560, 811, 421))  # Set the geometry as needed
+        self.scrollArea.setGeometry(QtCore.QRect(120, 560, 811, 421)) #Set the geometry as needed
         self.scrollArea.setWidgetResizable(True)
 
         self.pushButton = QtWidgets.QPushButton(self.centralwidget)
@@ -659,51 +659,50 @@ class Ui_OtherWindow(object):
             return np.random.choice(['Sad', 'Fear', 'Angry'])
     
     def transform_text_to_features(self, text):
-        # Check radio button selection
+    # Check radio button selection
         if self.radioButton1.isChecked():
-                print("Option 1")
-
-                # Load the tokenizer
-                with open('tokenizer.pkl', 'rb') as handle:
-                    tokenizer = pickle.load(handle)
-
-                # Load the original LSTM model
-                lstm_model = keras.models.load_model('lstm_model.h5')
-
-                # Preprocess the text (tokenization and padding)
-                seq = tokenizer.texts_to_sequences([text])
-                data_padded = keras.preprocessing.sequence.pad_sequences(seq, maxlen=100)  # Use the same maxlen as used during training
-
-                # Create a new model for feature extraction
-                # This model uses the original model's input and the output of the second-to-last Dense layer
-                feature_extraction_model = Model(inputs=lstm_model.input, outputs=lstm_model.layers[-2].output)
-
-                # Use the new model to extract features
-                features = feature_extraction_model.predict(data_padded)
-
-                return features
-        
+            print("Option 1")
+            features = self.extract_features_from_lstm(text, 'lstm_model.h5', 'tokenizer.pkl')
         elif self.radioButton2.isChecked():
             print("Option 2")
-            # Load the tokenizer and LSTM feature extractor model
-            with open('tokenizer_text.pkl', 'rb') as handle:
-                tokenizer = pickle.load(handle)
-                            # Load the original LSTM model
-                lstm_model = keras.models.load_model('lstm_model_text.h5')
+            features = self.extract_features_from_lstm(text, 'lstm_model_text.h5', 'tokenizer_text.pkl')
 
-                # Preprocess the text (tokenization and padding)
-                seq = tokenizer.texts_to_sequences([text])
-                data_padded = keras.preprocessing.sequence.pad_sequences(seq, maxlen=100)  # Use the same maxlen as used during training
+        # Transform features to 32 dimensions
+        transformed_features = self.adjust_features_to_expected_dim(features, 7)
+        return transformed_features
 
-                # Create a new model for feature extraction
-                # This model uses the original model's input and the output of the second-to-last Dense layer
-                feature_extraction_model = Model(inputs=lstm_model.input, outputs=lstm_model.layers[-2].output)
+    def extract_features_from_lstm(self, text, lstm_model_path, tokenizer_path):
+        # Load the tokenizer and LSTM model
+        with open(tokenizer_path, 'rb') as handle:
+            tokenizer = pickle.load(handle)
+        lstm_model = keras.models.load_model(lstm_model_path)
 
-                # Use the new model to extract features
-                features = feature_extraction_model.predict(data_padded)
+        # Preprocess the text
+        seq = tokenizer.texts_to_sequences([text])
+        data_padded = keras.preprocessing.sequence.pad_sequences(seq, maxlen=100)
 
+        # Create a feature extraction model
+        feature_extraction_model = Model(inputs=lstm_model.input, outputs=lstm_model.layers[-2].output)
+
+        # Extract features
+        features = feature_extraction_model.predict(data_padded)
+        return features
+
+    def adjust_features_to_expected_dim(self, features, expected_dim):
+        # Transform the features to match the expected dimensionality
+        if features.shape[1] > expected_dim:
+            return features[:, :expected_dim]
+        elif features.shape[1] < expected_dim:
+            additional_features = np.zeros((features.shape[0], expected_dim - features.shape[1]))
+            return np.concatenate((features, additional_features), axis=1)
+        else:
             return features
-        
+
+    def validate_svm_model(self, svm_model_path):
+        svm_model = joblib.load(svm_model_path)
+        print(f"{svm_model_path} expects {svm_model.n_features_in_} features.")
+        return svm_model
+    
     def showInputWarning(self):
         # Create and set up the pop-up dialog
         msgBox = QtWidgets.QMessageBox()

@@ -579,6 +579,21 @@ from keras.layers import LSTM, Dense, Embedding, Dropout
 from keras.preprocessing.text import Tokenizer
 from keras.preprocessing.sequence import pad_sequences
 from keras.models import Model  # Import the Model class
+from sklearn.utils import resample
+
+# Balancing the dataset
+data_majority = data[data.polarity == 1]
+data_minority = data[data.polarity == 0]
+
+data_minority_upsampled = resample(data_minority, 
+                                   replace=True,     # sample with replacement
+                                   n_samples=len(data_majority),    # to match majority class
+                                   random_state=123) # reproducible results
+
+data_balanced = pd.concat([data_majority, data_minority_upsampled])
+
+# Shuffling the dataset
+data_balanced = data_balanced.sample(frac=1).reset_index(drop=True)
 
 # Assuming 'data' is your DataFrame with 'text', 'polarity', and 'emotion' columns
 # Preprocess the text data here (if needed)
@@ -594,15 +609,17 @@ data_padded = pad_sequences(sequences, maxlen=100)
 
 # LSTM Model for Feature Extraction
 model = Sequential()
-model.add(Embedding(input_dim=20000, output_dim=256, input_length=100))  # Updated input_dim to match num_words
+model.add(Embedding(input_dim=20000, output_dim=256, input_length=100))  # Adjust 'input_dim' and 'input_length' as needed
 model.add(LSTM(128, return_sequences=True))
-model.add(Dropout(0.5))  # Increased dropout
+model.add(Dropout(0.5))
 model.add(LSTM(64))
-model.add(Dropout(0.5))  # Additional dropout layer
-model.add(Dense(7, activation='relu'))  # Updated output size to 8
+model.add(Dropout(0.5))
+model.add(Dense(7, activation='relu'))  # Added an extra Dense layer
 num_emotions = data['emotion'].nunique()  # Number of unique emotions
-model.add(Dense(num_emotions, activation='softmax'))  # Adjust for multi-class classification
+model.add(Dense(num_emotions, activation='softmax'))  # 'num_emotions' should be set to the number of emotion classes
+
 model.compile(optimizer='adam', loss='categorical_crossentropy', metrics=['accuracy'])
+
 model.fit(data_padded, pd.get_dummies(emotion_labels).values, epochs=15, batch_size=32, validation_split=0.2)  # Adjusted training
 
 # Save the LSTM model and tokenizer
@@ -633,9 +650,9 @@ param_grid = {
     'kernel': ['rbf', 'poly', 'sigmoid']
 }
 
-# Grid Search for Polarity SVM
 grid_polarity = GridSearchCV(SVC(), param_grid, refit=True, verbose=2)
 grid_polarity.fit(X_train, y_train_polarity)
+
 print("Best Polarity SVM Parameters:", grid_polarity.best_params_)
 
 # Grid Search for Emotion SVM
