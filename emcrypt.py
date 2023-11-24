@@ -9,7 +9,7 @@ from nltk.tokenize import RegexpTokenizer
 from spellchecker import SpellChecker
 from PyQt5 import QtCore, QtGui, QtWidgets
 from PyQt5.QtWidgets import QFileDialog
-from PyQt5.QtWidgets import QLabel, QDialog, QVBoxLayout, QPushButton
+from PyQt5.QtWidgets import QLabel, QDialog, QVBoxLayout
 from PyQt5.QtGui import QPixmap
 from PyQt5.QtCore import Qt
 from PyQt5.QtGui import QFont
@@ -439,6 +439,7 @@ class Ui_OtherWindow(object):
     "border-radius:10px\n"
     "")
         self.pushButton_2.setObjectName("pushButton_2")
+
         self.pushButton_3 = QtWidgets.QPushButton(self.centralwidget)
         self.pushButton_3.setGeometry(QtCore.QRect(730, 470, 181, 41))
         font = QtGui.QFont()
@@ -516,7 +517,6 @@ class Ui_OtherWindow(object):
 
         self.retranslateUi(OtherWindow)
         QtCore.QMetaObject.connectSlotsByName(OtherWindow)
-        
 
     # Utility methods for text processing
     @staticmethod
@@ -614,19 +614,57 @@ class Ui_OtherWindow(object):
         
         return lemmatized_text
 
-    def classify_intensity(self, emoticons_count, original_text):
+    def classify_intensity(self, emotion_result_str, emoticons_count, original_text):
         question_marks = original_text.count('?')
         periods = original_text.count('.')
         exclamation_marks = original_text.count('!')
 
-        if exclamation_marks > 1 or question_marks > 1 or emoticons_count > 1:
-            return 'High'
-        elif periods == 1 or question_marks == 1 or emoticons_count == 1 or exclamation_marks == 1:
-            return 'Medium'
-        elif question_marks == 0 and emoticons_count == 0:
-            return 'Low'
-        else:
-            return 'Undetermined'
+        # Happy
+        if emotion_result_str == 'Happy':
+            if exclamation_marks >= 1 or emoticons_count > 2:
+                return 'High'
+            elif periods == 1 and emoticons_count == 1:
+                return 'Medium'
+            elif question_marks > 0:
+                return 'Low'
+
+        # Sadness
+        elif emotion_result_str == 'Sad':
+            if exclamation_marks >= 1 and question_marks > 1 or emoticons_count > 1:
+                return 'High'
+            elif periods == 1 and question_marks == 1 and emoticons_count <= 1:
+                return 'Medium'
+
+        # Surprise
+        elif emotion_result_str == 'Surprise':
+            if exclamation_marks >= 1 and question_marks > 1 or emoticons_count > 2:
+                return 'High'
+            elif periods == 1 and question_marks == 1 and exclamation_marks == 1 and emoticons_count <= 2:
+                return 'Medium'
+
+        # Anger
+        elif emotion_result_str == 'Angry':
+            if exclamation_marks >= 1 and question_marks > 1 or emoticons_count > 2:
+                return 'High'
+            elif periods == 1 and question_marks == 1 and exclamation_marks == 1 and emoticons_count <= 2:
+                return 'Medium'
+
+        # Anticipation
+        elif emotion_result_str == 'Anticipation':
+            if exclamation_marks >= 1 and question_marks > 1 or emoticons_count > 2:
+                return 'High'
+            elif periods == 1 and question_marks == 1 and exclamation_marks == 1 and emoticons_count <= 2:
+                return 'Medium'
+
+        # Fear
+        elif emotion_result_str == 'Fear':
+            if exclamation_marks >= 1 and question_marks > 1 or emoticons_count > 2:
+                return 'High'
+            elif periods == 1 and question_marks == 1 and exclamation_marks == 1 and emoticons_count <= 2:
+                return 'Medium'
+
+        return 'Undetermined'
+
     
     def convert_emoticons_to_words(self, text_no_stopwords):
         text = text_no_stopwords  # Initialize 'text' with 'original_text'
@@ -825,8 +863,7 @@ class Ui_OtherWindow(object):
                 emotion_result = self.emotion_model_combine.predict(features)
             else:
                 emotion_result = "Model not loaded"
-            intensity_result = self.classify_intensity(emoticons_count, prepared_text) # Assuming classify_intensity requires emoticons_count and text
-
+            
         elif self.radioButton2.isChecked():
             print("Option 2")
             # Similar processing for radioButton2, if different
@@ -885,6 +922,9 @@ class Ui_OtherWindow(object):
         
         # Get the emotion from the dictionary with a default value of 'unknown'
         emotion_result_str = emotion_mappings.get(emotion_result_str, 'unknown')
+
+        intensity_result = self.classify_intensity(emotion_result_str, emoticons_count, original_text) # Assuming classify_intensity requires emoticons_count and text
+
 
         # Updating the table with analysis results
         current_row_count = self.tableWidget.rowCount()
