@@ -14,7 +14,7 @@ from PyQt5.QtGui import QPixmap
 from PyQt5.QtCore import Qt
 from PyQt5.QtGui import QFont
 from PyQt5.QtWidgets import QPlainTextEdit
-from keras.models import Model  # Import the Model class
+from keras.models import Model
 
 class ClearablePlainTextEdit(QPlainTextEdit):
     def __init__(self, parent=None):
