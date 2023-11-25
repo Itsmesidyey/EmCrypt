@@ -209,170 +209,170 @@ class Ui_OtherWindow(object):
 }
 
         self.emoticon_weights = {
-            '🌈': {'Angry': 0.0, 'Anticipation': 0.28, 'Fear': 0.0, 'Happy': 0.69, 'Sad': 0.06, 'Surprise': 0.22 },
-            '🌙': {'Angry': 0.0, 'Anticipation': 0.31, 'Fear': 0.0, 'Happy': 0.25, 'Sad': 0.0, 'Surprise': 0.06},
-            '🌚': {'Angry': 0.06, 'Anticipation': 0.08, 'Fear': 0.06, 'Happy': 0.42, 'Sad': 0.19, 'Surprise': 0.06},
-            '🌞': {'Angry': 0.0, 'Anticipation': 0.22, 'Fear': 0.0, 'Happy': 0.78, 'Sad': 0.0, 'Surprise': 0.11},
-            '🌟': {'Angry': 0.0, 'Anticipation': 0.28, 'Fear': 0.0, 'Happy': 0.53, 'Sad': 0.0, 'Surprise': 0.25},
-            '🌷': {'Angry': 0.0, 'Anticipation': 0.31, 'Fear': 0.0, 'Happy': 0.44, 'Sad': 0.0, 'Surprise': 0.0},
-            '🌸': {'Angry': 0.0, 'Anticipation': 0.22, 'Fear': 0.0, 'Happy': 0.56, 'Sad': 0.0, 'Surprise': 0.14},
-            '🌹': {'Angry': 0.0, 'Anticipation': 0.36, 'Fear': 0.0, 'Happy': 0.56, 'Sad': 0.0, 'Surprise': 0.11},
-            '🌺': {'Angry': 0.0, 'Anticipation': 0.11, 'Fear': 0.0, 'Happy': 0.39, 'Sad': 0.0, 'Surprise': 0.06},
-            '🍀': {'Angry': 0.0, 'Anticipation': 0.39, 'Fear': 0.0, 'Happy': 0.47, 'Sad': 0.0, 'Surprise': 0.22},
-            '🍃': {'Angry': 0.0, 'Anticipation': 0.31, 'Fear': 0.0, 'Happy': 0.11, 'Sad': 0.17, 'Surprise': 0.03},
-            '🍕': {'Angry': 0.06, 'Anticipation': 0.39, 'Fear': 0.06, 'Happy': 0.47, 'Sad': 0.06, 'Surprise': 0.17},
-            '🍻': {'Angry': 0.0, 'Anticipation': 0.44, 'Fear': 0.0, 'Happy': 0.72, 'Sad': 0.0, 'Surprise': 0.25},
-            '🎀': {'Angry': 0.0, 'Anticipation': 0.42, 'Fear': 0.0, 'Happy': 0.44, 'Sad': 0.0, 'Surprise': 0.36},
-            '🎈': {'Angry': 0.06, 'Anticipation': 0.25, 'Fear': 0.06, 'Happy': 0.47, 'Sad': 0.06, 'Surprise': 0.31},
-            '🎉': {'Angry': 0.0, 'Anticipation': 0.33, 'Fear': 0.0, 'Happy': 0.92, 'Sad': 0.0, 'Surprise': 0.5},
-            '🎤': {'Angry': 0.0, 'Anticipation': 0.39, 'Fear': 0.06, 'Happy': 0.39, 'Sad': 0.08, 'Surprise': 0.08},
-            '🎥': {'Angry': 0.0, 'Anticipation': 0.28, 'Fear': 0.0, 'Happy': 0.19, 'Sad': 0.0, 'Surprise': 0.17},
-            '🎧': {'Angry': 0.0, 'Anticipation': 0.08, 'Fear': 0.0, 'Happy': 0.44, 'Sad': 0.0, 'Surprise': 0.0},
-            '🎵': {'Angry': 0.0, 'Anticipation': 0.25, 'Fear': 0.0, 'Happy': 0.47, 'Sad': 0.08, 'Surprise': 0.08},
-            '🎶': {'Angry': 0.0, 'Anticipation': 0.22, 'Fear': 0.0, 'Happy': 0.47, 'Sad': 0.0, 'Surprise': 0.22},
-            '👀': {'Angry': 0.14, 'Anticipation': 0.81, 'Fear': 0.42, 'Happy': 0.0, 'Sad': 0.17, 'Surprise': 0.64},
-            '👅': {'Angry': 0.0, 'Anticipation': 0.17, 'Fear': 0.0, 'Happy': 0.36, 'Sad': 0.0, 'Surprise': 0.08},
-            '👇': {'Angry': 0.11, 'Anticipation': 0.14, 'Fear': 0.06, 'Happy': 0.0, 'Sad': 0.0, 'Surprise': 0.0},
-            '👈': {'Angry': 0.14, 'Anticipation': 0.17, 'Fear': 0.0, 'Happy': 0.0, 'Sad': 0.0, 'Surprise': 0.06},
-            '👉': {'Angry': 0.06, 'Anticipation': 0.25, 'Fear': 0.0, 'Happy': 0.0, 'Sad': 0.0, 'Surprise': 0.03},
-            '👊': {'Angry': 0.44, 'Anticipation': 0.36, 'Fear': 0.11, 'Happy': 0.22, 'Sad': 0.0, 'Surprise': 0.0},
-            '👋': {'Angry': 0.08, 'Anticipation': 0.28, 'Fear': 0.0, 'Happy': 0.22, 'Sad': 0.0, 'Surprise': 0.08},
-            '👌': {'Angry': 0.0, 'Anticipation': 0.36, 'Fear': 0.0, 'Happy': 0.22, 'Sad': 0.0, 'Surprise': 0.22},
-            '👍': {'Angry': 0.11, 'Anticipation': 0.39, 'Fear': 0.08, 'Happy': 0.39, 'Sad': 0.06, 'Surprise': 0.14},
-            '👎': {'Angry': 0.5, 'Anticipation': 0.08, 'Fear': 0.14, 'Happy': 0.0, 'Sad': 0.31, 'Surprise': 0.14},
-            '👏': {'Angry': 0.08, 'Anticipation': 0.39, 'Fear': 0.0, 'Happy': 0.64, 'Sad': 0.0, 'Surprise': 0.25},
-            '👑': {'Angry': 0.0, 'Anticipation': 0.25, 'Fear': 0.0, 'Happy': 0.28, 'Sad': 0.0, 'Surprise': 0.11},
-            '👻': {'Angry': 0.11, 'Anticipation': 0.08, 'Fear': 0.69, 'Happy': 0.0, 'Sad': 0.11, 'Surprise': 0.31},
-            '💀': {'Angry': 0.19, 'Anticipation': 0.14, 'Fear': 0.61, 'Happy': 0.03, 'Sad': 0.31, 'Surprise': 0.06},
-            '💁': {'Angry': 0.08, 'Anticipation': 0.33, 'Fear': 0.06, 'Happy': 0.14, 'Sad': 0.06, 'Surprise': 0.17},
-            '💃': {'Angry': 0.0, 'Anticipation': 0.11, 'Fear': 0.0, 'Happy': 0.69, 'Sad': 0.0, 'Surprise': 0.17},
-            '💋': {'Angry': 0.0, 'Anticipation': 0.28, 'Fear': 0.0, 'Happy': 0.78, 'Sad': 0.0, 'Surprise': 0.19},
-            '💎': {'Angry': 0.0, 'Anticipation': 0.31, 'Fear': 0.06, 'Happy': 0.33, 'Sad': 0.0, 'Surprise': 0.25},
-            '💐': {'Angry': 0.0, 'Anticipation': 0.39,  'Fear': 0.0, 'Happy': 0.69, 'Sad': 0.11, 'Surprise': 0.36},
-            '💓': {'Angry': 0.0, 'Anticipation': 0.47,  'Fear': 0.08, 'Happy': 0.61, 'Sad': 0.0, 'Surprise': 0.19},
-            '💔': {'Angry': 0.39, 'Anticipation': 0.19,  'Fear': 0.14, 'Happy': 0.0, 'Sad': 0.94, 'Surprise': 0.08},
-            '💕': {'Angry': 0.0, 'Anticipation': 0.31, 'Fear': 0.0, 'Happy': 0.83, 'Sad': 0.0, 'Surprise': 0.11},
-            '💖': {'Angry': 0.0, 'Anticipation': 0.33, 'Fear': 0.0, 'Happy': 0.89, 'Sad': 0.0, 'Surprise': 0.25},
-            '💗': {'Angry': 0.0, 'Anticipation': 0.36, 'Fear': 0.0, 'Happy': 0.89, 'Sad': 0.0, 'Surprise': 0.22},
-            '💘': {'Angry': 0.03, 'Anticipation': 0.31, 'Fear': 0.06, 'Happy': 0.67, 'Sad': 0.14, 'Surprise': 0.06},
-            '💙': {'Angry': 0.0, 'Anticipation': 0.25, 'Fear': 0.0, 'Happy': 0.61, 'Sad': 0.17, 'Surprise': 0.17},
-            '💚': {'Angry': 0.0, 'Anticipation': 0.11, 'Fear': 0.0, 'Happy': 0.58, 'Sad': 0.03, 'Surprise': 0.03},
-            '💛': {'Angry': 0.03, 'Anticipation': 0.11, 'Fear': 0.0, 'Happy': 0.53, 'Sad': 0.08, 'Surprise': 0.08},
-            '💜': {'Angry': 0.0, 'Anticipation': 0.11, 'Fear': 0.06, 'Happy': 0.47, 'Sad': 0.11, 'Surprise': 0.08},
-            '💞': {'Angry': 0.0, 'Anticipation': 0.25,'Fear': 0.0, 'Happy': 0.83, 'Sad': 0.0, 'Surprise': 0.22},
-            '💤': {'Angry': 0.06, 'Anticipation': 0.36, 'Fear': 0.06, 'Happy': 0.11, 'Sad': 0.14, 'Surprise': 0.06},
-            '💥': {'Angry': 0.44, 'Anticipation': 0.19, 'Fear': 0.31, 'Happy': 0.11, 'Sad': 0.14, 'Surprise': 0.31},
-            '💦': {'Angry': 0.0, 'Anticipation': 0.11, 'Fear': 0.06, 'Happy': 0.0, 'Sad': 0.14, 'Surprise': 0.0},
-            '💩': {'Angry': 0.14, 'Anticipation': 0.08, 'Fear': 0.0, 'Happy': 0.25, 'Sad': 0.03, 'Surprise': 0.19},
-            '💪': {'Angry': 0.03, 'Anticipation': 0.31, 'Fear': 0.0, 'Happy': 0.42, 'Sad': 0.0, 'Surprise': 0.08},
-            '💫': {'Angry': 0.0, 'Anticipation': 0.19, 'Fear': 0.06, 'Happy': 0.44, 'Sad': 0.0, 'Surprise': 0.19},
-            '💭': {'Angry': 0.11, 'Anticipation': 0.64, 'Fear': 0.11, 'Happy': 0.17, 'Sad': 0.11, 'Surprise': 0.17},
-            '💯': {'Angry': 0.06, 'Anticipation': 0.28, 'Fear': 0.06, 'Happy': 0.64, 'Sad': 0.06, 'Surprise': 0.19},
-            '💰': {'Angry': 0.0, 'Anticipation': 0.58,  'Fear': 0.06, 'Happy': 0.47, 'Sad': 0.06, 'Surprise': 0.25},
-            '📷': {'Angry': 0.0, 'Anticipation': 0.19, 'Fear': 0.0, 'Happy': 0.14, 'Sad': 0.0, 'Surprise': 0.08},
-            '🔞': {'Angry': 0.11, 'Anticipation': 0.11,  'Fear': 0.03, 'Happy': 0.08, 'Sad': 0.11, 'Surprise': 0.0},
-            '🔥': {'Angry': 0.47, 'Anticipation': 0.22, 'Fear': 0.17, 'Happy': 0.25, 'Sad': 0.11, 'Surprise': 0.39},
-            '🔫': {'Angry': 0.44, 'Anticipation': 0.14, 'Fear': 0.14, 'Happy': 0.03, 'Sad': 0.14, 'Surprise': 0.0},
-            '🔴': {'Angry': 0.08, 'Anticipation': 0.06, 'Fear': 0.11, 'Happy': 0.0, 'Sad': 0.03, 'Surprise': 0.19},
-            '😀': {'Angry': 0.06, 'Anticipation': 0.22, 'Fear': 0.06, 'Happy': 0.69, 'Sad': 0.06, 'Surprise': 0.14},
-            '😁': {'Angry': 0.06, 'Anticipation': 0.25,  'Fear': 0.08, 'Happy': 0.89, 'Sad': 0.06, 'Surprise': 0.33},
-            '😂': {'Angry': 0.0, 'Anticipation': 0.17, 'Fear': 0.06, 'Happy': 0.94, 'Sad': 0.0, 'Surprise': 0.33},
-            '😃': {'Angry': 0.0, 'Anticipation': 0.31, 'Fear': 0.06, 'Happy': 0.83, 'Sad': 0.0, 'Surprise': 0.33},
-            '😄': {'Angry': 0.0, 'Anticipation': 0.36, 'Fear': 0.0, 'Happy': 0.86, 'Sad': 0.0, 'Surprise': 0.28},
-            '😅': {'Angry': 0.08, 'Anticipation': 0.44, 'Fear': 0.28, 'Happy': 0.42, 'Sad': 0.06, 'Surprise': 0.36},
-            '😆': {'Angry': 0.06, 'Anticipation': 0.19, 'Fear': 0.06, 'Happy': 0.94, 'Sad': 0.06, 'Surprise': 0.25},
-            '😇': {'Angry': 0.0, 'Anticipation': 0.31, 'Fear': 0.0, 'Happy': 0.72, 'Sad': 0.0, 'Surprise': 0.17},
-            '😈': {'Angry': 0.14, 'Anticipation': 0.44, 'Fear': 0.19, 'Happy': 0.33, 'Sad': 0.08, 'Surprise': 0.03},
-            '😉': {'Angry': 0.0, 'Anticipation': 0.42, 'Fear': 0.0, 'Happy': 0.44, 'Sad': 0.08, 'Surprise': 0.28},
-            '😊': {'Angry': 0.0, 'Anticipation': 0.42, 'Fear': 0.0, 'Happy': 0.92, 'Sad': 0.0, 'Surprise': 0.33},
-            '😋': {'Angry': 0.0, 'Anticipation': 0.47, 'Fear': 0.0, 'Happy': 0.78, 'Sad': 0.0, 'Surprise': 0.19},
-            '😌': {'Angry': 0.0, 'Anticipation': 0.33, 'Fear': 0.11, 'Happy': 0.81, 'Sad': 0.0, 'Surprise': 0.22},
-            '😍': {'Angry': 0.0, 'Anticipation': 0.31, 'Fear': 0.0, 'Happy': 0.83, 'Sad': 0.0, 'Surprise': 0.5},
-            '😎': {'Angry': 0.0, 'Anticipation': 0.22, 'Fear': 0.0, 'Happy': 0.75, 'Sad': 0.0, 'Surprise': 0.06},
-            '😏': {'Angry': 0.22, 'Anticipation': 0.33,  'Fear': 0.14, 'Happy': 0.22, 'Sad': 0.22, 'Surprise': 0.11},
-            '😐': {'Angry': 0.14, 'Anticipation': 0.33,  'Fear': 0.17, 'Happy': 0.06, 'Sad': 0.25, 'Surprise': 0.31},
-            '😑': {'Angry': 0.28, 'Anticipation': 0.22, 'Fear': 0.14, 'Happy': 0.0, 'Sad': 0.33, 'Surprise': 0.19},
-            '😒': {'Angry': 0.58, 'Anticipation': 0.14, 'Fear': 0.17, 'Happy': 0.0, 'Sad': 0.42, 'Surprise': 0.11},
-            '😓': {'Angry': 0.19, 'Anticipation': 0.44, 'Fear': 0.64, 'Happy': 0.0, 'Sad': 0.36, 'Surprise': 0.17},
-            '😔': {'Angry': 0.25, 'Anticipation': 0.22, 'Fear': 0.28, 'Happy': 0.0, 'Sad': 0.72, 'Surprise': 0.19},
-            '😕': {'Angry': 0.19, 'Anticipation': 0.42, 'Fear': 0.36, 'Happy': 0.0, 'Sad': 0.39, 'Surprise': 0.28},
-            '😖': {'Angry': 0.22, 'Anticipation': 0.36, 'Fear': 0.5, 'Happy': 0.08, 'Sad': 0.53, 'Surprise': 0.11},
-            '😘': {'Angry': 0.0, 'Anticipation': 0.33, 'Fear': 0.0, 'Happy': 0.72, 'Sad': 0.0, 'Surprise': 0.17},
-            '😙': {'Angry': 0.0, 'Anticipation': 0.47, 'Fear': 0.0, 'Happy': 0.83, 'Sad': 0.0, 'Surprise': 0.17},
-            '😚': {'Angry': 0.0, 'Anticipation': 0.44, 'Fear': 0.0, 'Happy': 0.86, 'Sad': 0.0, 'Surprise': 0.22},
-            '😛': {'Angry': 0.0, 'Anticipation': 0.31, 'Fear': 0.03, 'Happy': 0.69, 'Sad': 0.0, 'Surprise': 0.28},
-            '😜': {'Angry': 0.0, 'Anticipation': 0.42, 'Fear': 0.06, 'Happy': 0.64, 'Sad': 0.0, 'Surprise': 0.28},
-            '😝': {'Angry': 0.0, 'Anticipation': 0.22, 'Fear': 0.08, 'Happy': 0.83, 'Sad': 0.0, 'Surprise': 0.22},
-            '😞': {'Angry': 0.39, 'Anticipation': 0.19, 'Fear': 0.33, 'Happy': 0.0, 'Sad': 0.92, 'Surprise': 0.06},
-            '😟': {'Angry': 0.25, 'Anticipation': 0.44, 'Fear': 0.72, 'Happy': 0.0, 'Sad': 0.69, 'Surprise': 0.17},
-            '😠': {'Angry': 1.0, 'Anticipation': 0.17, 'Fear': 0.17, 'Happy': 0.0, 'Sad': 0.25, 'Surprise': 0.11},
-            '😡': {'Angry': 1.0, 'Anticipation': 0.11, 'Fear': 0.11, 'Happy': 0.0, 'Sad': 0.36, 'Surprise': 0.08},
-            '😢': {'Angry': 0.25, 'Anticipation': 0.08, 'Fear': 0.5, 'Happy': 0.0, 'Sad': 1.0, 'Surprise': 0.08},
-            '😣': {'Angry': 0.31, 'Anticipation': 0.28, 'Fear': 0.47, 'Happy': 0.0, 'Sad': 0.64, 'Surprise': 0.0},
-            '😤': {'Angry': 0.75, 'Anticipation': 0.11, 'Fear': 0.14, 'Happy': 0.0, 'Sad': 0.25, 'Surprise': 0.03},
-            '😥': {'Angry': 0.14, 'Anticipation': 0.19, 'Fear': 0.33, 'Happy': 0.03, 'Sad': 0.81, 'Surprise': 0.08},
-            '😨': {'Angry': 0.17, 'Anticipation': 0.39, 'Fear': 0.97, 'Happy': 0.0, 'Sad': 0.56, 'Surprise': 0.39},
-            '😩': {'Angry': 0.33, 'Anticipation': 0.25, 'Fear': 0.47, 'Happy': 0.0, 'Sad': 0.75, 'Surprise': 0.14},
-            '😪': {'Angry': 0.11, 'Anticipation': 0.08, 'Fear': 0.28, 'Happy': 0.0, 'Sad': 0.64, 'Surprise': 0.06},
-            '😫': {'Angry': 0.36, 'Anticipation': 0.14, 'Fear': 0.17, 'Happy': 0.11, 'Sad': 0.72, 'Surprise': 0.06},
-            '😬': {'Angry': 0.14, 'Anticipation': 0.53, 'Fear': 0.44, 'Happy': 0.17, 'Sad': 0.11, 'Surprise': 0.25},
-            '😭': {'Angry': 0.22, 'Anticipation': 0.08, 'Fear': 0.33, 'Happy': 0.0, 'Sad': 1.0, 'Surprise': 0.08},
-            '😰': {'Angry': 0.22, 'Anticipation': 0.31, 'Fear': 0.83, 'Happy': 0.0, 'Sad': 0.69, 'Surprise': 0.08},
-            '😱': {'Angry': 0.28, 'Anticipation': 0.42,  'Fear': 0.92, 'Happy': 0.06, 'Sad': 0.25, 'Surprise': 0.69},
-            '😳': {'Angry': 0.06, 'Anticipation': 0.36, 'Fear': 0.5, 'Happy': 0.14, 'Sad': 0.19, 'Surprise': 0.44},
-            '😴': {'Angry': 0.0, 'Anticipation': 0.06, 'Fear': 0.0, 'Happy': 0.03, 'Sad': 0.03, 'Surprise': 0.0},
-            '😶': {'Angry': 0.06, 'Anticipation': 0.22, 'Fear': 0.36, 'Happy': 0.0, 'Sad': 0.14, 'Surprise': 0.19},
-            '😷': {'Angry': 0.03, 'Anticipation': 0.17, 'Fear': 0.5, 'Happy': 0.0, 'Sad': 0.22, 'Surprise': 0.03},
-            '😹': {'Angry': 0.0, 'Anticipation': 0.17, 'Fear': 0.0, 'Happy': 0.94, 'Sad': 0.0, 'Surprise': 0.14},
-            '😻': {'Angry': 0.0, 'Anticipation': 0.42, 'Fear': 0.0, 'Happy': 0.75, 'Sad': 0.06, 'Surprise': 0.33},
-            '🙅': {'Angry': 0.47, 'Anticipation': 0.25, 'Fear': 0.33, 'Happy': 0.06, 'Sad': 0.33, 'Surprise': 0.11},
-            '🙆': {'Angry': 0.03, 'Anticipation': 0.33, 'Fear': 0.0, 'Happy': 0.39, 'Sad': 0.0, 'Surprise': 0.03},
-            '🙈': {'Angry': 0.0, 'Anticipation': 0.39, 'Fear': 0.17, 'Happy': 0.28, 'Sad': 0.03, 'Surprise': 0.5},
-            '🙊': {'Angry': 0.06, 'Anticipation': 0.44, 'Fear': 0.47, 'Happy': 0.14, 'Sad': 0.08, 'Surprise': 0.42},
-            '🙋': {'Angry': 0.0, 'Anticipation': 0.53, 'Fear': 0.0, 'Happy': 0.44, 'Sad': 0.0, 'Surprise': 0.19},
-            '🙌': {'Angry': 0.0, 'Anticipation': 0.33, 'Fear': 0.0, 'Happy': 0.72, 'Sad': 0.0, 'Surprise': 0.39},
-            '🙏': {'Angry': 0.06, 'Anticipation': 0.44, 'Fear': 0.11, 'Happy': 0.25, 'Sad': 0.11, 'Surprise': 0.17},
-            '‼': {'Angry': 0.44, 'Anticipation': 0.42, 'Fear': 0.06, 'Happy': 0.14, 'Sad': 0.0, 'Surprise': 0.89},
-            '↩': {'Angry': 0.0, 'Anticipation': 0.06, 'Fear': 0.0, 'Happy': 0.0, 'Sad': 0.0, 'Surprise': 0.0},
-            '↪': {'Angry': 0.06, 'Anticipation': 0.19, 'Fear': 0.0, 'Happy': 0.0, 'Sad': 0.0, 'Surprise': 0.0},
-            '▶': {'Angry': 0.0, 'Anticipation': 0.08, 'Fear': 0.0, 'Happy': 0.03, 'Sad': 0.0, 'Surprise': 0.0},
-            '◀': {'Angry': 0.0, 'Anticipation': 0.06, 'Fear': 0.0, 'Happy': 0.0, 'Sad': 0.0, 'Surprise': 0.06},
-            '☀': {'Angry': 0.0, 'Anticipation': 0.22, 'Fear': 0.0, 'Happy': 0.44, 'Sad': 0.0, 'Surprise': 0.06},
-            '☑': {'Angry': 0.0, 'Anticipation': 0.22, 'Fear': 0.0, 'Happy': 0.25, 'Sad': 0.0, 'Surprise': 0.0},
-            '☝': {'Angry': 0.11, 'Anticipation': 0.31, 'Fear': 0.11, 'Happy': 0.03, 'Sad': 0.11, 'Surprise': 0.0},
-            '☺': {'Angry': 0.0, 'Anticipation': 0.42, 'Fear': 0.0, 'Happy': 1.0, 'Sad': 0.0, 'Surprise': 0.39},
-            '♥': {'Angry': 0.0, 'Anticipation': 0.28, 'Fear': 0.0, 'Happy': 0.72, 'Sad': 0.0, 'Surprise': 0.11},
-            '♻': {'Angry': 0.03, 'Anticipation': 0.19, 'Fear': 0.0, 'Happy': 0.03, 'Sad': 0.03, 'Surprise': 0.0},
-            '⚡': {'Angry': 0.28, 'Anticipation': 0.31, 'Fear': 0.25, 'Happy': 0.08, 'Sad': 0.0, 'Surprise': 0.36},
-            '⚽': {'Angry': 0.0, 'Anticipation': 0.33, 'Fear': 0.06, 'Happy': 0.25, 'Sad': 0.0, 'Surprise': 0.0},
-            '✅': {'Angry': 0.0, 'Anticipation': 0.31, 'Fear': 0.0, 'Happy': 0.19, 'Sad': 0.0, 'Surprise': 0.0},
-            '✈': {'Angry': 0.0, 'Anticipation': 0.44, 'Fear': 0.11, 'Happy': 0.28, 'Sad': 0.11, 'Surprise': 0.19},
-            '✊': {'Angry': 0.25, 'Anticipation': 0.5, 'Fear': 0.11, 'Happy': 0.03, 'Sad': 0.11, 'Surprise': 0.08},
-            '✋': {'Angry': 0.22, 'Anticipation': 0.25, 'Fear': 0.11, 'Happy': 0.06, 'Sad': 0.06, 'Surprise': 0.08},
-            '✌': {'Angry': 0.0, 'Anticipation': 0.42, 'Fear': 0.0, 'Happy': 0.61, 'Sad': 0.0, 'Surprise': 0.17},
-            '✔': {'Angry': 0.0, 'Anticipation': 0.25, 'Fear': 0.0, 'Happy': 0.14, 'Sad': 0.0, 'Surprise': 0.0,},
-            '✨': {'Angry': 0.0, 'Anticipation': 0.36, 'Fear': 0.06, 'Happy': 0.53, 'Sad': 0.0, 'Surprise': 0.44,},
-            '❄': {'Angry': 0.11, 'Anticipation': 0.33, 'Fear': 0.17, 'Happy': 0.28, 'Sad': 0.14, 'Surprise': 0.22,},
-            '❌': {'Angry': 0.5, 'Anticipation': 0.14, 'Fear': 0.25, 'Happy': 0.0, 'Sad': 0.31, 'Surprise': 0.08,},
-            '❗': {'Angry': 0.44, 'Anticipation': 0.42, 'Fear': 0.42, 'Happy': 0.08, 'Sad': 0.17, 'Surprise': 0.81,},
-            '❤': {'Angry': 0.0, 'Anticipation': 0.36, 'Fear': 0.0, 'Happy': 0.69, 'Sad': 0.0, 'Surprise': 0.14,},
-            '➡': {'Angry': 0.0, 'Anticipation': 0.06, 'Fear': 0.0, 'Happy': 0.0, 'Sad': 0.0, 'Surprise': 0.0,},
-            '⬅': {'Angry' : 0.17, 'Anticipation' : 0.14, 'Fear' : 0.14, 'Happy' :0.0, 'Sad': 0.14, 'Surprise': 0.03},
-            '⭐': { 'Angry': 0.0, 'Anticipation' : 0.17, 'Fear' : 0.0, 'Happy' :	0.39, 'Sad' : 0.0, 'Surprise' :	0.17},
-            "😲": { 'Angry': 0.0, 'Anticipation': 0.33, 'Fear': 0.33, 'Happy': 0.0, 'Sad': 0.0, 'Surprise': 0.67 },
-            "😯": { 'Angry': 0.0, 'Anticipation': 0.25, 'Fear': 0.25, 'Happy': 0.0, 'Sad': 0.0, 'Surprise': 0.50 },
-            "😮": { 'Angry': 0.0, 'Anticipation': 0.40, 'Fear': 0.20, 'Happy': 0.0, 'Sad': 0.0, 'Surprise': 0.60 },
-            "😵": { 'Angry': 0.0, 'Anticipation': 0.0, 'Fear': 0.50, 'Happy': 0.0, 'Sad': 0.0, 'Surprise': 0.50 },
-            "❗": { 'Angry': 0.25, 'Anticipation': 0.50, 'Fear': 0.25, 'Happy': 0.0, 'Sad': 0.0, 'Surprise': 0.75 },
-            "⚡": { 'Angry': 0.2, 'Anticipation': 0.4, 'Fear': 0.3, 'Happy': 0.0, 'Sad': 0.0, 'Surprise': 0.5 },
-            "🎊": { 'Angry': 0.0, 'Anticipation': 0.6, 'Fear': 0.0, 'Happy': 0.8, 'Sad': 0.0, 'Surprise': 0.7 },
-            "🙁": { 'Angry': 0.2, 'Anticipation': 0.0, 'Fear': 0.1, 'Happy': 0.0, 'Sad': 0.7, 'Surprise': 0.1 },
-            "🔪": { 'Angry': 0.4, 'Anticipation': 0.2, 'Fear': 0.6, 'Happy': 0.0, 'Sad': 0.1, 'Surprise': 0.2 },
-            "🌕": { 'Angry': 0.0, 'Anticipation': 0.3, 'Fear': 0.0, 'Happy': 0.4, 'Sad': 0.0, 'Surprise': 0.3 },
-            "🚀": { 'Angry': 0.0, 'Anticipation': 0.7, 'Fear': 0.1, 'Happy': 0.6, 'Sad': 0.0, 'Surprise': 0.5 },
-            "📉": { 'Angry': 0.3, 'Anticipation': 0.1, 'Fear': 0.4, 'Happy': 0.0, 'Sad': 0.7, 'Surprise': 0.2 },
-            "🤣": { 'Angry': 0.0, 'Anticipation': 0.2, 'Fear': 0.0, 'Happy': 1.0, 'Sad': 0.0, 'Surprise': 0.3 },
-            "💸": { 'Angry': 0.2, 'Anticipation': 0.5, 'Fear': 0.1, 'Happy': 0.3, 'Sad': 0.4, 'Surprise': 0.4 }
+            '🌈': {'angry': 0.0, 'anticipation': 0.28, 'fear': 0.0, 'happy': 0.69, 'sad': 0.06, 'surprise': 0.22 },
+            '🌙': {'angry': 0.0, 'anticipation': 0.31, 'fear': 0.0, 'happy': 0.25, 'sad': 0.0, 'surprise': 0.06},
+            '🌚': {'angry': 0.06, 'anticipation': 0.08, 'fear': 0.06, 'happy': 0.42, 'sad': 0.19, 'surprise': 0.06},
+            '🌞': {'angry': 0.0, 'anticipation': 0.22, 'fear': 0.0, 'happy': 0.78, 'sad': 0.0, 'surprise': 0.11},
+            '🌟': {'angry': 0.0, 'anticipation': 0.28, 'fear': 0.0, 'happy': 0.53, 'sad': 0.0, 'surprise': 0.25},
+            '🌷': {'angry': 0.0, 'anticipation': 0.31, 'fear': 0.0, 'happy': 0.44, 'sad': 0.0, 'surprise': 0.0},
+            '🌸': {'angry': 0.0, 'anticipation': 0.22, 'fear': 0.0, 'happy': 0.56, 'sad': 0.0, 'surprise': 0.14},
+            '🌹': {'angry': 0.0, 'anticipation': 0.36, 'fear': 0.0, 'happy': 0.56, 'sad': 0.0, 'surprise': 0.11},
+            '🌺': {'angry': 0.0, 'anticipation': 0.11, 'fear': 0.0, 'happy': 0.39, 'sad': 0.0, 'surprise': 0.06},
+            '🍀': {'angry': 0.0, 'anticipation': 0.39, 'fear': 0.0, 'happy': 0.47, 'sad': 0.0, 'surprise': 0.22},
+            '🍃': {'angry': 0.0, 'anticipation': 0.31, 'fear': 0.0, 'happy': 0.11, 'sad': 0.17, 'surprise': 0.03},
+            '🍕': {'angry': 0.06, 'anticipation': 0.39, 'fear': 0.06, 'happy': 0.47, 'sad': 0.06, 'surprise': 0.17},
+            '🍻': {'angry': 0.0, 'anticipation': 0.44, 'fear': 0.0, 'happy': 0.72, 'sad': 0.0, 'surprise': 0.25},
+            '🎀': {'angry': 0.0, 'anticipation': 0.42, 'fear': 0.0, 'happy': 0.44, 'sad': 0.0, 'surprise': 0.36},
+            '🎈': {'angry': 0.06, 'anticipation': 0.25, 'fear': 0.06, 'happy': 0.47, 'sad': 0.06, 'surprise': 0.31},
+            '🎉': {'angry': 0.0, 'anticipation': 0.33, 'fear': 0.0, 'happy': 0.92, 'sad': 0.0, 'surprise': 0.5},
+            '🎤': {'angry': 0.0, 'anticipation': 0.39, 'fear': 0.06, 'happy': 0.39, 'sad': 0.08, 'surprise': 0.08},
+            '🎥': {'angry': 0.0, 'anticipation': 0.28, 'fear': 0.0, 'happy': 0.19, 'sad': 0.0, 'surprise': 0.17},
+            '🎧': {'angry': 0.0, 'anticipation': 0.08, 'fear': 0.0, 'happy': 0.44, 'sad': 0.0, 'surprise': 0.0},
+            '🎵': {'angry': 0.0, 'anticipation': 0.25, 'fear': 0.0, 'happy': 0.47, 'sad': 0.08, 'surprise': 0.08},
+            '🎶': {'angry': 0.0, 'anticipation': 0.22, 'fear': 0.0, 'happy': 0.47, 'sad': 0.0, 'surprise': 0.22},
+            '👀': {'angry': 0.14, 'anticipation': 0.81, 'fear': 0.42, 'happy': 0.0, 'sad': 0.17, 'surprise': 0.64},
+            '👅': {'angry': 0.0, 'anticipation': 0.17, 'fear': 0.0, 'happy': 0.36, 'sad': 0.0, 'surprise': 0.08},
+            '👇': {'angry': 0.11, 'anticipation': 0.14, 'fear': 0.06, 'happy': 0.0, 'sad': 0.0, 'surprise': 0.0},
+            '👈': {'angry': 0.14, 'anticipation': 0.17, 'fear': 0.0, 'happy': 0.0, 'sad': 0.0, 'surprise': 0.06},
+            '👉': {'angry': 0.06, 'anticipation': 0.25, 'fear': 0.0, 'happy': 0.0, 'sad': 0.0, 'surprise': 0.03},
+            '👊': {'angry': 0.44, 'anticipation': 0.36, 'fear': 0.11, 'happy': 0.22, 'sad': 0.0, 'surprise': 0.0},
+            '👋': {'angry': 0.08, 'anticipation': 0.28, 'fear': 0.0, 'happy': 0.22, 'sad': 0.0, 'surprise': 0.08},
+            '👌': {'angry': 0.0, 'anticipation': 0.36, 'fear': 0.0, 'happy': 0.22, 'sad': 0.0, 'surprise': 0.22},
+            '👍': {'angry': 0.11, 'anticipation': 0.39, 'fear': 0.08, 'happy': 0.39, 'sad': 0.06, 'surprise': 0.14},
+            '👎': {'angry': 0.5, 'anticipation': 0.08, 'fear': 0.14, 'happy': 0.0, 'sad': 0.31, 'surprise': 0.14},
+            '👏': {'angry': 0.08, 'anticipation': 0.39, 'fear': 0.0, 'happy': 0.64, 'sad': 0.0, 'surprise': 0.25},
+            '👑': {'angry': 0.0, 'anticipation': 0.25, 'fear': 0.0, 'happy': 0.28, 'sad': 0.0, 'surprise': 0.11},
+            '👻': {'angry': 0.11, 'anticipation': 0.08, 'fear': 0.69, 'happy': 0.0, 'sad': 0.11, 'surprise': 0.31},
+            '💀': {'angry': 0.19, 'anticipation': 0.14, 'fear': 0.61, 'happy': 0.03, 'sad': 0.31, 'surprise': 0.06},
+            '💁': {'angry': 0.08, 'anticipation': 0.33, 'fear': 0.06, 'happy': 0.14, 'sad': 0.06, 'surprise': 0.17},
+            '💃': {'angry': 0.0, 'anticipation': 0.11, 'fear': 0.0, 'happy': 0.69, 'sad': 0.0, 'surprise': 0.17},
+            '💋': {'angry': 0.0, 'anticipation': 0.28, 'fear': 0.0, 'happy': 0.78, 'sad': 0.0, 'surprise': 0.19},
+            '💎': {'angry': 0.0, 'anticipation': 0.31, 'fear': 0.06, 'happy': 0.33, 'sad': 0.0, 'surprise': 0.25},
+            '💐': {'angry': 0.0, 'anticipation': 0.39,  'fear': 0.0, 'happy': 0.69, 'sad': 0.11, 'surprise': 0.36},
+            '💓': {'angry': 0.0, 'anticipation': 0.47,  'fear': 0.08, 'happy': 0.61, 'sad': 0.0, 'surprise': 0.19},
+            '💔': {'angry': 0.39, 'anticipation': 0.19,  'fear': 0.14, 'happy': 0.0, 'sad': 0.94, 'surprise': 0.08},
+            '💕': {'angry': 0.0, 'anticipation': 0.31, 'fear': 0.0, 'happy': 0.83, 'sad': 0.0, 'surprise': 0.11},
+            '💖': {'angry': 0.0, 'anticipation': 0.33, 'fear': 0.0, 'happy': 0.89, 'sad': 0.0, 'surprise': 0.25},
+            '💗': {'angry': 0.0, 'anticipation': 0.36, 'fear': 0.0, 'happy': 0.89, 'sad': 0.0, 'surprise': 0.22},
+            '💘': {'angry': 0.03, 'anticipation': 0.31, 'fear': 0.06, 'happy': 0.67, 'sad': 0.14, 'surprise': 0.06},
+            '💙': {'angry': 0.0, 'anticipation': 0.25, 'fear': 0.0, 'happy': 0.61, 'sad': 0.17, 'surprise': 0.17},
+            '💚': {'angry': 0.0, 'anticipation': 0.11, 'fear': 0.0, 'happy': 0.58, 'sad': 0.03, 'surprise': 0.03},
+            '💛': {'angry': 0.03, 'anticipation': 0.11, 'fear': 0.0, 'happy': 0.53, 'sad': 0.08, 'surprise': 0.08},
+            '💜': {'angry': 0.0, 'anticipation': 0.11, 'fear': 0.06, 'happy': 0.47, 'sad': 0.11, 'surprise': 0.08},
+            '💞': {'angry': 0.0, 'anticipation': 0.25,'fear': 0.0, 'happy': 0.83, 'sad': 0.0, 'surprise': 0.22},
+            '💤': {'angry': 0.06, 'anticipation': 0.36, 'fear': 0.06, 'happy': 0.11, 'sad': 0.14, 'surprise': 0.06},
+            '💥': {'angry': 0.44, 'anticipation': 0.19, 'fear': 0.31, 'happy': 0.11, 'sad': 0.14, 'surprise': 0.31},
+            '💦': {'angry': 0.0, 'anticipation': 0.11, 'fear': 0.06, 'happy': 0.0, 'sad': 0.14, 'surprise': 0.0},
+            '💩': {'angry': 0.14, 'anticipation': 0.08, 'fear': 0.0, 'happy': 0.25, 'sad': 0.03, 'surprise': 0.19},
+            '💪': {'angry': 0.03, 'anticipation': 0.31, 'fear': 0.0, 'happy': 0.42, 'sad': 0.0, 'surprise': 0.08},
+            '💫': {'angry': 0.0, 'anticipation': 0.19, 'fear': 0.06, 'happy': 0.44, 'sad': 0.0, 'surprise': 0.19},
+            '💭': {'angry': 0.11, 'anticipation': 0.64, 'fear': 0.11, 'happy': 0.17, 'sad': 0.11, 'surprise': 0.17},
+            '💯': {'angry': 0.06, 'anticipation': 0.28, 'fear': 0.06, 'happy': 0.64, 'sad': 0.06, 'surprise': 0.19},
+            '💰': {'angry': 0.0, 'anticipation': 0.58,  'fear': 0.06, 'happy': 0.47, 'sad': 0.06, 'surprise': 0.25},
+            '📷': {'angry': 0.0, 'anticipation': 0.19, 'fear': 0.0, 'happy': 0.14, 'sad': 0.0, 'surprise': 0.08},
+            '🔞': {'angry': 0.11, 'anticipation': 0.11,  'fear': 0.03, 'happy': 0.08, 'sad': 0.11, 'surprise': 0.0},
+            '🔥': {'angry': 0.47, 'anticipation': 0.22, 'fear': 0.17, 'happy': 0.25, 'sad': 0.11, 'surprise': 0.39},
+            '🔫': {'angry': 0.44, 'anticipation': 0.14, 'fear': 0.14, 'happy': 0.03, 'sad': 0.14, 'surprise': 0.0},
+            '🔴': {'angry': 0.08, 'anticipation': 0.06, 'fear': 0.11, 'happy': 0.0, 'sad': 0.03, 'surprise': 0.19},
+            '😀': {'angry': 0.06, 'anticipation': 0.22, 'fear': 0.06, 'happy': 0.69, 'sad': 0.06, 'surprise': 0.14},
+            '😁': {'angry': 0.06, 'anticipation': 0.25,  'fear': 0.08, 'happy': 0.89, 'sad': 0.06, 'surprise': 0.33},
+            '😂': {'angry': 0.0, 'anticipation': 0.17, 'fear': 0.06, 'happy': 0.94, 'sad': 0.0, 'surprise': 0.33},
+            '😃': {'angry': 0.0, 'anticipation': 0.31, 'fear': 0.06, 'happy': 0.83, 'sad': 0.0, 'surprise': 0.33},
+            '😄': {'angry': 0.0, 'anticipation': 0.36, 'fear': 0.0, 'happy': 0.86, 'sad': 0.0, 'surprise': 0.28},
+            '😅': {'angry': 0.08, 'anticipation': 0.44, 'fear': 0.28, 'happy': 0.42, 'sad': 0.06, 'surprise': 0.36},
+            '😆': {'angry': 0.06, 'anticipation': 0.19, 'fear': 0.06, 'happy': 0.94, 'sad': 0.06, 'surprise': 0.25},
+            '😇': {'angry': 0.0, 'anticipation': 0.31, 'fear': 0.0, 'happy': 0.72, 'sad': 0.0, 'surprise': 0.17},
+            '😈': {'angry': 0.14, 'anticipation': 0.44, 'fear': 0.19, 'happy': 0.33, 'sad': 0.08, 'surprise': 0.03},
+            '😉': {'angry': 0.0, 'anticipation': 0.42, 'fear': 0.0, 'happy': 0.44, 'sad': 0.08, 'surprise': 0.28},
+            '😊': {'angry': 0.0, 'anticipation': 0.42, 'fear': 0.0, 'happy': 0.92, 'sad': 0.0, 'surprise': 0.33},
+            '😋': {'angry': 0.0, 'anticipation': 0.47, 'fear': 0.0, 'happy': 0.78, 'sad': 0.0, 'surprise': 0.19},
+            '😌': {'angry': 0.0, 'anticipation': 0.33, 'fear': 0.11, 'happy': 0.81, 'sad': 0.0, 'surprise': 0.22},
+            '😍': {'angry': 0.0, 'anticipation': 0.31, 'fear': 0.0, 'happy': 0.83, 'sad': 0.0, 'surprise': 0.5},
+            '😎': {'angry': 0.0, 'anticipation': 0.22, 'fear': 0.0, 'happy': 0.75, 'sad': 0.0, 'surprise': 0.06},
+            '😏': {'angry': 0.22, 'anticipation': 0.33,  'fear': 0.14, 'happy': 0.22, 'sad': 0.22, 'surprise': 0.11},
+            '😐': {'angry': 0.14, 'anticipation': 0.33,  'fear': 0.17, 'happy': 0.06, 'sad': 0.25, 'surprise': 0.31},
+            '😑': {'angry': 0.28, 'anticipation': 0.22, 'fear': 0.14, 'happy': 0.0, 'sad': 0.33, 'surprise': 0.19},
+            '😒': {'angry': 0.58, 'anticipation': 0.14, 'fear': 0.17, 'happy': 0.0, 'sad': 0.42, 'surprise': 0.11},
+            '😓': {'angry': 0.19, 'anticipation': 0.44, 'fear': 0.64, 'happy': 0.0, 'sad': 0.36, 'surprise': 0.17},
+            '😔': {'angry': 0.25, 'anticipation': 0.22, 'fear': 0.28, 'happy': 0.0, 'sad': 0.72, 'surprise': 0.19},
+            '😕': {'angry': 0.19, 'anticipation': 0.42, 'fear': 0.36, 'happy': 0.0, 'sad': 0.39, 'surprise': 0.28},
+            '😖': {'angry': 0.22, 'anticipation': 0.36, 'fear': 0.5, 'happy': 0.08, 'sad': 0.53, 'surprise': 0.11},
+            '😘': {'angry': 0.0, 'anticipation': 0.33, 'fear': 0.0, 'happy': 0.72, 'sad': 0.0, 'surprise': 0.17},
+            '😙': {'angry': 0.0, 'anticipation': 0.47, 'fear': 0.0, 'happy': 0.83, 'sad': 0.0, 'surprise': 0.17},
+            '😚': {'angry': 0.0, 'anticipation': 0.44, 'fear': 0.0, 'happy': 0.86, 'sad': 0.0, 'surprise': 0.22},
+            '😛': {'angry': 0.0, 'anticipation': 0.31, 'fear': 0.03, 'happy': 0.69, 'sad': 0.0, 'surprise': 0.28},
+            '😜': {'angry': 0.0, 'anticipation': 0.42, 'fear': 0.06, 'happy': 0.64, 'sad': 0.0, 'surprise': 0.28},
+            '😝': {'angry': 0.0, 'anticipation': 0.22, 'fear': 0.08, 'happy': 0.83, 'sad': 0.0, 'surprise': 0.22},
+            '😞': {'angry': 0.39, 'anticipation': 0.19, 'fear': 0.33, 'happy': 0.0, 'sad': 0.92, 'surprise': 0.06},
+            '😟': {'angry': 0.25, 'anticipation': 0.44, 'fear': 0.72, 'happy': 0.0, 'sad': 0.69, 'surprise': 0.17},
+            '😠': {'angry': 1.0, 'anticipation': 0.17, 'fear': 0.17, 'happy': 0.0, 'sad': 0.25, 'surprise': 0.11},
+            '😡': {'angry': 1.0, 'anticipation': 0.11, 'fear': 0.11, 'happy': 0.0, 'sad': 0.36, 'surprise': 0.08},
+            '😢': {'angry': 0.25, 'anticipation': 0.08, 'fear': 0.5, 'happy': 0.0, 'sad': 1.0, 'surprise': 0.08},
+            '😣': {'angry': 0.31, 'anticipation': 0.28, 'fear': 0.47, 'happy': 0.0, 'sad': 0.64, 'surprise': 0.0},
+            '😤': {'angry': 0.75, 'anticipation': 0.11, 'fear': 0.14, 'happy': 0.0, 'sad': 0.25, 'surprise': 0.03},
+            '😥': {'angry': 0.14, 'anticipation': 0.19, 'fear': 0.33, 'happy': 0.03, 'sad': 0.81, 'surprise': 0.08},
+            '😨': {'angry': 0.17, 'anticipation': 0.39, 'fear': 0.97, 'happy': 0.0, 'sad': 0.56, 'surprise': 0.39},
+            '😩': {'angry': 0.33, 'anticipation': 0.25, 'fear': 0.47, 'happy': 0.0, 'sad': 0.75, 'surprise': 0.14},
+            '😪': {'angry': 0.11, 'anticipation': 0.08, 'fear': 0.28, 'happy': 0.0, 'sad': 0.64, 'surprise': 0.06},
+            '😫': {'angry': 0.36, 'anticipation': 0.14, 'fear': 0.17, 'happy': 0.11, 'sad': 0.72, 'surprise': 0.06},
+            '😬': {'angry': 0.14, 'anticipation': 0.53, 'fear': 0.44, 'happy': 0.17, 'sad': 0.11, 'surprise': 0.25},
+            '😭': {'angry': 0.22, 'anticipation': 0.08, 'fear': 0.33, 'happy': 0.0, 'sad': 1.0, 'surprise': 0.08},
+            '😰': {'angry': 0.22, 'anticipation': 0.31, 'fear': 0.83, 'happy': 0.0, 'sad': 0.69, 'surprise': 0.08},
+            '😱': {'angry': 0.28, 'anticipation': 0.42,  'fear': 0.92, 'happy': 0.06, 'sad': 0.25, 'surprise': 0.69},
+            '😳': {'angry': 0.06, 'anticipation': 0.36, 'fear': 0.5, 'happy': 0.14, 'sad': 0.19, 'surprise': 0.44},
+            '😴': {'angry': 0.0, 'anticipation': 0.06, 'fear': 0.0, 'happy': 0.03, 'sad': 0.03, 'surprise': 0.0},
+            '😶': {'angry': 0.06, 'anticipation': 0.22, 'fear': 0.36, 'happy': 0.0, 'sad': 0.14, 'surprise': 0.19},
+            '😷': {'angry': 0.03, 'anticipation': 0.17, 'fear': 0.5, 'happy': 0.0, 'sad': 0.22, 'surprise': 0.03},
+            '😹': {'angry': 0.0, 'anticipation': 0.17, 'fear': 0.0, 'happy': 0.94, 'sad': 0.0, 'surprise': 0.14},
+            '😻': {'angry': 0.0, 'anticipation': 0.42, 'fear': 0.0, 'happy': 0.75, 'sad': 0.06, 'surprise': 0.33},
+            '🙅': {'angry': 0.47, 'anticipation': 0.25, 'fear': 0.33, 'happy': 0.06, 'sad': 0.33, 'surprise': 0.11},
+            '🙆': {'angry': 0.03, 'anticipation': 0.33, 'fear': 0.0, 'happy': 0.39, 'sad': 0.0, 'surprise': 0.03},
+            '🙈': {'angry': 0.0, 'anticipation': 0.39, 'fear': 0.17, 'happy': 0.28, 'sad': 0.03, 'surprise': 0.5},
+            '🙊': {'angry': 0.06, 'anticipation': 0.44, 'fear': 0.47, 'happy': 0.14, 'sad': 0.08, 'surprise': 0.42},
+            '🙋': {'angry': 0.0, 'anticipation': 0.53, 'fear': 0.0, 'happy': 0.44, 'sad': 0.0, 'surprise': 0.19},
+            '🙌': {'angry': 0.0, 'anticipation': 0.33, 'fear': 0.0, 'happy': 0.72, 'sad': 0.0, 'surprise': 0.39},
+            '🙏': {'angry': 0.06, 'anticipation': 0.44, 'fear': 0.11, 'happy': 0.25, 'sad': 0.11, 'surprise': 0.17},
+            '‼': {'angry': 0.44, 'anticipation': 0.42, 'fear': 0.06, 'happy': 0.14, 'sad': 0.0, 'surprise': 0.89},
+            '↩': {'angry': 0.0, 'anticipation': 0.06, 'fear': 0.0, 'happy': 0.0, 'sad': 0.0, 'surprise': 0.0},
+            '↪': {'angry': 0.06, 'anticipation': 0.19, 'fear': 0.0, 'happy': 0.0, 'sad': 0.0, 'surprise': 0.0},
+            '▶': {'angry': 0.0, 'anticipation': 0.08, 'fear': 0.0, 'happy': 0.03, 'sad': 0.0, 'surprise': 0.0},
+            '◀': {'angry': 0.0, 'anticipation': 0.06, 'fear': 0.0, 'happy': 0.0, 'sad': 0.0, 'surprise': 0.06},
+            '☀': {'angry': 0.0, 'anticipation': 0.22, 'fear': 0.0, 'happy': 0.44, 'sad': 0.0, 'surprise': 0.06},
+            '☑': {'angry': 0.0, 'anticipation': 0.22, 'fear': 0.0, 'happy': 0.25, 'sad': 0.0, 'surprise': 0.0},
+            '☝': {'angry': 0.11, 'anticipation': 0.31, 'fear': 0.11, 'happy': 0.03, 'sad': 0.11, 'surprise': 0.0},
+            '☺': {'angry': 0.0, 'anticipation': 0.42, 'fear': 0.0, 'happy': 1.0, 'sad': 0.0, 'surprise': 0.39},
+            '♥': {'angry': 0.0, 'anticipation': 0.28, 'fear': 0.0, 'happy': 0.72, 'sad': 0.0, 'surprise': 0.11},
+            '♻': {'angry': 0.03, 'anticipation': 0.19, 'fear': 0.0, 'happy': 0.03, 'sad': 0.03, 'surprise': 0.0},
+            '⚡': {'angry': 0.28, 'anticipation': 0.31, 'fear': 0.25, 'happy': 0.08, 'sad': 0.0, 'surprise': 0.36},
+            '⚽': {'angry': 0.0, 'anticipation': 0.33, 'fear': 0.06, 'happy': 0.25, 'sad': 0.0, 'surprise': 0.0},
+            '✅': {'angry': 0.0, 'anticipation': 0.31, 'fear': 0.0, 'happy': 0.19, 'sad': 0.0, 'surprise': 0.0},
+            '✈': {'angry': 0.0, 'anticipation': 0.44, 'fear': 0.11, 'happy': 0.28, 'sad': 0.11, 'surprise': 0.19},
+            '✊': {'angry': 0.25, 'anticipation': 0.5, 'fear': 0.11, 'happy': 0.03, 'sad': 0.11, 'surprise': 0.08},
+            '✋': {'angry': 0.22, 'anticipation': 0.25, 'fear': 0.11, 'happy': 0.06, 'sad': 0.06, 'surprise': 0.08},
+            '✌': {'angry': 0.0, 'anticipation': 0.42, 'fear': 0.0, 'happy': 0.61, 'sad': 0.0, 'surprise': 0.17},
+            '✔': {'angry': 0.0, 'anticipation': 0.25, 'fear': 0.0, 'happy': 0.14, 'sad': 0.0, 'surprise': 0.0,},
+            '✨': {'angry': 0.0, 'anticipation': 0.36, 'fear': 0.06, 'happy': 0.53, 'sad': 0.0, 'surprise': 0.44,},
+            '❄': {'angry': 0.11, 'anticipation': 0.33, 'fear': 0.17, 'happy': 0.28, 'sad': 0.14, 'surprise': 0.22,},
+            '❌': {'angry': 0.5, 'anticipation': 0.14, 'fear': 0.25, 'happy': 0.0, 'sad': 0.31, 'surprise': 0.08,},
+            '❗': {'angry': 0.44, 'anticipation': 0.42, 'fear': 0.42, 'happy': 0.08, 'sad': 0.17, 'surprise': 0.81,},
+            '❤': {'angry': 0.0, 'anticipation': 0.36, 'fear': 0.0, 'happy': 0.69, 'sad': 0.0, 'surprise': 0.14,},
+            '➡': {'angry': 0.0, 'anticipation': 0.06, 'fear': 0.0, 'happy': 0.0, 'sad': 0.0, 'surprise': 0.0,},
+            '⬅': {'angry' : 0.17, 'anticipation' : 0.14, 'fear' : 0.14, 'happy' :0.0, 'sad': 0.14, 'surprise': 0.03},
+            '⭐': { 'angry': 0.0, 'anticipation' : 0.17, 'fear' : 0.0, 'happy' :	0.39, 'sad' : 0.0, 'surprise' :	0.17},
+            "😲": { 'angry': 0.0, 'anticipation': 0.33, 'fear': 0.33, 'happy': 0.0, 'sad': 0.0, 'surprise': 0.67 },
+            "😯": { 'angry': 0.0, 'anticipation': 0.25, 'fear': 0.25, 'happy': 0.0, 'sad': 0.0, 'surprise': 0.50 },
+            "😮": { 'angry': 0.0, 'anticipation': 0.40, 'fear': 0.20, 'happy': 0.0, 'sad': 0.0, 'surprise': 0.60 },
+            "😵": { 'angry': 0.0, 'anticipation': 0.0, 'fear': 0.50, 'happy': 0.0, 'sad': 0.0, 'surprise': 0.50 },
+            "❗": { 'angry': 0.25, 'anticipation': 0.50, 'fear': 0.25, 'happy': 0.0, 'sad': 0.0, 'surprise': 0.75 },
+            "⚡": { 'angry': 0.2, 'anticipation': 0.4, 'fear': 0.3, 'happy': 0.0, 'sad': 0.0, 'surprise': 0.5 },
+            "🎊": { 'angry': 0.0, 'anticipation': 0.6, 'fear': 0.0, 'happy': 0.8, 'sad': 0.0, 'surprise': 0.7 },
+            "🙁": { 'angry': 0.2, 'anticipation': 0.0, 'fear': 0.1, 'happy': 0.0, 'sad': 0.7, 'surprise': 0.1 },
+            "🔪": { 'angry': 0.4, 'anticipation': 0.2, 'fear': 0.6, 'happy': 0.0, 'sad': 0.1, 'surprise': 0.2 },
+            "🌕": { 'angry': 0.0, 'anticipation': 0.3, 'fear': 0.0, 'happy': 0.4, 'sad': 0.0, 'surprise': 0.3 },
+            "🚀": { 'angry': 0.0, 'anticipation': 0.7, 'fear': 0.1, 'happy': 0.6, 'sad': 0.0, 'surprise': 0.5 },
+            "📉": { 'angry': 0.3, 'anticipation': 0.1, 'fear': 0.4, 'happy': 0.0, 'sad': 0.7, 'surprise': 0.2 },
+            "🤣": { 'angry': 0.0, 'anticipation': 0.2, 'fear': 0.0, 'happy': 1.0, 'sad': 0.0, 'surprise': 0.3 },
+            "💸": { 'angry': 0.2, 'anticipation': 0.5, 'fear': 0.1, 'happy': 0.3, 'sad': 0.4, 'surprise': 0.4 }
 }
     
     def setupUi(self, OtherWindow):
@@ -518,13 +518,15 @@ class Ui_OtherWindow(object):
         self.retranslateUi(OtherWindow)
         QtCore.QMetaObject.connectSlotsByName(OtherWindow)
 
-    # Utility methods for text processing
+    # Utility methods for text pre-processing
+
     @staticmethod
     def cleaning_numbers(original_text):
         cleaned_text = re.sub('[0-9]+', '', original_text)
         
         # Print the cleaned text
-        print("Text after removing numbers:", cleaned_text)
+        print("Text after removing numbers: ", cleaned_text) 
+        print("\n")
         
         return cleaned_text
     
@@ -549,7 +551,8 @@ class Ui_OtherWindow(object):
         
         # Print the cleaned text
         print("Cleaned Text:", cleaned_text)
-        
+        print("\n")
+
         return cleaned_text
     
 
@@ -567,7 +570,7 @@ class Ui_OtherWindow(object):
 
         # Print the corrected text
         print("Corrected Text:", corrected_text)
-
+        print("\n")
         return corrected_text
 
     @staticmethod
@@ -592,7 +595,7 @@ class Ui_OtherWindow(object):
 
         # Print the text after removing stopwords
         print("Text after removing stopwords:", cleaned_text)
-
+        print("\n")
         return cleaned_text
 
     @staticmethod
@@ -601,7 +604,8 @@ class Ui_OtherWindow(object):
         
         # Print the text after removing repeating words
         print("Text after removing repeating words:", cleaned_text)
-        
+        print("\n")
+
         return cleaned_text
 
     @staticmethod
@@ -611,13 +615,13 @@ class Ui_OtherWindow(object):
         
         # Print the text after lemmatization
         print("Text after lemmatization:", ' '.join(lemmatized_text))
-        
+        print("\n")
         return lemmatized_text
 
-    def classify_intensity(self, emotion_result_str, emoticons_count, original_text):
-        question_marks = original_text.count('?')
-        periods = original_text.count('.')
-        exclamation_marks = original_text.count('!')
+    def classify_intensity(self, emotion_result_str, emoticons_count, prepared_text):
+        question_marks = prepared_text.count('?')
+        periods = prepared_text.count('.')
+        exclamation_marks = prepared_text.count('!')
 
         # Happy
         if emotion_result_str == 'Happy':
@@ -625,7 +629,7 @@ class Ui_OtherWindow(object):
                 return 'High'
             elif periods == 1 and emoticons_count == 1:
                 return 'Medium'
-            elif question_marks > 0:
+            elif question_marks == 0:
                 return 'Low'
 
         # Sadness
@@ -634,6 +638,8 @@ class Ui_OtherWindow(object):
                 return 'High'
             elif periods == 1 and question_marks == 1 and emoticons_count <= 1:
                 return 'Medium'
+            elif question_marks == 0:
+                return 'Low'
 
         # Surprise
         elif emotion_result_str == 'Surprise':
@@ -641,6 +647,8 @@ class Ui_OtherWindow(object):
                 return 'High'
             elif periods == 1 and question_marks == 1 and exclamation_marks == 1 and emoticons_count <= 2:
                 return 'Medium'
+            elif question_marks == 0:
+                return 'Low'
 
         # Anger
         elif emotion_result_str == 'Angry':
@@ -648,6 +656,8 @@ class Ui_OtherWindow(object):
                 return 'High'
             elif periods == 1 and question_marks == 1 and exclamation_marks == 1 and emoticons_count <= 2:
                 return 'Medium'
+            elif question_marks == 0:
+                return 'Low'
 
         # Anticipation
         elif emotion_result_str == 'Anticipation':
@@ -655,6 +665,8 @@ class Ui_OtherWindow(object):
                 return 'High'
             elif periods == 1 and question_marks == 1 and exclamation_marks == 1 and emoticons_count <= 2:
                 return 'Medium'
+            elif question_marks == 0:
+                return 'Low'
 
         # Fear
         elif emotion_result_str == 'Fear':
@@ -662,8 +674,10 @@ class Ui_OtherWindow(object):
                 return 'High'
             elif periods == 1 and question_marks == 1 and exclamation_marks == 1 and emoticons_count <= 2:
                 return 'Medium'
+            elif question_marks == 0:
+                return 'Low'
 
-        return 'Undetermined'
+        return 'Low'
 
     
     def convert_emoticons_to_words(self, text_no_stopwords):
@@ -675,7 +689,6 @@ class Ui_OtherWindow(object):
                 emoticons_count += 1
         return text, emoticons_count
     
-
 
     def remove_punctuations_and_known_emojis(self, text_no_stopwords):
         if isinstance(text_no_stopwords, str):  # Check if text is a valid string
@@ -699,10 +712,12 @@ class Ui_OtherWindow(object):
     def transform_text_to_features(self, text):
     # Check radio button selection
         if self.radioButton1.isChecked():
-            print("Option 1")
+            print("The Feature that you use is the Proposed System")
+            print("\n")
             features = self.extract_features_from_lstm(text, 'lstm_model.h5', 'tokenizer.pkl')
         elif self.radioButton2.isChecked():
-            print("Option 2")
+            print("The Feature that you use is using the Plain-Text Only")
+            print("\n")
             features = self.extract_features_from_lstm(text, 'lstm_model_text.h5', 'tokenizer_text.pkl')
 
         # Transform features to 32 dimensions
@@ -752,29 +767,16 @@ class Ui_OtherWindow(object):
 
     def updateTextInTable(self):
         original_text = self.plainTextEdit.toPlainText()
-        
-        # Additional preprocessing
-        emoticons_to_keep = [
-            '🌈', '🌙', '🌚', '🌞', '🌟', '🌷', '🌸', '🌹', '🌺', '🍀', '🍕', '🍻', '🎀',
-            '🎈', '🎉', '🎤', '🎥', '🎧', '🎵', '🎶', '👅', '👇', '👈', '👉', '👋', '👌',
-            '👍', '👏', '👑', '💀', '💁', '💃', '💋', '💐', '💓', '💕', '💖', '💗', '💘',
-            '💙', '💚', '💛', '💜', '💞', '💤', '💥', '💦', '💪', '💫', '💯', '📷', '🔥',
-            '😀', '😁', '😃', '😄', '😅', '😆', '😇', '😈', '😉', '😊', '😋', '😌', '😍',
-            '😎', '😏', '😺', '😻', '😽', '🙏', '☀', '☺', '♥', '✅', '✈', '✊', '✋',
-            '✌', '✔', '✨', '❄', '❤', '⭐', '😢', '😞', '😟', '😠', '😡', '😔', '😕',
-            '😖', '😨', '😩', '😪', '😫', '😰', '😱', '😳', '😶', '😷', '👊', '👎', '❌',
-            '😲', '😯', '😮', '😵', '🙊', '🙉', '🙈', '💭', '❗', '⚡', '🎊', '🙁', '💔',
-            '😤', '🔪', '🌕', '🚀', '📉', '🤣', '💸']
 
         # Text processing steps
+        print("<---------- Pre-processing Stage ---------->")
+        print("\n")
         text_no_numbers = self.cleaning_numbers(original_text)
         text_cleaned = self.clean_tweet(text_no_numbers, self.emoticons_to_keep)  # Use class attribute for emoticons_to_keep
         text_spell_checked = self.spell_correction(text_cleaned, self.emoticons_to_keep)  # Removed the emoticons_to_keep parameter if not used in spell_correction
 
         # Check radio button selection
         if self.radioButton1.isChecked():
-
-            print("Combination of Keywords, Ending Puctuation Marks, and Emoticons")
             converted_text, emoticons_count = self.convert_emoticons_to_words(text_spell_checked)  # Use the processed text
              # Convert and Calculate
             # Assuming 'convert_and_calculate' is a method in your class and 'text_lemmatized' is the final processed text
@@ -782,27 +784,30 @@ class Ui_OtherWindow(object):
 
             # Print the text after coverting
             print("Combination of Keywords, Ending Punctuation Marks, and Emoticons :", ' '.join(converted_text))
+            print("\n")
 
         elif self.radioButton2.isChecked():
-            print("Plain-text Only")
-
             # Remove punctuations and known emojis and use the 'text' models
             converted_text = self.remove_punctuations_and_known_emojis(text_spell_checked)
 
             # Print the text after lemmatization
             print("Plain Text Only :", ' '.join(converted_text))
+            print("\n")
 
         text_no_repeating_words = self.cleaning_repeating_words(converted_text)
         text_no_stopwords = self.cleaning_stopwords(text_no_repeating_words)
         text_lowercased = text_no_stopwords.lower()
         tokenizer = RegexpTokenizer(r'\w+|[^\w\s]')
         text_tokenized = tokenizer.tokenize(text_lowercased)
-        print("Text after Tokenization:", ' '.join(text_tokenized))
+        print("Text after Tokenization: ", ' '.join(text_tokenized))
+        print("\n")
 
         text_lemmatized = self.lemmatizer_on_text(' '.join(text_tokenized))
-        #text_stemmed = self.stemming_on_text(' '.join(text_lemmatized))
-        text_lemmatized = self.lemmatizer_on_text(' '.join(text_tokenized))
+
         emoticons_count = 0
+
+        print("<---------- Sentiment Analysis Stage ---------->")
+        print("\n")
         
         # Import necessary libraries
         import mysql.connector
@@ -833,7 +838,8 @@ class Ui_OtherWindow(object):
                     cursor.execute(insert_query, (lemmatized_text,))
                     # Commit the transaction
                     connection.commit()
-                    print("Data inserted successfully")
+                    print("Data inserted successfully in the EmCrypt Database")
+                    print("\n")
 
             except Error as e:
                 print("Error while connecting to MySQL", e)
@@ -843,7 +849,7 @@ class Ui_OtherWindow(object):
                 if connection.is_connected():
                     cursor.close()
                     connection.close()
-                    print("MySQL connection is closed")
+                    #print("MySQL connection is closed")
 
         # Use this function to insert the lemmatized text into your database
         lemmatized_text_string = ' '.join(text_lemmatized)  # Assuming text_lemmatized is your list of lemmatized words
@@ -851,37 +857,46 @@ class Ui_OtherWindow(object):
 
         # Check radio button selection
         if self.radioButton1.isChecked():
-            print("Option 1")
             prepared_text = text_lemmatized    # Use the processed text
             features = self.transform_text_to_features(prepared_text)
+            print("\n")
+            print("Features Extracting...")
+            print("\n")
             if self.polarity_model_combine is not None:
                 polarity_result = self.polarity_model_combine.predict(features)
+                print("Applying Polarity Classifier Model - LSTM-SVM...")
+                print("\n")
             else:
                 polarity_result = "Model not loaded"
 
             if self.emotion_model_combine is not None:
                 emotion_result = self.emotion_model_combine.predict(features)
+                print("Applying Emotion Recognition Model - LSTM-SVM...")
+                print("\n")
             else:
                 emotion_result = "Model not loaded"
             
         elif self.radioButton2.isChecked():
-            print("Option 2")
             # Similar processing for radioButton2, if different
             prepared_text = text_lemmatized    # Use the processed text
             features = self.transform_text_to_features(prepared_text)
+            print("\n")
+            print("Features Extracting...")
+            print("\n")
             if self.polarity_model_text is not None:
                 polarity_result = self.polarity_model_text.predict(features)
+                print("Applying Polarity Classifier Model - LSTM-SVM...")
+                print("\n")
             else:
                 polarity_result = "Model not loaded"
 
             if self.emotion_model_text is not None:
                 emotion_result = self.emotion_model_text.predict(features)
+                print("Applying Emotion Recognition Model - LSTM-SVM...")
+                print("\n")
             else:
                 emotion_result = "Model not loaded"
-            # Assuming classify_intensity requires emoticons_count and text
-            intensity_result = self.classify_intensity(emoticons_count, prepared_text)  # Assuming classify_intensity requires emoticons_count and text
-
-
+                
         # Convert the NumPy array to a string
         polarity_result_str = np.array2string(polarity_result)
         emotion_result_str = np.array2string(emotion_result)
@@ -923,8 +938,16 @@ class Ui_OtherWindow(object):
         # Get the emotion from the dictionary with a default value of 'unknown'
         emotion_result_str = emotion_mappings.get(emotion_result_str, 'unknown')
 
-        intensity_result = self.classify_intensity(emotion_result_str, emoticons_count, original_text) # Assuming classify_intensity requires emoticons_count and text
+        intensity_result = self.classify_intensity(emotion_result_str, emoticons_count, prepared_text) # Assuming classify_intensity requires emoticons_count and text
 
+        print("The Polarity is: ", polarity_result_str)
+        print("\n")
+        print("The Emotion is: ", emotion_result_str)
+        print("\n")
+        print("The Intensity Level is: ", intensity_result)
+        print("\n")
+        print("===============================================================================================================================================================================")
+        print("\n")
 
         # Updating the table with analysis results
         current_row_count = self.tableWidget.rowCount()
