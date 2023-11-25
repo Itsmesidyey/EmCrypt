@@ -21,11 +21,24 @@ class ClearablePlainTextEdit(QPlainTextEdit):
         super(ClearablePlainTextEdit, self).__init__(parent)
         self.placeholder_text = " Enter the Cryptocurrency related tweets here..."
         self.setPlainText(self.placeholder_text)
+        self.setMaximumLength(280)  # Set the maximum length to 280 characters
 
     def focusInEvent(self, event):
         if self.toPlainText() == self.placeholder_text:
             self.setPlainText("")
         super(ClearablePlainTextEdit, self).focusInEvent(event)
+
+    def keyPressEvent(self, event):
+        if len(self.toPlainText()) < self.maximumLength() or event.key() == QtCore.Qt.Key_Backspace:
+            super(ClearablePlainTextEdit, self).keyPressEvent(event)
+        else:
+            event.ignore()  # Ignore the key press if it exceeds the limit
+
+    def setMaximumLength(self, length):
+        self._maximumLength = length
+
+    def maximumLength(self):
+        return self._maximumLength
 
 class Ui_OtherWindow(object):
     # Initialize class attributes
