@@ -1023,7 +1023,7 @@ class Ui_OtherWindow(object):
 
         # Create and set the image label
         label = QLabel(dialog)
-        pixmap = QPixmap("/Users/cjcasinsinan/Documents/GitHub/EmCrypt/assets/upload-file-instruction.png")
+        pixmap = QPixmap("/Users/cjcasinsinan/Documents/GitHub/EmCrypt/assets/upload-file-instruction.png", "")
         label.setPixmap(pixmap)
         layout.addWidget(label)
 
