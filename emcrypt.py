@@ -631,67 +631,81 @@ class Ui_OtherWindow(object):
         print("\n")
         return lemmatized_text
 
-    def classify_intensity(self, emotion_result_str, emoticons_count, prepared_text):
-        question_marks = prepared_text.count('?')
-        periods = prepared_text.count('.')
-        exclamation_marks = prepared_text.count('!')
+    def classify_intensity(self, emotion_result_str, text_spell_checked):
+        question_marks = text_spell_checked.count('?')
+        periods = text_spell_checked.count('.')
+        exclamation_marks = text_spell_checked.count('!')
+        total_emotion_weight = 0
 
-        # Happy
+        # Calculate total emotion weight for the given emotion
+        for char in text_spell_checked:
+            if char in self.emoticon_weights:
+                emoticon_weight = self.emoticon_weights[char]
+                if emotion_result_str.lower() in emoticon_weight:
+                    total_emotion_weight += emoticon_weight[emotion_result_str.lower()]
+
+        # Thresholds for different intensities can be adjusted as needed
+        high_threshold = 1.5  # Example threshold, adjust based on experimentation
+        medium_threshold = 0.5
+
+        print("The emoticon weight is:", total_emotion_weight)
+        print("\n")
+
+        # Define intensity based on the combination of punctuation and emoticon weight
         if emotion_result_str == 'Happy':
-            if exclamation_marks >= 1 or emoticons_count > 2:
+            if exclamation_marks >= 1 or total_emotion_weight > high_threshold:
                 return 'High'
-            elif periods == 1 and emoticons_count == 1:
+            elif periods == 1 and question_marks == 0 and total_emotion_weight > medium_threshold:
                 return 'Medium'
-            elif question_marks == 0:
+            else:
                 return 'Low'
 
-        # Sadness
         elif emotion_result_str == 'Sad':
-            if exclamation_marks >= 1 and question_marks > 1 or emoticons_count > 1:
+            if exclamation_marks >= 1 and question_marks > 1 or total_emotion_weight > high_threshold:
                 return 'High'
-            elif periods == 1 and question_marks == 1 and emoticons_count <= 1:
+            elif periods == 1 and question_marks == 1 and total_emotion_weight > medium_threshold:
                 return 'Medium'
-            elif question_marks == 0:
+            else:
                 return 'Low'
 
-        # Surprise
         elif emotion_result_str == 'Surprise':
-            if exclamation_marks >= 1 and question_marks > 1 or emoticons_count > 2:
+            if exclamation_marks >= 1 and question_marks > 1 or total_emotion_weight > high_threshold:
                 return 'High'
-            elif periods == 1 and question_marks == 1 and exclamation_marks == 1 and emoticons_count <= 2:
+            elif periods == 1 and question_marks == 1 and exclamation_marks == 1 and total_emotion_weight > medium_threshold:
                 return 'Medium'
-            elif question_marks == 0:
+            else:
                 return 'Low'
 
-        # Anger
         elif emotion_result_str == 'Angry':
-            if exclamation_marks >= 1 and question_marks > 1 or emoticons_count > 2:
+            if exclamation_marks >= 1 and total_emotion_weight > high_threshold:
                 return 'High'
-            elif periods == 1 and question_marks == 1 and exclamation_marks == 1 and emoticons_count <= 2:
+            elif periods == 1 and question_marks == 0 and total_emotion_weight > medium_threshold:
                 return 'Medium'
-            elif question_marks == 0:
+            else:
                 return 'Low'
 
-        # Anticipation
         elif emotion_result_str == 'Anticipation':
-            if exclamation_marks >= 1 and question_marks > 1 or emoticons_count > 2:
+            if exclamation_marks >= 1 and question_marks > 1 or total_emotion_weight > high_threshold:
                 return 'High'
-            elif periods == 1 and question_marks == 1 and exclamation_marks == 1 and emoticons_count <= 2:
+            elif periods == 1 and question_marks == 1 and total_emotion_weight > medium_threshold:
                 return 'Medium'
-            elif question_marks == 0:
+            else:
                 return 'Low'
 
-        # Fear
         elif emotion_result_str == 'Fear':
-            if exclamation_marks >= 1 and question_marks > 1 or emoticons_count > 2:
+            if exclamation_marks >= 1 and question_marks > 1 or total_emotion_weight > high_threshold:
                 return 'High'
-            elif periods == 1 and question_marks == 1 and exclamation_marks == 1 and emoticons_count <= 2:
+            elif periods == 1 and question_marks == 1 and total_emotion_weight > medium_threshold:
                 return 'Medium'
-            elif question_marks == 0:
+            else:
                 return 'Low'
 
-        return 'Low'
+        else:
+            return 'Low'
 
+
+
+    
     
     def convert_emoticons_to_words(self, text_no_stopwords):
         text = text_no_stopwords  # Initialize 'text' with 'original_text'
@@ -951,7 +965,8 @@ class Ui_OtherWindow(object):
         # Get the emotion from the dictionary with a default value of 'unknown'
         emotion_result_str = emotion_mappings.get(emotion_result_str, 'unknown')
 
-        intensity_result = self.classify_intensity(emotion_result_str, emoticons_count, prepared_text) # Assuming classify_intensity requires emoticons_count and text
+        # Updated call
+        intensity_result = self.classify_intensity(emotion_result_str, text_spell_checked) # Assuming classify_intensity requires emoticons_count and text
 
         print("The Polarity is: ", polarity_result_str)
         print("\n")
