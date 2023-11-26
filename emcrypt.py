@@ -1048,7 +1048,6 @@ class Ui_OtherWindow(object):
                     self.updateTextInTable()  # Process and update the table
             except Exception as e:
                 print("An error occurred:", e)
-
         
     def showPopup(self):
         # Create and set up the pop-up dialog
