@@ -128,15 +128,15 @@ print("Output after removing punctuation and known emojis:")
 print(dataset)
 
 # Function to clean repeating words
-def cleaning_repeating_words(text):
-    # This regex pattern targets whole words that are repeated
-    return re.sub(r'\b(\w+)( \1\b)+', r'\1', text)
+#def cleaning_repeating_words(text):
+#    # This regex pattern targets whole words that are repeated
+#    return re.sub(r'\b(\w+)( \1\b)+', r'\1', text)
 
 # Assuming 'dataset' is a pandas DataFrame and 'text' is a column in it
 # Apply the cleaning function for repeating words to each row in the 'text' column
-dataset['text'] = dataset['text'].apply(cleaning_repeating_words)
-print("Repeating words cleaned from 'text' column.")
-print(dataset['text'].head())
+#dataset['text'] = dataset['text'].apply(cleaning_repeating_words)
+#print("Repeating words cleaned from 'text' column.")
+#print(dataset['text'].head())
 
 
 stopwordlist = ['a', 'about', 'above', 'after', 'again', 'ain', 'all', 'am', 'an',
@@ -288,8 +288,8 @@ model.compile(optimizer='adam', loss='categorical_crossentropy', metrics=['accur
 model.fit(data_padded, pd.get_dummies(emotion_labels).values, epochs=15, batch_size=32, validation_split=0.2)  # Adjusted training
 
 # Save the LSTM model and tokenizer
-model.save("lstm_model.h5")
-with open('tokenizer.pkl', 'wb') as handle:
+model.save("lstm_model_text.h5")
+with open('tokenizer_text.pkl', 'wb') as handle:
     pickle.dump(tokenizer, handle, protocol=pickle.HIGHEST_PROTOCOL)
 
 # Create a new model for feature extraction
@@ -326,8 +326,8 @@ grid_emotion.fit(X_train_emotion, y_train_emotion)  # Use X_train_emotion for em
 print("Best Emotion SVM Parameters:", grid_emotion.best_params_)
 
 # Save the best SVM models
-joblib.dump(grid_polarity.best_estimator_, "svm_polarity.pkl")
-joblib.dump(grid_emotion.best_estimator_, "svm_emotion.pkl")
+joblib.dump(grid_polarity.best_estimator_, "svm_polarity_text.pkl")
+joblib.dump(grid_emotion.best_estimator_, "svm_emotion_text.pkl")
 
 # Evaluation functions
 def evaluate_model(grid, X_test, y_test, title):

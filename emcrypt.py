@@ -39,6 +39,7 @@ class ClearablePlainTextEdit(QPlainTextEdit):
 
     def maximumLength(self):
         return self._maximumLength
+    
 
 class Ui_OtherWindow(object):
     # Initialize class attributes
@@ -220,6 +221,10 @@ class Ui_OtherWindow(object):
         "🤣": "Rolling on the Floor Laughing",
         "💸": "Money with Wings"
 }
+        self.intensifiers = {
+            'pos': ['very', 'extremely', 'incredibly','absolutely', 'completely', 'utterly', 'totally', 'thoroughly','remarkably', 'exceptionally', 'especially', 'extraordinarily','amazingly', 'unbelievably', 'entirely', 'deeply', 'profoundly','truly', 'immensely', 'wholly', 'significantly', 'exceedingly'],
+            'neg': ['less', 'hardly', 'barely', 'scarcely', 'marginally', 'slightly', 'minimally', 'rarely','infrequently', 'little', 'just', 'almost', 'nearly', 'faintly','somewhat', 'insufficiently', 'meagerly', 'sparingly']}
+        self.negations = ['not', 'never', 'none']
 
         self.emoticon_weights = {
             '🌈': {'angry': 0.0, 'anticipation': 0.28, 'fear': 0.0, 'happy': 0.69, 'sad': 0.06, 'surprise': 0.22 },
@@ -612,16 +617,6 @@ class Ui_OtherWindow(object):
         return cleaned_text
 
     @staticmethod
-    def cleaning_repeating_words(original_text):
-        cleaned_text = re.sub(r'\b(\w+)( \1\b)+', r'\1', original_text)
-        
-        # Print the text after removing repeating words
-        print("Text after removing repeating words:", cleaned_text)
-        print("\n")
-
-        return cleaned_text
-
-    @staticmethod
     def lemmatizer_on_text(original_text):
         lm = nltk.WordNetLemmatizer()
         lemmatized_text = [lm.lemmatize(word) for word in original_text.split()]
@@ -650,6 +645,20 @@ class Ui_OtherWindow(object):
 
         print("The emoticon weight is:", total_emotion_weight)
         print("\n")
+
+        # Additional logic to account for intensifiers and negations
+        words = text_spell_checked.split()
+        intensity_modifier = 1.0
+        for word in words:
+            if word in self.intensifiers['pos']:
+                intensity_modifier += 0.5  # Increase the modifier for positive intensifiers
+            elif word in self.intensifiers['neg']:
+                intensity_modifier -= 0.5  # Decrease the modifier for negative intensifiers
+            elif word in self.negations:
+                intensity_modifier *= -1  # Negate the modifier for negations
+
+        # Apply the intensity modifier to the total emotion weight
+        total_emotion_weight *= intensity_modifier
 
         # Define intensity based on the combination of punctuation and emoticon weight
         if emotion_result_str == 'Happy':
@@ -703,10 +712,6 @@ class Ui_OtherWindow(object):
         else:
             return 'Low'
 
-
-
-    
-    
     def convert_emoticons_to_words(self, text_no_stopwords):
         text = text_no_stopwords  # Initialize 'text' with 'original_text'
         emoticons_count = 0
@@ -821,8 +826,7 @@ class Ui_OtherWindow(object):
             print("Plain Text Only :", ' '.join(converted_text))
             print("\n")
 
-        text_no_repeating_words = self.cleaning_repeating_words(converted_text)
-        text_no_stopwords = self.cleaning_stopwords(text_no_repeating_words)
+        text_no_stopwords = self.cleaning_stopwords(converted_text)
         text_lowercased = text_no_stopwords.lower()
         tokenizer = RegexpTokenizer(r'\w+|[^\w\s]')
         text_tokenized = tokenizer.tokenize(text_lowercased)

@@ -463,15 +463,15 @@ dataset['emoticons_count'] = result.apply(lambda x: x[1])
 dataset['emotional_scores'] = result.apply(lambda x: x[2])
 
 # Function to clean repeating words
-def cleaning_repeating_words(text):
-    # This regex pattern targets whole words that are repeated
-    return re.sub(r'\b(\w+)( \1\b)+', r'\1', text)
+#def cleaning_repeating_words(text):
+#    # This regex pattern targets whole words that are repeated
+#    return re.sub(r'\b(\w+)( \1\b)+', r'\1', text)
 
 # Assuming 'dataset' is a pandas DataFrame and 'text' is a column in it
 # Apply the cleaning function for repeating words to each row in the 'text' column
-dataset['text'] = dataset['text'].apply(cleaning_repeating_words)
-print("Repeating words cleaned from 'text' column.")
-print(dataset['text'].head())
+#dataset['text'] = dataset['text'].apply(cleaning_repeating_words)
+#print("Repeating words cleaned from 'text' column.")
+#print(dataset['text'].head())
 
 #Remove Stopwords
 stopwordlist = ['a', 'about', 'above', 'after', 'again', 'ain', 'all', 'am', 'an',
