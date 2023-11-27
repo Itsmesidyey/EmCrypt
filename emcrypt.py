@@ -395,7 +395,7 @@ class Ui_OtherWindow(object):
     
     def setupUi(self, OtherWindow):
         OtherWindow.setObjectName("OtherWindow")
-        OtherWindow.resize(1034, 1086)
+        OtherWindow.resize(1034, 1200)
         self.centralwidget = QtWidgets.QWidget(OtherWindow)
         self.centralwidget.setObjectName("centralwidget")
         self.label = QtWidgets.QLabel(self.centralwidget)

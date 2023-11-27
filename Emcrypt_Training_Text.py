@@ -9,7 +9,7 @@ from spellchecker import SpellChecker
 from nltk.tokenize import RegexpTokenizer
 
 import chardet
-DATASET_COLUMNS = ['text', 'polarity', 'emotion', 'intensity']
+DATASET_COLUMNS = ['text', 'polarity', 'emotion']
 
 #Detect file encoding using chardet
 with open('dataset_text.csv', 'rb') as f:
