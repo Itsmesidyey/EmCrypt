@@ -44,7 +44,7 @@ class ClearablePlainTextEdit(QPlainTextEdit):
 class Ui_OtherWindow(object):
     # Initialize class attributes
     def __init__(self):
-        try:
+        try: #Initialize the classifier model
             self.polarity_model_combine = joblib.load('svm_polarity.pkl')
             self.emotion_model_combine = joblib.load('svm_emotion.pkl')
             self.polarity_model_text = joblib.load('svm_polarity_text.pkl')
@@ -224,7 +224,7 @@ class Ui_OtherWindow(object):
         self.intensifiers = {
             'pos': ['very', 'extremely', 'incredibly','absolutely', 'completely', 'utterly', 'totally', 'thoroughly','remarkably', 'exceptionally', 'especially', 'extraordinarily','amazingly', 'unbelievably', 'entirely', 'deeply', 'profoundly','truly', 'immensely', 'wholly', 'significantly', 'exceedingly'],
             'neg': ['less', 'hardly', 'barely', 'scarcely', 'marginally', 'slightly', 'minimally', 'rarely','infrequently', 'little', 'just', 'almost', 'nearly', 'faintly','somewhat', 'insufficiently', 'meagerly', 'sparingly']}
-        self.negations = ['not', 'never', 'none']
+        #self.negations = ['not', 'never', 'none']
 
         self.emoticon_weights = {
             '🌈': {'angry': 0.0, 'anticipation': 0.28, 'fear': 0.0, 'happy': 0.69, 'sad': 0.06, 'surprise': 0.22 },
@@ -599,12 +599,12 @@ class Ui_OtherWindow(object):
                         'does', 'doing', 'down', 'during', 'each','few', 'for', 'from',
                         'further', 'had', 'has', 'have', 'having', 'he', 'her', 'here',
                         'hers', 'herself', 'him', 'himself', 'his', 'how', 'i', 'if', 'in',
-                        'into','is', 'it', 'its', 'itself', 'just', 'll', 'm', 'ma',
+                        'into','is', 'it', 'its', 'itself', 'll', 'm', 'ma',
                         'me', 'more', 'most','my', 'myself', 'now', 'o', 'of', 'on', 'once',
-                        'only', 'or', 'other', 'our', 'ours','ourselves', 'out', 'own', 're','s', 'same', 'she', "shes", 'should', "shouldve",'so', 'some', 'such',
+                        'or', 'other', 'our', 'ours','ourselves', 'out', 'own', 're','s', 'same', 'she', "shes", 'should', "shouldve",'so', 'some', 'such',
                         't', 'than', 'that', "thatll", 'the', 'their', 'theirs', 'them',
                         'themselves', 'then', 'there', 'these', 'they', 'this', 'those',
-                        'through', 'to', 'too','under', 'until', 'up', 've', 'very', 'was',
+                        'through', 'to', 'too','under', 'until', 'up', 've', 'was',
                         'we', 'were', 'what', 'when', 'where','which','while', 'who', 'whom',
                         'why', 'will', 'with', 'won', 'y', 'you', "youd","youll", "youre",
                         "youve", 'your', 'yours', 'yourself', 'yourselves']
@@ -626,7 +626,7 @@ class Ui_OtherWindow(object):
         print("\n")
         return lemmatized_text
 
-    def classify_intensity(self, emotion_result_str, text_spell_checked):
+    def classify_intensity(self, polarity_result_str, emotion_result_str, text_spell_checked):
         question_marks = text_spell_checked.count('?')
         periods = text_spell_checked.count('.')
         exclamation_marks = text_spell_checked.count('!')
@@ -645,26 +645,32 @@ class Ui_OtherWindow(object):
 
         print("The emoticon weight is:", total_emotion_weight)
         print("\n")
-
         # Additional logic to account for intensifiers and negations
+
         words = text_spell_checked.split()
         intensity_modifier = 1.0
         for word in words:
             if word in self.intensifiers['pos']:
                 intensity_modifier += 0.5  # Increase the modifier for positive intensifiers
             elif word in self.intensifiers['neg']:
-                intensity_modifier -= 0.5  # Decrease the modifier for negative intensifiers
-            elif word in self.negations:
-                intensity_modifier *= -1  # Negate the modifier for negations
+                intensity_modifier -= 0.5  #Decrease the modifier for negative intensifiers
+            #elif word in self.negations:
+            #intensity_modifier *= -1  # Negate the modifier for negations
+
+        print("Intensity Modifier Score:", intensity_modifier)
+        print("\n")
 
         # Apply the intensity modifier to the total emotion weight
-        total_emotion_weight *= intensity_modifier
+        total_emotion_weight += intensity_modifier
+
+        print("The Intensity and Emotion weight is:", total_emotion_weight)
+        print("\n")
 
         # Define intensity based on the combination of punctuation and emoticon weight
         if emotion_result_str == 'Happy':
             if exclamation_marks >= 1 or total_emotion_weight > high_threshold:
                 return 'High'
-            elif periods == 1 and question_marks == 0 and total_emotion_weight > medium_threshold:
+            elif periods == 1 and question_marks == 0 or total_emotion_weight > medium_threshold:
                 return 'Medium'
             else:
                 return 'Low'
@@ -672,7 +678,7 @@ class Ui_OtherWindow(object):
         elif emotion_result_str == 'Sad':
             if exclamation_marks >= 1 and question_marks > 1 or total_emotion_weight > high_threshold:
                 return 'High'
-            elif periods == 1 and question_marks == 1 and total_emotion_weight > medium_threshold:
+            elif periods == 1 and question_marks == 1 or total_emotion_weight > medium_threshold:
                 return 'Medium'
             else:
                 return 'Low'
@@ -680,7 +686,7 @@ class Ui_OtherWindow(object):
         elif emotion_result_str == 'Surprise':
             if exclamation_marks >= 1 and question_marks > 1 or total_emotion_weight > high_threshold:
                 return 'High'
-            elif periods == 1 and question_marks == 1 and exclamation_marks == 1 and total_emotion_weight > medium_threshold:
+            elif periods == 1 and question_marks == 1 and exclamation_marks == 1 or total_emotion_weight > medium_threshold:
                 return 'Medium'
             else:
                 return 'Low'
@@ -688,7 +694,7 @@ class Ui_OtherWindow(object):
         elif emotion_result_str == 'Angry':
             if exclamation_marks >= 1 and total_emotion_weight > high_threshold:
                 return 'High'
-            elif periods == 1 and question_marks == 0 and total_emotion_weight > medium_threshold:
+            elif periods == 1 and question_marks == 0 or total_emotion_weight > medium_threshold:
                 return 'Medium'
             else:
                 return 'Low'
@@ -696,7 +702,7 @@ class Ui_OtherWindow(object):
         elif emotion_result_str == 'Anticipation':
             if exclamation_marks >= 1 and question_marks > 1 or total_emotion_weight > high_threshold:
                 return 'High'
-            elif periods == 1 and question_marks == 1 and total_emotion_weight > medium_threshold:
+            elif periods == 1 and question_marks == 1 or total_emotion_weight > medium_threshold:
                 return 'Medium'
             else:
                 return 'Low'
@@ -704,16 +710,16 @@ class Ui_OtherWindow(object):
         elif emotion_result_str == 'Fear':
             if exclamation_marks >= 1 and question_marks > 1 or total_emotion_weight > high_threshold:
                 return 'High'
-            elif periods == 1 and question_marks == 1 and total_emotion_weight > medium_threshold:
+            elif periods == 1 and question_marks == 1 or total_emotion_weight > medium_threshold:
                 return 'Medium'
             else:
                 return 'Low'
 
         else:
-            return 'Low'
+            return 'Undefined'
 
-    def convert_emoticons_to_words(self, text_no_stopwords):
-        text = text_no_stopwords  # Initialize 'text' with 'original_text'
+    def convert_emoticons_to_words(self, text_spell_checked):
+        text = text_spell_checked  # Initialize 'text' with 'original_text'
         emoticons_count = 0
         for emoticon, word in self.emoticon_dict.items():
             while emoticon in text:
@@ -722,15 +728,15 @@ class Ui_OtherWindow(object):
         return text, emoticons_count
     
 
-    def remove_punctuations_and_known_emojis(self, text_no_stopwords):
-        if isinstance(text_no_stopwords, str):  # Check if text is a valid string
+    def remove_punctuations_and_known_emojis(self, text_spell_checked):
+        if isinstance(text_spell_checked, str):  # Check if text is a valid string
             # Define the regex pattern for known emojis
             emoji_pattern = r'(🌈|🌙|🌚|🌞|🌟|🌷|🌸|🌹|🌺|🍀|🍕|🍻|🎀|🎈|🎉|🎤|🎥|🎧|🎵|🎶|👅|👇|👈|👉|👋|👌|👍|👏|👑|💀|💁|💃|💋|💐|💓|💕|💖|💗|💘|💙|💚|💛|💜|💞|💤|💥|💦|💪|💫|💯|📷|🔥|😀|😁|😃|😄|😅|😆|😇|😈|😉|😊|😋|😌|😍|😎|😏|😺|😻|😽|🙏|☀|☺|♥|✅|✈|✊|✋|✌|✔|✨|❄|❤|⭐|😢|😞|😟|😠|😡|😔|😕|😖|😨|😩|😪|😫|😰|😱|😳|😶|😷|👊|👎|❌|😲|😯|😮|😵|🙊|🙉|🙈|💭|❗|⚡|🎊|🙁|💔|😤|🔪|🌕|🚀|📉|🤣|💸)'
             # Construct the regex pattern to remove punctuation except specified characters and emojis
             punctuation_except_specified = r'[^\w\s]'
 
             # Replace all other punctuation marks except (. ! ?) and known emojis with an empty string
-            text = re.sub(punctuation_except_specified + '|' + emoji_pattern, '', text_no_stopwords)
+            text = re.sub(punctuation_except_specified + '|' + emoji_pattern, '', text_spell_checked)
             return text
         else:
             return text
@@ -810,10 +816,7 @@ class Ui_OtherWindow(object):
         # Check radio button selection
         if self.radioButton1.isChecked():
             converted_text, emoticons_count = self.convert_emoticons_to_words(text_spell_checked)  # Use the processed text
-             # Convert and Calculate
-            # Assuming 'convert_and_calculate' is a method in your class and 'text_lemmatized' is the final processed text
         
-
             # Print the text after coverting
             print("Combination of Keywords, Ending Punctuation Marks, and Emoticons :", ' '.join(converted_text))
             print("\n")
@@ -834,8 +837,6 @@ class Ui_OtherWindow(object):
         print("\n")
 
         text_lemmatized = self.lemmatizer_on_text(' '.join(text_tokenized))
-
-        emoticons_count = 0
 
         print("<---------- Sentiment Analysis Stage ---------->")
         print("\n")
@@ -970,7 +971,7 @@ class Ui_OtherWindow(object):
         emotion_result_str = emotion_mappings.get(emotion_result_str, 'unknown')
 
         # Updated call
-        intensity_result = self.classify_intensity(emotion_result_str, text_spell_checked) # Assuming classify_intensity requires emoticons_count and text
+        intensity_result = self.classify_intensity(polarity_result_str, emotion_result_str, text_spell_checked) # Assuming classify_intensity requires emoticons_count and text
 
         print("The Polarity is: ", polarity_result_str)
         print("\n")
