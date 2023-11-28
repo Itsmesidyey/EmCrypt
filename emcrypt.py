@@ -83,19 +83,19 @@ class ChartDialog(QDialog):
         bars3 = ax3.bar(self.intensity_counts.keys(), intensity_data, color='red')
 
         # Function to add percentage labels inside the bars
-        def add_percentage_labels(bars, data):
+        def add_percentage_labels(ax, bars, data):
             total = sum(data)
             for bar, value in zip(bars, data):
                 percentage = (value / total) * 100 if total != 0 else 0
-                ax1.annotate(f'{percentage:.1f}%',  # Format with one decimal
-                            xy=(bar.get_x() + bar.get_width() / 2, value/2),
+                ax.annotate(f'{percentage:.1f}%',  # Format with one decimal
+                            xy=(bar.get_x() + bar.get_width() / 2, value / 2),
                             ha='center', va='center',
                             color='white', fontsize=8)
 
         # Adding percentage labels inside each bar
-        add_percentage_labels(bars1, polarity_data)
-        add_percentage_labels(bars2, emotion_data)
-        add_percentage_labels(bars3, intensity_data)
+        add_percentage_labels(ax1, bars1, polarity_data)
+        add_percentage_labels(ax2, bars2, emotion_data)
+        add_percentage_labels(ax3, bars3, intensity_data)
 
         # Setting titles and labels
         ax1.set_title('Polarity')
@@ -110,6 +110,7 @@ class ChartDialog(QDialog):
 
         # Draw the plot
         self.canvas.draw()
+
 
 
 
