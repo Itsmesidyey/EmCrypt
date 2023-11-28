@@ -15,6 +15,10 @@ from PyQt5.QtCore import Qt
 from PyQt5.QtGui import QFont
 from PyQt5.QtWidgets import QPlainTextEdit
 from keras.models import Model
+import sys
+from PyQt5.QtWidgets import QMainWindow, QApplication, QPushButton, QVBoxLayout, QWidget
+from matplotlib.figure import Figure
+from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
 
 class ClearablePlainTextEdit(QPlainTextEdit):
     def __init__(self, parent=None):
@@ -39,10 +43,86 @@ class ClearablePlainTextEdit(QPlainTextEdit):
 
     def maximumLength(self):
         return self._maximumLength
-    
+
+class ChartDialog(QDialog):
+    def __init__(self, parent=None, polarity_counts=None, emotion_counts=None, intensity_counts=None):
+        super(ChartDialog, self).__init__(parent)
+
+        # Assign count dictionaries if provided, else initialize empty
+        self.polarity_counts = polarity_counts if polarity_counts is not None else {'Negative': 0, 'Positive': 0}
+        self.emotion_counts = emotion_counts if emotion_counts is not None else {'Happy': 0, 'Sad': 0, 'Angry': 0, 'Anticipation': 0, 'Surprise': 0, 'Fear': 0}
+        self.intensity_counts = intensity_counts if intensity_counts is not None else {'Low': 0, 'Medium': 0, 'High': 0}
+
+        self.figure = Figure()
+        self.canvas = FigureCanvas(self.figure)
+
+        # Set the layout for the dialog
+        layout = QVBoxLayout()
+        layout.addWidget(self.canvas)
+        self.setLayout(layout)
+
+        self.draw_chart()
+
+    def draw_chart(self):
+        # Use the counts from the dictionaries
+        polarity_data = list(self.polarity_counts.values())
+        emotion_data = list(self.emotion_counts.values())
+        intensity_data = list(self.intensity_counts.values())
+
+        # Clear the previous figure
+        self.figure.clear()
+
+        # Create a subplot for each category
+        ax1 = self.figure.add_subplot(311)
+        ax2 = self.figure.add_subplot(312)
+        ax3 = self.figure.add_subplot(313)
+
+        # Plotting each category
+        bars1 = ax1.bar(self.polarity_counts.keys(), polarity_data, color='blue')
+        bars2 = ax2.bar(self.emotion_counts.keys(), emotion_data, color='green')
+        bars3 = ax3.bar(self.intensity_counts.keys(), intensity_data, color='red')
+
+        # Function to add percentage labels inside the bars
+        def add_percentage_labels(bars, data):
+            total = sum(data)
+            for bar, value in zip(bars, data):
+                percentage = (value / total) * 100 if total != 0 else 0
+                ax1.annotate(f'{percentage:.1f}%',  # Format with one decimal
+                            xy=(bar.get_x() + bar.get_width() / 2, value/2),
+                            ha='center', va='center',
+                            color='white', fontsize=8)
+
+        # Adding percentage labels inside each bar
+        add_percentage_labels(bars1, polarity_data)
+        add_percentage_labels(bars2, emotion_data)
+        add_percentage_labels(bars3, intensity_data)
+
+        # Setting titles and labels
+        ax1.set_title('Polarity')
+        ax1.set_ylabel('Counts')
+        ax2.set_title('Emotion')
+        ax2.set_ylabel('Counts')
+        ax3.set_title('Intensity Level')
+        ax3.set_ylabel('Counts')
+
+        # Adjust layout
+        self.figure.tight_layout()
+
+        # Draw the plot
+        self.canvas.draw()
+
+
+
 
 class Ui_OtherWindow(object):
     # Initialize class attributes
+    def show_chart_dialog(self):
+        dialog = ChartDialog(self.OtherWindow, self.polarity_counts, self.emotion_counts, self.intensity_counts)
+        dialog.setWindowTitle("Chart")
+        dialog.exec_()
+
+        
+
     def __init__(self):
         try: #Initialize the classifier model
             self.polarity_model_combine = joblib.load('svm_polarity.pkl')
@@ -51,6 +131,13 @@ class Ui_OtherWindow(object):
             self.emotion_model_text = joblib.load('svm_emotion_text.pkl')
         except Exception as e:
             print(f"Error loading models: {e}")
+        
+        self.polarity_counts = {'Negative': 0, 'Positive': 0}
+        self.emotion_counts = {'Happy': 0, 'Sad': 0, 'Angry': 0, 'Anticipation': 0, 'Surprise': 0, 'Fear': 0}
+        self.intensity_counts = {'Low': 0, 'Medium': 0, 'High': 0}
+
+        # Pass the QMainWindow instance or a proper QWidget to ChartDialog
+        #self.chart_dialog = ChartDialog(parent=self.OtherWindow, polarity_counts=self.polarity_counts, emotion_counts=self.emotion_counts, intensity_counts=self.intensity_counts)
 
         # Initialize SpellChecker
         self.spell = SpellChecker()
@@ -494,7 +581,7 @@ class Ui_OtherWindow(object):
         self.tableWidget.verticalHeader().setDefaultSectionSize(50)
 
         # Set header font color to white
-        header_stylesheet = "QHeaderView::section { bbackground-color:rgb(126,217,87); color: #000000; }"
+        header_stylesheet = "QHeaderView::section { background-color:rgb(126,217,87); color: #000000; }"
         self.tableWidget.horizontalHeader().setStyleSheet(header_stylesheet)
 
         # Table Widget font and style settings
@@ -535,6 +622,20 @@ class Ui_OtherWindow(object):
 
         self.retranslateUi(OtherWindow)
         QtCore.QMetaObject.connectSlotsByName(OtherWindow)
+        
+
+        self.OtherWindow = OtherWindow  # Store the reference to OtherWindow
+        self.showChartButton = QPushButton("Show Chart", self.centralwidget)
+        self.showChartButton.clicked.connect(self.show_chart_dialog)
+
+        # Now instantiate the ChartDialog
+        self.chart_dialog = ChartDialog(parent=self.OtherWindow, polarity_counts=self.polarity_counts, emotion_counts=self.emotion_counts, intensity_counts=self.intensity_counts)
+
+
+    def show_chart_dialog(self):
+        dialog = ChartDialog(parent=self.OtherWindow, polarity_counts=self.polarity_counts, emotion_counts=self.emotion_counts, intensity_counts=self.intensity_counts)
+        dialog.setWindowTitle("Chart")
+        dialog.exec_()
 
     # Utility methods for text pre-processing
 
@@ -972,6 +1073,7 @@ class Ui_OtherWindow(object):
 
         # Updated call
         intensity_result = self.classify_intensity(polarity_result_str, emotion_result_str, text_spell_checked) # Assuming classify_intensity requires emoticons_count and text
+        
 
         print("The Polarity is: ", polarity_result_str)
         print("\n")
@@ -1015,6 +1117,31 @@ class Ui_OtherWindow(object):
         intensity_item.setFont(font)
         self.tableWidget.setItem(current_row_count, 3, intensity_item)
 
+        # Incrementing the counts for polarity, emotion, and intensity
+        self.update_counts(polarity_result_str, emotion_result_str, intensity_result)
+
+    def update_counts(self, polarity, emotion, intensity):
+        # Update polarity count
+        if polarity in self.polarity_counts:
+            self.polarity_counts[polarity] += 1
+        else:
+            self.polarity_counts[polarity] = 1
+
+        # Update emotion count
+        if emotion in self.emotion_counts:
+            self.emotion_counts[emotion] += 1
+        else:
+            self.emotion_counts[emotion] = 1
+
+        # Update intensity count
+        if intensity in self.intensity_counts:
+            self.intensity_counts[intensity] += 1
+        else:
+            self.intensity_counts[intensity] = 1
+        
+        # After updating counts, redraw the chart
+        self.chart_dialog.draw_chart()
+
     def clearPlainText(self):
         self.plainTextEdit.setPlainText("")
 
@@ -1051,8 +1178,12 @@ class Ui_OtherWindow(object):
                 for index, row in df.iterrows():
                     self.plainTextEdit.setPlainText(row['Tweets'])  # Set the text in the plainTextEdit widget
                     self.updateTextInTable()  # Process and update the table
+                        # After processing all rows, set the filename in plainTextEdit
+                self.plainTextEdit.setPlainText(file_name)
+
             except Exception as e:
                 print("An error occurred:", e)
+        
         
     def showPopup(self):
         # Create and set up the pop-up dialog
@@ -1092,8 +1223,8 @@ import dsg2
 # Main application execution
 if __name__ == "__main__":
     import sys
-    app = QtWidgets.QApplication(sys.argv)
-    OtherWindow = QtWidgets.QMainWindow()
+    app = QApplication(sys.argv)
+    OtherWindow = QMainWindow()
     ui = Ui_OtherWindow()
     ui.setupUi(OtherWindow)
     OtherWindow.show()
