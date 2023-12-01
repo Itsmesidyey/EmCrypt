@@ -509,10 +509,8 @@ class Ui_OtherWindow(object):
 "")
         self.uploadfile.setObjectName("uploadfile")
         self.tableWidget = QtWidgets.QTableWidget(self.centralwidget)
-        self.tableWidget.setGeometry(QtCore.QRect(100, 470, 695, 311))
-        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Expanding)
-        sizePolicy.setHorizontalStretch(0)
-        sizePolicy.setVerticalStretch(0)
+        self.tableWidget.setGeometry(QtCore.QRect(100, 470, 695, 250))
+        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Fixed, QtWidgets.QSizePolicy.Fixed)
         sizePolicy.setHeightForWidth(self.tableWidget.sizePolicy().hasHeightForWidth())
         self.tableWidget.setSizePolicy(sizePolicy)
         font = QtGui.QFont()
@@ -1212,14 +1210,15 @@ class Ui_OtherWindow(object):
                     raise ValueError("Unsupported file format")
 
                 self.tableWidget.setRowCount(0)
-                for row in df.iterrows():
-                    self.plainTextEdit.setPlainText(row['Tweets'])  # Set the text in the plainTextEdit widget
+                for index, row in df.iterrows():
+                    self.plainTextEdit.setPlainText(row['Tweets'])  # Access the 'Tweets' column of the row
                     self.updateTextInTable()  # Process and update the table
-                        # After processing all rows, set the filename in plainTextEdit
+                    # After processing all rows, set the filename in plainTextEdit
                     self.plainTextEdit.setPlainText(file_name)
 
             except Exception as e:
                 print("An error occurred:", e)
+
         
         
     def showPopup(self):
