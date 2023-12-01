@@ -18,10 +18,10 @@ class Ui_Manual(object):
         self.centralwidget.setObjectName("centralwidget")
         self.label = QtWidgets.QLabel(self.centralwidget)
         self.label.setGeometry(QtCore.QRect(-20, 0, 1121, 721))
-        self.label.setStyleSheet("background-image: url(:/manual/Downloads/Frame 7 (6).png)")
+        self.label.setStyleSheet("background-image: url(:/manual/Downloads/Frame 7 (9).png) ")
         self.label.setText("")
         self.label.setTextFormat(QtCore.Qt.AutoText)
-        self.label.setPixmap(QtGui.QPixmap(":/manual/Downloads/Frame 7 (6).png"))
+        self.label.setPixmap(QtGui.QPixmap(":/manual/Downloads/Frame 7 (9).png"))
         self.label.setScaledContents(True)
         self.label.setObjectName("label")
         self.pushButton = QtWidgets.QPushButton(self.centralwidget)
@@ -114,7 +114,7 @@ class Ui_Manual(object):
 
     def retranslateUi(self, Manual):
         _translate = QtCore.QCoreApplication.translate
-        Manual.setWindowTitle(_translate("Manual", "MainWindow"))
+        Manual.setWindowTitle(_translate("Manual", "Emcrypt Manual"))
         self.pushButton.setText(_translate("Manual", "Continue >"))
 import dsg3
 
