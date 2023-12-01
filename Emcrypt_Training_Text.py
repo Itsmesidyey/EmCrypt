@@ -127,17 +127,6 @@ print("Output after removing punctuation and known emojis:")
 #Display the entire dataset
 print(dataset)
 
-# Function to clean repeating words
-#def cleaning_repeating_words(text):
-#    # This regex pattern targets whole words that are repeated
-#    return re.sub(r'\b(\w+)( \1\b)+', r'\1', text)
-
-# Assuming 'dataset' is a pandas DataFrame and 'text' is a column in it
-# Apply the cleaning function for repeating words to each row in the 'text' column
-#dataset['text'] = dataset['text'].apply(cleaning_repeating_words)
-#print("Repeating words cleaned from 'text' column.")
-#print(dataset['text'].head())
-
 
 stopwordlist = ['a', 'about', 'above', 'after', 'again', 'ain', 'all', 'am', 'an',
              'and','any','are', 'as', 'at', 'be', 'because', 'been', 'before',
@@ -279,7 +268,7 @@ model.add(LSTM(128, return_sequences=True))
 model.add(Dropout(0.5))
 model.add(LSTM(64))
 model.add(Dropout(0.5))
-model.add(Dense(7, activation='relu'))  # Added an extra Dense layer
+model.add(Dense(32, activation='relu'))  # Added an extra Dense layer
 num_emotions = data['emotion'].nunique()  # Number of unique emotions
 model.add(Dense(num_emotions, activation='softmax'))  # 'num_emotions' should be set to the number of emotion classes
 

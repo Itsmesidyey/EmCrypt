@@ -122,8 +122,6 @@ class Ui_OtherWindow(object):
         dialog.setWindowTitle("Chart")
         dialog.exec_()
 
-        
-
     def __init__(self):
         try: #Initialize the classifier model
             self.polarity_model_combine = joblib.load('svm_polarity.pkl')
@@ -136,9 +134,6 @@ class Ui_OtherWindow(object):
         self.polarity_counts = {'Negative': 0, 'Positive': 0}
         self.emotion_counts = {'Happy': 0, 'Sad': 0, 'Angry': 0, 'Anticipation': 0, 'Surprise': 0, 'Fear': 0}
         self.intensity_counts = {'Low': 0, 'Medium': 0, 'High': 0}
-
-        # Pass the QMainWindow instance or a proper QWidget to ChartDialog
-        #self.chart_dialog = ChartDialog(parent=self.OtherWindow, polarity_counts=self.polarity_counts, emotion_counts=self.emotion_counts, intensity_counts=self.intensity_counts)
 
         # Initialize SpellChecker
         self.spell = SpellChecker()
@@ -669,7 +664,6 @@ class Ui_OtherWindow(object):
         dialog.exec_()
 
     # Utility methods for text pre-processing
-
     @staticmethod
     def cleaning_numbers(original_text):
         cleaned_text = re.sub('[0-9]+', '', original_text)
@@ -891,7 +885,7 @@ class Ui_OtherWindow(object):
             features = self.extract_features_from_lstm(text, 'lstm_model_text.h5', 'tokenizer_text.pkl')
 
         # Transform features to 32 dimensions
-        transformed_features = self.adjust_features_to_expected_dim(features, 7)
+        transformed_features = self.adjust_features_to_expected_dim(features, 32)
         return transformed_features
 
     def extract_features_from_lstm(self, text, lstm_model_path, tokenizer_path):

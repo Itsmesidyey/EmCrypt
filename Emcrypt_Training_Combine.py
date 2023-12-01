@@ -2,6 +2,7 @@
 import re
 import pandas as pd
 import nltk
+import numpy as np
 
 #SpellCorrection
 from spellchecker import SpellChecker
@@ -435,43 +436,32 @@ emoticon_weights = {
             "💸": { 'angry': 0.2, 'anticipation': 0.5, 'fear': 0.1, 'happy': 0.3, 'sad': 0.4, 'surprise': 0.4 }
 }
 
-# Emoticon Conversion
-def convert_and_calculate(text, polarity):
-    emotional_scores = {emotion: 0.0 for emotion in ['angry', 'anticipation', 'fear', 'happy', 'sad', 'surprise']}
-    changed_emoticons = 0
-
+# Emoticon to word conversion function
+def convert_emoticons_to_words(text):
+    changed_emoticons = 0  # Variable to count the number of changed emoticons
     for emoticon, word in emoticon_dict.items():
-        if emoticon in text:
-            text = text.replace(emoticon, word + " ")
-            changed_emoticons += text.count(word)  # Count how many times the emoticon was replaced
+        while emoticon in text:
+            text = text.replace(emoticon, word + " ", 1)
+            changed_emoticons += 1
+    return text, changed_emoticons
 
-    for emoticon, word in emoticon_dict.items():
-        scores = emoticon_weights.get(emoticon, {'angry': 0.0, 'anticipation': 0.0, 'fear': 0.0, 'happy': 0.0, 'sad': 0.0, 'surprise': 0.0})
-        for emotion, score in scores.items():
-            # Adjust scores based on polarity
-            if polarity == 1 and emotion in ['happy', 'surprise', 'anticipation']:
-                emotional_scores[emotion] += score * text.count(word)
-            elif polarity == 0 and emotion in ['sad', 'fear', 'angry']:
-                emotional_scores[emotion] += score * text.count(word)
+# Apply the function and count emoticons for each row
+def apply_conversion(text):
+    converted_text, count = convert_emoticons_to_words(text)
+    return pd.Series([converted_text, count], index=['converted_text', 'emoticons_count'])
 
-    return text, changed_emoticons, emotional_scores
+def assign_emotion_based_on_polarity(polarity):
+    if polarity == 1:  # Positive polarity
+        return np.random.choice(['happy', 'surprise', 'anticipation'])
+    else:  # Negative polarity
+        return np.random.choice(['sad', 'fear', 'angry'])
 
-# Apply the combined function with polarity
-result = dataset.apply(lambda x: convert_and_calculate(x['text'], x['polarity']), axis=1)
-dataset['converted_text'] = result.apply(lambda x: x[0])
-dataset['emoticons_count'] = result.apply(lambda x: x[1])
-dataset['emotional_scores'] = result.apply(lambda x: x[2])
+conversion_results = dataset['text'].apply(apply_conversion)
+dataset['converted_text'] = conversion_results['converted_text']
+dataset['emoticons_count'] = conversion_results['emoticons_count']
+print("Emoticons converted to words in 'converted_text' column.")
+print(dataset[['converted_text', 'emoticons_count']].head())
 
-# Function to clean repeating words
-#def cleaning_repeating_words(text):
-#    # This regex pattern targets whole words that are repeated
-#    return re.sub(r'\b(\w+)( \1\b)+', r'\1', text)
-
-# Assuming 'dataset' is a pandas DataFrame and 'text' is a column in it
-# Apply the cleaning function for repeating words to each row in the 'text' column
-#dataset['text'] = dataset['text'].apply(cleaning_repeating_words)
-#print("Repeating words cleaned from 'text' column.")
-#print(dataset['text'].head())
 
 #Remove Stopwords
 stopwordlist = ['a', 'about', 'above', 'after', 'again', 'ain', 'all', 'am', 'an',
@@ -614,7 +604,7 @@ model.add(LSTM(128, return_sequences=True))
 model.add(Dropout(0.5))
 model.add(LSTM(64))
 model.add(Dropout(0.5))
-model.add(Dense(7, activation='relu'))  # Added an extra Dense layer
+model.add(Dense(32, activation='relu'))  # Added an extra Dense layer
 num_emotions = data['emotion'].nunique()  # Number of unique emotions
 model.add(Dense(num_emotions, activation='softmax'))  # 'num_emotions' should be set to the number of emotion classes
 
