@@ -23,12 +23,12 @@ from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
 class ClearablePlainTextEdit(QPlainTextEdit):
     def __init__(self, parent=None):
         super(ClearablePlainTextEdit, self).__init__(parent)
-        self.placeholder_text = " Enter the Cryptocurrency related tweets here..."
-        self.setPlainText(self.placeholder_text)
+        self.setPlaceholderText = " Enter the Cryptocurrency related tweets here..."
+        self.setPlainText(self.setPlaceholderText)
         self.setMaximumLength(280)  # Set the maximum length to 280 characters
 
     def focusInEvent(self, event):
-        if self.toPlainText() == self.placeholder_text:
+        if self.toPlainText() == self.setPlaceholderText:
             self.setPlainText("")
         super(ClearablePlainTextEdit, self).focusInEvent(event)
 
@@ -483,138 +483,171 @@ class Ui_OtherWindow(object):
     
     def setupUi(self, OtherWindow):
         OtherWindow.setObjectName("OtherWindow")
-        OtherWindow.resize(1034, 1000)
+        OtherWindow.resize(887, 831)
+        OtherWindow.setStyleSheet("background url(:/bg/Downloads/Frame (1).jpg)")
         self.centralwidget = QtWidgets.QWidget(OtherWindow)
         self.centralwidget.setObjectName("centralwidget")
         self.label = QtWidgets.QLabel(self.centralwidget)
-        self.label.setGeometry(QtCore.QRect(0, 0, 1051, 1061))
-        self.label.setStyleSheet("background-image: url(:/bgapp/Frame.png);")
+        self.label.setGeometry(QtCore.QRect(0, 0, 891, 821))
+        self.label.setStyleSheet("background url(:/bg/Downloads/Frame (10).jpg)")
         self.label.setText("")
-        self.label.setPixmap(QtGui.QPixmap(":/bgapp/Frame.png"))
+        self.label.setPixmap(QtGui.QPixmap(":/bg/Downloads/Frame (10).jpg"))
         self.label.setScaledContents(True)
         self.label.setObjectName("label")
 
-        self.scrollArea = QtWidgets.QScrollArea(self.centralwidget)
-        self.scrollArea.setGeometry(QtCore.QRect(120, 560, 811, 421)) #Set the geometry as needed
-        self.scrollArea.setWidgetResizable(True)
-
-        self.pushButton = QtWidgets.QPushButton(self.centralwidget)
-        self.pushButton.setGeometry(QtCore.QRect(140, 469, 181, 41))
+        self.uploadfile = QtWidgets.QPushButton(self.centralwidget)
+        self.uploadfile.setGeometry(QtCore.QRect(120, 390, 181, 41))
         font = QtGui.QFont()
         font.setFamily("Poppins")
-        font.setPointSize(14)
+        font.setPointSize(11)
         font.setBold(True)
         font.setWeight(75)
-        self.pushButton.setFont(font)
-        self.pushButton.setStyleSheet("background-color: rgb(126,217,87);\n"
-    "color: white;\n"
-    "border-radius:10px\n"
-    "")
-        self.pushButton.setObjectName("pushButton")
-        self.radioButton1 = QtWidgets.QRadioButton(self.centralwidget)
-        self.radioButton1.setGeometry(QtCore.QRect(170, 383, 21, 20))
-        self.radioButton1.setText("")
-        self.radioButton1.setObjectName("radioButton1")
-        self.radioButton1.setChecked(True)
-
-        self.radioButton2 = QtWidgets.QRadioButton(self.centralwidget)
-        self.radioButton2.setGeometry(QtCore.QRect(170, 415, 21, 21))
-        self.radioButton2.setText("")
-        self.radioButton2.setObjectName("radioButton2")
-
-        self.pushButton.setObjectName("pushButton")
-
-        self.plainTextEdit = ClearablePlainTextEdit(self.centralwidget)
-        self.plainTextEdit.setGeometry(QtCore.QRect(120, 180, 811, 171))
+        self.uploadfile.setFont(font)
+        self.uploadfile.setStyleSheet("background-color: rgb(126,217,87);\n"
+"color: white;\n"
+"border-radius:10px\n"
+"")
+        self.uploadfile.setObjectName("uploadfile")
+        self.tableWidget = QtWidgets.QTableWidget(self.centralwidget)
+        self.tableWidget.setGeometry(QtCore.QRect(100, 470, 695, 311))
+        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Expanding)
+        sizePolicy.setHorizontalStretch(0)
+        sizePolicy.setVerticalStretch(0)
+        sizePolicy.setHeightForWidth(self.tableWidget.sizePolicy().hasHeightForWidth())
+        self.tableWidget.setSizePolicy(sizePolicy)
         font = QtGui.QFont()
         font.setFamily("Poppins")
-        font.setPointSize(14)
+        font.setPointSize(10)
+        self.tableWidget.setFont(font)
+        self.tableWidget.setAutoFillBackground(False)
+        self.tableWidget.setStyleSheet("QTableWidget{\n"
+"background-color: white;\n"
+"color: white;\n"
+"border-radius:1px\n"
+"\n"
+"}\n"
+"QHeaderView::section { background-color:rgb(126,217,87)}\");\n"
+"\n"
+"")
+        self.tableWidget.setLineWidth(1)
+        self.tableWidget.setVerticalScrollBarPolicy(QtCore.Qt.ScrollBarAlwaysOn)
+        self.tableWidget.setHorizontalScrollBarPolicy(QtCore.Qt.ScrollBarAsNeeded)
+        self.tableWidget.setSizeAdjustPolicy(QtWidgets.QAbstractScrollArea.AdjustToContents)
+        self.tableWidget.setAutoScroll(True)
+        self.tableWidget.setShowGrid(True)
+        self.tableWidget.setRowCount(0)
+        self.tableWidget.setObjectName("tableWidget")
+        self.tableWidget.setColumnCount(4)
+        item = QtWidgets.QTableWidgetItem()
+        font = QtGui.QFont()
+        font.setFamily("Poppins")
+        font.setPointSize(10)
+        font.setKerning(False)
+        item.setFont(font)
+        item.setBackground(QtGui.QColor(255, 255, 255, 0))
+        brush = QtGui.QBrush(QtGui.QColor(255, 255, 255))
+        brush.setStyle(QtCore.Qt.SolidPattern)
+        item.setForeground(brush)
+        self.tableWidget.setHorizontalHeaderItem(0, item)
+        item = QtWidgets.QTableWidgetItem()
+        font = QtGui.QFont()
+        font.setFamily("Poppins")
+        font.setPointSize(10)
+        item.setFont(font)
+        item.setBackground(QtGui.QColor(255, 255, 255, 0))
+        brush = QtGui.QBrush(QtGui.QColor(255, 255, 255))
+        brush.setStyle(QtCore.Qt.SolidPattern)
+        item.setForeground(brush)
+        self.tableWidget.setHorizontalHeaderItem(1, item)
+        item = QtWidgets.QTableWidgetItem()
+        item.setText("Emotion")
+        font = QtGui.QFont()
+        font.setFamily("Poppins")
+        font.setPointSize(10)
+        item.setFont(font)
+        item.setBackground(QtGui.QColor(255, 255, 255, 0))
+        brush = QtGui.QBrush(QtGui.QColor(255, 255, 255))
+        brush.setStyle(QtCore.Qt.SolidPattern)
+        item.setForeground(brush)
+        self.tableWidget.setHorizontalHeaderItem(2, item)
+        item = QtWidgets.QTableWidgetItem()
+        font = QtGui.QFont()
+        font.setFamily("Poppins")
+        font.setPointSize(10)
+        item.setFont(font)
+        item.setBackground(QtGui.QColor(126, 217, 87, 0))
+        brush = QtGui.QBrush(QtGui.QColor(255, 255, 255))
+        brush.setStyle(QtCore.Qt.SolidPattern)
+        item.setForeground(brush)
+        self.tableWidget.setHorizontalHeaderItem(3, item)
+        self.tableWidget.horizontalHeader().setCascadingSectionResizes(True)
+        self.tableWidget.horizontalHeader().setDefaultSectionSize(160)
+        self.tableWidget.horizontalHeader().setHighlightSections(True)
+        self.tableWidget.horizontalHeader().setMinimumSectionSize(10)
+        self.tableWidget.horizontalHeader().setSortIndicatorShown(True)
+        self.tableWidget.horizontalHeader().setStretchLastSection(True)
+        self.tableWidget.verticalHeader().setCascadingSectionResizes(True)
+        self.tableWidget.verticalHeader().setDefaultSectionSize(100)
+        self.tableWidget.verticalHeader().setHighlightSections(True)
+        self.tableWidget.verticalHeader().setMinimumSectionSize(100)
+        self.tableWidget.verticalHeader().setSortIndicatorShown(True)
+        self.tableWidget.verticalHeader().setStretchLastSection(True)
+        self.evaluateButton = QtWidgets.QPushButton(self.centralwidget)
+        self.evaluateButton.setGeometry(QtCore.QRect(600, 390, 181, 41))
+        font = QtGui.QFont()
+        font.setFamily("Poppins")
+        font.setPointSize(11)
+        font.setBold(True)
+        font.setWeight(75)
+        self.evaluateButton.setFont(font)
+        self.evaluateButton.setStyleSheet("background-color: black;\n"
+"color: white;\n"
+"border-radius:10px\n"
+"")
+        self.evaluateButton.setObjectName("evaluateButton")
+        self.ClearButton = QtWidgets.QPushButton(self.centralwidget)
+        self.ClearButton.setGeometry(QtCore.QRect(310, 390, 141, 41))
+        font = QtGui.QFont()
+        font.setFamily("Poppins")
+        font.setPointSize(11)
+        font.setBold(True)
+        font.setWeight(75)
+        self.ClearButton.setFont(font)
+        self.ClearButton.setStyleSheet("background-color: rgb(249,107,107);\n"
+"color: white;\n"
+"border-radius:10px\n"
+"")
+        self.ClearButton.setObjectName("ClearButton")
+        self.plainTextEdit = ClearablePlainTextEdit(self.centralwidget)
+       #self.plainTextEdit = QtWidgets.QPlainTextEdit(self.centralwidget)
+        self.plainTextEdit.setGeometry(QtCore.QRect(100, 160, 691, 121))
+        font = QtGui.QFont()
+        font.setFamily("Poppins")
+        font.setPointSize(11)
         self.plainTextEdit.setFont(font)
         self.plainTextEdit.setObjectName("plainTextEdit")
-        
-        self.pushButton_2 = QtWidgets.QPushButton(self.centralwidget)
-        self.pushButton_2.setGeometry(QtCore.QRect(330, 469, 141, 41))
-        font = QtGui.QFont()
-        font.setFamily("Poppins")
-        font.setPointSize(14)
-        font.setBold(True)
-        font.setWeight(75)
-        self.pushButton_2.setFont(font)
-        self.pushButton_2.setStyleSheet("background-color: rgb(249,107,107);\n"
-    "color: white;\n"
-    "border-radius:10px\n"
-    "")
-        self.pushButton_2.setObjectName("pushButton_2")
+        self.radioButton = QtWidgets.QRadioButton(self.centralwidget)
+        self.radioButton.setGeometry(QtCore.QRect(140, 311, 451, 20))
+        self.radioButton.setObjectName("radioButton")
+        self.radioButton_2 = QtWidgets.QRadioButton(self.centralwidget)
+        self.radioButton_2.setGeometry(QtCore.QRect(140, 330, 201, 41))
+        self.radioButton_2.setObjectName("radioButton_2")
 
-        self.pushButton_3 = QtWidgets.QPushButton(self.centralwidget)
-        self.pushButton_3.setGeometry(QtCore.QRect(730, 470, 181, 41))
-        font = QtGui.QFont()
-        font.setFamily("Poppins")
-        font.setPointSize(14)
-        font.setBold(True)
-        font.setWeight(75)
-        self.pushButton_3.setFont(font)
-        self.pushButton_3.setStyleSheet("background-color: black;\n"
-    "color: white;\n"
-    "border-radius:10px\n"
-    "")
-        self.pushButton_3.setObjectName("pushButton_3")
-
-        # Create and set up the QScrollArea
-        self.scrollArea = QtWidgets.QScrollArea(self.centralwidget)
-        self.scrollArea.setGeometry(QtCore.QRect(120, 560, 811, 421))  # Adjust size and position as needed
-        self.scrollArea.setWidgetResizable(True)
-
-        # Create the QTableWidget
-        self.tableWidget = QtWidgets.QTableWidget()
-        self.tableWidget.setColumnCount(4)
-        self.tableWidget.setObjectName("tableWidget")
-        
-        # Set the headers
-        headers = ["Tweets", "Polarity", "Emotion", "Intensity"]
-        self.tableWidget.setHorizontalHeaderLabels(headers)
-
-        # Change font size of headers
-        font = QFont()
-        font.setPointSize(12)  # Set your desired font size here
-        self.tableWidget.horizontalHeader().setFont(font)
-        self.tableWidget.horizontalHeader().setDefaultSectionSize(203)
-        self.tableWidget.verticalHeader().setDefaultSectionSize(50)
-
-        # Set header font color to white
-        header_stylesheet = "QHeaderView::section { background-color:rgb(126,217,87); color: #000000; }"
-        self.tableWidget.horizontalHeader().setStyleSheet(header_stylesheet)
-
-        # Table Widget font and style settings
-        font = QtGui.QFont()
-        font.setFamily("Poppins")
-        font.setPointSize(16)
-        self.tableWidget.setFont(font)
-        self.tableWidget.setStyleSheet("QTableWidget{\n"
-                                    "background-color: white;\n"
-                                    "color: black;\n"  # Changed color to black for visibility
-                                    "border-radius:20px\n"
-                                    "}\n"
-                                    "QHeaderView::section { background-color:rgb(126,217,87)}\");\n")
-
-        self.tableWidget.setShowGrid(True)
-        self.tableWidget.setGridStyle(QtCore.Qt.CustomDashLine)
-
-
-        # Add the QTableWidget to the QScrollArea
-        self.scrollArea.setWidget(self.tableWidget)
-
-
-        self.iconButton = QtWidgets.QPushButton(self.centralwidget)
-        self.iconButton.setGeometry(QtCore.QRect(980, 10, 40, 40))  # Position in the upper right corner
-        icon = QtGui.QIcon()
-        icon.addPixmap(QtGui.QPixmap("/Users/cjcasinsinan/Documents/GitHub/EmCrypt/assets/manual-icon.png"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
-        self.iconButton.setIcon(icon)
-        self.iconButton.setIconSize(QtCore.QSize(30, 30))  # Set size of the icon
-        self.iconButton.setObjectName("iconButton")
-
-        # Connect the icon button to the function to show the pop-up
-        self.iconButton.clicked.connect(self.showPopup)
+        self.chartbutton = QtWidgets.QPushButton(self.centralwidget)
+        self.chartbutton.setGeometry(QtCore.QRect(830, 20, 30, 30))
+        self.chartbutton.setStyleSheet("image: url(:/chart/bar_chart_4_bars.png);\n"
+"background: white;\n"
+"border: white")
+        self.chartbutton.setText("")
+        self.chartbutton.setObjectName("chartbutton")
+        self.manualbutton = QtWidgets.QPushButton(self.centralwidget)
+        self.manualbutton.setGeometry(QtCore.QRect(30, 20, 30, 30))
+        self.manualbutton.setStyleSheet("image: url(:/manual/Downloads/manual-icon 3.png);\n"
+"background: white;\n"
+"border: white")
+        self.manualbutton.setText("")
+        self.manualbutton.setObjectName("manualbutton")
+        self.manualbutton.clicked.connect(self.showPopup)
 
         OtherWindow.setCentralWidget(self.centralwidget)
         self.statusbar = QtWidgets.QStatusBar(OtherWindow)
@@ -626,8 +659,7 @@ class Ui_OtherWindow(object):
         
 
         self.OtherWindow = OtherWindow  # Store the reference to OtherWindow
-        self.showChartButton = QPushButton("Show Chart", self.centralwidget)
-        self.showChartButton.clicked.connect(self.show_chart_dialog)
+        self.chartbutton.clicked.connect(self.show_chart_dialog)
 
         # Now instantiate the ChartDialog
         self.chart_dialog = ChartDialog(parent=self.OtherWindow, polarity_counts=self.polarity_counts, emotion_counts=self.emotion_counts, intensity_counts=self.intensity_counts)
@@ -851,11 +883,11 @@ class Ui_OtherWindow(object):
     
     def transform_text_to_features(self, text):
     # Check radio button selection
-        if self.radioButton1.isChecked():
+        if self.radioButton.isChecked():
             print("The Feature that you use is the Proposed System")
             print("\n")
             features = self.extract_features_from_lstm(text, 'lstm_model.h5', 'tokenizer.pkl')
-        elif self.radioButton2.isChecked():
+        elif self.radioButton_2.isChecked():
             print("The Feature that you use is using the Plain-Text Only")
             print("\n")
             features = self.extract_features_from_lstm(text, 'lstm_model_text.h5', 'tokenizer_text.pkl')
@@ -916,20 +948,24 @@ class Ui_OtherWindow(object):
         text_spell_checked = self.spell_correction(text_cleaned, self.emoticons_to_keep)  # Removed the emoticons_to_keep parameter if not used in spell_correction
 
         # Check radio button selection
-        if self.radioButton1.isChecked():
+        if self.radioButton.isChecked():
             converted_text, emoticons_count = self.convert_emoticons_to_words(text_spell_checked)  # Use the processed text
         
             # Print the text after coverting
             print("Combination of Keywords, Ending Punctuation Marks, and Emoticons :", ' '.join(converted_text))
             print("\n")
 
-        elif self.radioButton2.isChecked():
+        elif self.radioButton_2.isChecked():
             # Remove punctuations and known emojis and use the 'text' models
             converted_text = self.remove_punctuations_and_known_emojis(text_spell_checked)
 
             # Print the text after lemmatization
             print("Plain Text Only :", ' '.join(converted_text))
             print("\n")
+
+        else :
+            self.showButtonWarning()
+            
 
         text_no_stopwords = self.cleaning_stopwords(converted_text)
         text_lowercased = text_no_stopwords.lower()
@@ -990,7 +1026,7 @@ class Ui_OtherWindow(object):
         insert_into_database(lemmatized_text_string, 'emcrypt')
 
         # Check radio button selection
-        if self.radioButton1.isChecked():
+        if self.radioButton.isChecked():
             prepared_text = text_lemmatized    # Use the processed text
             features = self.transform_text_to_features(prepared_text)
             print("\n")
@@ -1010,7 +1046,7 @@ class Ui_OtherWindow(object):
             else:
                 emotion_result = "Model not loaded"
             
-        elif self.radioButton2.isChecked():
+        elif self.radioButton_2.isChecked():
             # Similar processing for radioButton2, if different
             prepared_text = text_lemmatized    # Use the processed text
             features = self.transform_text_to_features(prepared_text)
@@ -1065,7 +1101,7 @@ class Ui_OtherWindow(object):
         }
 
         # Check if the original text is empty and show the popup
-        if not original_text or original_text == self.plainTextEdit.placeholder_text:
+        if not original_text or original_text == self.plainTextEdit.setPlaceholderText:
             self.showInputWarning()
             return
         
@@ -1176,11 +1212,11 @@ class Ui_OtherWindow(object):
                     raise ValueError("Unsupported file format")
 
                 self.tableWidget.setRowCount(0)
-                for index, row in df.iterrows():
+                for row in df.iterrows():
                     self.plainTextEdit.setPlainText(row['Tweets'])  # Set the text in the plainTextEdit widget
                     self.updateTextInTable()  # Process and update the table
                         # After processing all rows, set the filename in plainTextEdit
-                self.plainTextEdit.setPlainText(file_name)
+                    self.plainTextEdit.setPlainText(file_name)
 
             except Exception as e:
                 print("An error occurred:", e)
@@ -1203,23 +1239,30 @@ class Ui_OtherWindow(object):
     def retranslateUi(self, OtherWindow):
         _translate = QtCore.QCoreApplication.translate
         OtherWindow.setWindowTitle(_translate("OtherWindow", "Emcrypt"))
-        self.pushButton.setText(_translate("OtherWindow", "Upload File"))
-        self.plainTextEdit.setPlainText(_translate("OtherWindow", " Enter the Cryptocurrency related tweets here..."))
-        self.pushButton_2.setText(_translate("OtherWindow", "Clear"))
-        self.pushButton_3.setText(_translate("OtherWindow", "Evaluate"))
         self.tableWidget.setSortingEnabled(True)
-        self.tableWidget.setHorizontalHeaderLabels([
-        _translate("OtherWindow", "Tweets"),
-        _translate("OtherWindow", "Polarity"),
-        _translate("OtherWindow", "Emotion"),
-        _translate("OtherWindow", "Intensity")
-        ])
+        #new code
+        OtherWindow.setWindowTitle(_translate("OtherWindow", "EmCrypt Analyzer"))
+        self.uploadfile.setText(_translate("OtherWindow", "Upload File"))
+        self.tableWidget.setWhatsThis(_translate("OtherWindow", "<html><head/><body><p>dcgvdfvbf</p></body></html>"))
+        item = self.tableWidget.horizontalHeaderItem(0)
+        item.setText(_translate("OtherWindow", "Tweets"))
+        item = self.tableWidget.horizontalHeaderItem(1)
+        item.setText(_translate("OtherWindow", "Polarity"))
+        item = self.tableWidget.horizontalHeaderItem(3)
+        item.setText(_translate("OtherWindow", "Intensity"))
+        self.evaluateButton.setText(_translate("OtherWindow", "Analyze"))
+        self.ClearButton.setText(_translate("OtherWindow", "Clear"))
+        self.plainTextEdit.setPlainText(_translate("OtherWindow", " Enter the Cryptocurrency related tweets here..."))
+        self.radioButton.setText(_translate("OtherWindow", "Combination of keywords, punctuation mark and emojis"))
+        self.radioButton_2.setText(_translate("OtherWindow", "Plaintext Only"))
 
-        self.pushButton.clicked.connect(self.uploadFile)  # Connect the button to the function
-        self.pushButton_2.clicked.connect(self.clearPlainText)  
-        self.pushButton_3.clicked.connect(self.updateTextInTable)
 
-import dsg2
+        # Connect the button to the function
+        self.uploadfile.clicked.connect(self.uploadFile)
+        self.ClearButton.clicked.connect(self.clearPlainText)  
+        self.evaluateButton.clicked.connect(self.updateTextInTable)
+
+import dsg4
 
 # Main application execution
 if __name__ == "__main__":
