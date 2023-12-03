@@ -116,7 +116,7 @@ class Ui_Manual(object):
         _translate = QtCore.QCoreApplication.translate
         Manual.setWindowTitle(_translate("Manual", "Emcrypt Manual"))
         self.pushButton.setText(_translate("Manual", "Continue >"))
-import dsg3
+import assets.dsg3 as dsg3
 
 
 if __name__ == "__main__":

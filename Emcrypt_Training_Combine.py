@@ -485,13 +485,13 @@ def cleaning_stopwords(text):
     return " ".join([word for word in str(text).split() if word not in STOPWORDS])
 
 # Apply the stopwords cleaning after the loop, once the 'text' column has been updated accordingly
-dataset['text'] = dataset['text'].apply(cleaning_stopwords)
-print("Stopwords removed from 'text' column.")
-print(dataset['text'].head())
+dataset['converted_text'] = dataset['converted_text'].apply(cleaning_stopwords)
+print("Stopwords removed from 'converted_text' column.")
+print(dataset['converted_text'].head())
 
 
-dataset['text']=dataset['text'].str.lower()
-dataset['text'].head()
+dataset['converted_text']=dataset['converted_text'].str.lower()
+dataset['converted_text'].head()
 
 
 #Tokenization
@@ -501,18 +501,18 @@ from nltk.tokenize import RegexpTokenizer
 tokenizer = RegexpTokenizer(r'\w+|[^\w\s]')
 
 # Applying the modified tokenizer to the dataset
-dataset['text'] = dataset['text'].apply(lambda x: ' '.join(x) if isinstance(x, list) else x)
-dataset['text'] = dataset['text'].apply(tokenizer.tokenize)
+dataset['converted_text'] = dataset['converted_text'].apply(lambda x: ' '.join(x) if isinstance(x, list) else x)
+dataset['converted_text'] = dataset['converted_text'].apply(tokenizer.tokenize)
 
 #Lemmatization
 lm = nltk.WordNetLemmatizer()
 def lemmatizer_on_text(data):
     text = [lm.lemmatize(word) for word in data]
     return data
-dataset['text'] = dataset['text'].apply(lambda x: lemmatizer_on_text(x))
+dataset['converted_text'] = dataset['converted_text'].apply(lambda x: lemmatizer_on_text(x))
 
 # Convert list to string for database insertion
-dataset['text'] = dataset['text'].apply(lambda x: ' '.join(x) if isinstance(x, list) else x)
+dataset['converted_text'] = dataset['converted_text'].apply(lambda x: ' '.join(x) if isinstance(x, list) else x)
 
 import mysql.connector
 from mysql.connector import Error
@@ -532,7 +532,7 @@ def insert_into_database(data, table_name):
 
             for i, row in data.iterrows():
                 # Assuming 'text' column contains the preprocessed and lemmatized text
-                text_value = row['text']
+                text_value = row['converted_text']
                 # If 'text' is a list, convert it to string
                 if isinstance(text_value, list):
                     text_value = ' '.join(text_value)

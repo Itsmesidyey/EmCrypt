@@ -19,6 +19,7 @@ import sys
 from PyQt5.QtWidgets import QMainWindow, QApplication, QPushButton, QVBoxLayout, QWidget
 from matplotlib.figure import Figure
 from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
+from sklearn.metrics import precision_score, recall_score, f1_score
 
 class ClearablePlainTextEdit(QPlainTextEdit):
     def __init__(self, parent=None):
@@ -110,10 +111,6 @@ class ChartDialog(QDialog):
 
         # Draw the plot
         self.canvas.draw()
-
-
-
-
 
 class Ui_OtherWindow(object):
     # Initialize class attributes
