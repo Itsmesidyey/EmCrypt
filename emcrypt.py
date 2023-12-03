@@ -16,7 +16,7 @@ from PyQt5.QtGui import QFont
 from PyQt5.QtWidgets import QPlainTextEdit
 from keras.models import Model
 import sys
-from PyQt5.QtWidgets import QMainWindow, QApplication, QPushButton, QVBoxLayout, QWidget
+from PyQt5.QtWidgets import QMainWindow, QApplication, QMessageBox, QVBoxLayout
 from matplotlib.figure import Figure
 from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
 from sklearn.metrics import precision_score, recall_score, f1_score
@@ -527,6 +527,7 @@ class Ui_OtherWindow(object):
         self.tableWidget.setShowGrid(True)
         self.tableWidget.setRowCount(0)
         self.tableWidget.setObjectName("tableWidget")
+        self.tableWidget.setEditTriggers(QtWidgets.QAbstractItemView.NoEditTriggers)
         self.tableWidget.setColumnCount(4)
         item = QtWidgets.QTableWidgetItem()
         font = QtGui.QFont()
@@ -750,97 +751,192 @@ class Ui_OtherWindow(object):
         print("\n")
         return lemmatized_text
 
-    def classify_intensity(self, polarity_result_str, emotion_result_str, text_spell_checked):
-        question_marks = text_spell_checked.count('?')
-        periods = text_spell_checked.count('.')
-        exclamation_marks = text_spell_checked.count('!')
-        total_emotion_weight = 0
+    def classify_intensity(self, polarity_result_str, emotion_result_str, text_spell_checked, converted_text):
+        if self.radioButton.isChecked():
+            question_marks = text_spell_checked.count('?')
+            periods = text_spell_checked.count('.')
+            exclamation_marks = text_spell_checked.count('!')
+            total_emotion_weight = 0
 
-        # Calculate total emotion weight for the given emotion
-        for char in text_spell_checked:
-            if char in self.emoticon_weights:
-                emoticon_weight = self.emoticon_weights[char]
-                if emotion_result_str.lower() in emoticon_weight:
-                    total_emotion_weight += emoticon_weight[emotion_result_str.lower()]
+            # Calculate total emotion weight for the given emotion
+            for char in text_spell_checked:
+                if char in self.emoticon_weights:
+                    emoticon_weight = self.emoticon_weights[char]
+                    if emotion_result_str.lower() in emoticon_weight:
+                        total_emotion_weight += emoticon_weight[emotion_result_str.lower()]
 
-        # Thresholds for different intensities can be adjusted as needed
-        high_threshold = 1.5  # Example threshold, adjust based on experimentation
-        medium_threshold = 0.5
+            # Thresholds for different intensities can be adjusted as needed
+            high_threshold = 1.5  # Example threshold, adjust based on experimentation
+            medium_threshold = 0.5
 
-        print("The emoticon weight is:", total_emotion_weight)
-        print("\n")
-        # Additional logic to account for intensifiers and negations
+            print("The emoticon weight is:", total_emotion_weight)
+            print("\n")
+            # Additional logic to account for intensifiers and negations
 
-        words = text_spell_checked.split()
-        intensity_modifier = 1.0
-        for word in words:
-            if word in self.intensifiers['pos']:
-                intensity_modifier += 0.5  # Increase the modifier for positive intensifiers
-            elif word in self.intensifiers['neg']:
-                intensity_modifier -= 0.5  #Decrease the modifier for negative intensifiers
-            #elif word in self.negations:
-            #intensity_modifier *= -1  # Negate the modifier for negations
+            words = text_spell_checked.split()
+            intensity_modifier = 1.0
+            for word in words:
+                if word in self.intensifiers['pos']:
+                    intensity_modifier += 0.5  # Increase the modifier for positive intensifiers
+                elif word in self.intensifiers['neg']:
+                    intensity_modifier -= 0.5  #Decrease the modifier for negative intensifiers
+                #elif word in self.negations:
+                #intensity_modifier *= -1  # Negate the modifier for negations
 
-        print("Intensity Modifier Score:", intensity_modifier)
-        print("\n")
+            print("Intensity Modifier Score:", intensity_modifier)
+            print("\n")
 
-        # Apply the intensity modifier to the total emotion weight
-        total_emotion_weight += intensity_modifier
+            # Apply the intensity modifier to the total emotion weight
+            total_emotion_weight += intensity_modifier
 
-        print("The Intensity and Emotion weight is:", total_emotion_weight)
-        print("\n")
+            print("The Intensity and Emotion weight is:", total_emotion_weight)
+            print("\n")
 
-        # Define intensity based on the combination of punctuation and emoticon weight
-        if emotion_result_str == 'Happy':
-            if exclamation_marks >= 1 or total_emotion_weight > high_threshold:
-                return 'High'
-            elif periods == 1 and question_marks == 0 or total_emotion_weight > medium_threshold:
-                return 'Medium'
+            # Define intensity based on the combination of punctuation and emoticon weight
+            if emotion_result_str == 'Happy':
+                if exclamation_marks >= 1 or total_emotion_weight > high_threshold:
+                    return 'High'
+                elif periods == 1 and question_marks == 0 or total_emotion_weight > medium_threshold:
+                    return 'Medium'
+                else:
+                    return 'Low'
+
+            elif emotion_result_str == 'Sad':
+                if exclamation_marks >= 1 and question_marks > 1 or total_emotion_weight > high_threshold:
+                    return 'High'
+                elif periods == 1 and question_marks == 1 or total_emotion_weight > medium_threshold:
+                    return 'Medium'
+                else:
+                    return 'Low'
+
+            elif emotion_result_str == 'Surprise':
+                if exclamation_marks >= 1 and question_marks > 1 or total_emotion_weight > high_threshold:
+                    return 'High'
+                elif periods == 1 and question_marks == 1 and exclamation_marks == 1 or total_emotion_weight > medium_threshold:
+                    return 'Medium'
+                else:
+                    return 'Low'
+
+            elif emotion_result_str == 'Angry':
+                if exclamation_marks >= 1 and total_emotion_weight > high_threshold:
+                    return 'High'
+                elif periods == 1 and question_marks == 0 or total_emotion_weight > medium_threshold:
+                    return 'Medium'
+                else:
+                    return 'Low'
+
+            elif emotion_result_str == 'Anticipation':
+                if exclamation_marks >= 1 and question_marks > 1 or total_emotion_weight > high_threshold:
+                    return 'High'
+                elif periods == 1 and question_marks == 1 or total_emotion_weight > medium_threshold:
+                    return 'Medium'
+                else:
+                    return 'Low'
+
+            elif emotion_result_str == 'Fear':
+                if exclamation_marks >= 1 and question_marks > 1 or total_emotion_weight > high_threshold:
+                    return 'High'
+                elif periods == 1 and question_marks == 1 or total_emotion_weight > medium_threshold:
+                    return 'Medium'
+                else:
+                    return 'Low'
+
             else:
-                return 'Low'
+                return 'Undefined'
+            
+        elif self.radioButton_2.isChecked():
+            question_marks = converted_text.count('?')
+            periods = converted_text.count('.')
+            exclamation_marks = converted_text.count('!')
+            total_emotion_weight = 0
 
-        elif emotion_result_str == 'Sad':
-            if exclamation_marks >= 1 and question_marks > 1 or total_emotion_weight > high_threshold:
-                return 'High'
-            elif periods == 1 and question_marks == 1 or total_emotion_weight > medium_threshold:
-                return 'Medium'
+            # Calculate total emotion weight for the given emotion
+            for char in converted_text:
+                if char in self.emoticon_weights:
+                    emoticon_weight = self.emoticon_weights[char]
+                    if emotion_result_str.lower() in emoticon_weight:
+                        total_emotion_weight += emoticon_weight[emotion_result_str.lower()]
+
+            # Thresholds for different intensities can be adjusted as needed
+            high_threshold = 1.5  # Example threshold, adjust based on experimentation
+            medium_threshold = 0.5
+
+            print("The emoticon weight is:", total_emotion_weight)
+            print("\n")
+            # Additional logic to account for intensifiers and negations
+
+            words = converted_text.split()
+            intensity_modifier = 0.5
+            for word in words:
+                if word in self.intensifiers['pos']:
+                    intensity_modifier += 0.5  # Increase the modifier for positive intensifiers
+                elif word in self.intensifiers['neg']:
+                    intensity_modifier -= 0.5  #Decrease the modifier for negative intensifiers
+                #elif word in self.negations:
+                #intensity_modifier *= -1  # Negate the modifier for negations
+
+            print("Intensity Modifier Score:", intensity_modifier)
+            print("\n")
+
+            # Apply the intensity modifier to the total emotion weight
+            total_emotion_weight += intensity_modifier
+
+            print("The Intensity and Emotion weight is:", total_emotion_weight)
+            print("\n")
+
+            # Define intensity based on the combination of punctuation and emoticon weight
+            if emotion_result_str == 'Happy':
+                if exclamation_marks >= 1 and total_emotion_weight > high_threshold:
+                    return 'High'
+                elif periods == 1 and question_marks == 0 and total_emotion_weight > medium_threshold:
+                    return 'Medium'
+                else:
+                    return 'Low'
+
+            elif emotion_result_str == 'Sad':
+                if exclamation_marks >= 1 and question_marks > 1 and total_emotion_weight > high_threshold:
+                    return 'High'
+                elif periods == 1 and question_marks == 1 and total_emotion_weight > medium_threshold:
+                    return 'Medium'
+                else:
+                    return 'Low'
+
+            elif emotion_result_str == 'Surprise':
+                if exclamation_marks >= 1 and question_marks > 1 and total_emotion_weight > high_threshold:
+                    return 'High'
+                elif periods == 1 and question_marks == 1 and exclamation_marks == 1 and total_emotion_weight > medium_threshold:
+                    return 'Medium'
+                else:
+                    return 'Low'
+
+            elif emotion_result_str == 'Angry':
+                if exclamation_marks >= 1 and total_emotion_weight > high_threshold:
+                    return 'High'
+                elif periods == 1 and question_marks == 0 and total_emotion_weight > medium_threshold:
+                    return 'Medium'
+                else:
+                    return 'Low'
+
+            elif emotion_result_str == 'Anticipation':
+                if exclamation_marks >= 1 and question_marks > 1 and total_emotion_weight > high_threshold:
+                    return 'High'
+                elif periods == 1 and question_marks == 1 and total_emotion_weight > medium_threshold:
+                    return 'Medium'
+                else:
+                    return 'Low'
+
+            elif emotion_result_str == 'Fear':
+                if exclamation_marks >= 1 and question_marks > 1 and total_emotion_weight > high_threshold:
+                    return 'High'
+                elif periods == 1 and question_marks == 1 and total_emotion_weight > medium_threshold:
+                    return 'Medium'
+                else:
+                    return 'Low'
+
             else:
-                return 'Low'
+                return 'Undefined'
 
-        elif emotion_result_str == 'Surprise':
-            if exclamation_marks >= 1 and question_marks > 1 or total_emotion_weight > high_threshold:
-                return 'High'
-            elif periods == 1 and question_marks == 1 and exclamation_marks == 1 or total_emotion_weight > medium_threshold:
-                return 'Medium'
-            else:
-                return 'Low'
 
-        elif emotion_result_str == 'Angry':
-            if exclamation_marks >= 1 and total_emotion_weight > high_threshold:
-                return 'High'
-            elif periods == 1 and question_marks == 0 or total_emotion_weight > medium_threshold:
-                return 'Medium'
-            else:
-                return 'Low'
-
-        elif emotion_result_str == 'Anticipation':
-            if exclamation_marks >= 1 and question_marks > 1 or total_emotion_weight > high_threshold:
-                return 'High'
-            elif periods == 1 and question_marks == 1 or total_emotion_weight > medium_threshold:
-                return 'Medium'
-            else:
-                return 'Low'
-
-        elif emotion_result_str == 'Fear':
-            if exclamation_marks >= 1 and question_marks > 1 or total_emotion_weight > high_threshold:
-                return 'High'
-            elif periods == 1 and question_marks == 1 or total_emotion_weight > medium_threshold:
-                return 'Medium'
-            else:
-                return 'Low'
-
-        else:
-            return 'Undefined'
 
     def convert_emoticons_to_words(self, text_spell_checked):
         text = text_spell_checked  # Initialize 'text' with 'original_text'
@@ -927,6 +1023,15 @@ class Ui_OtherWindow(object):
         msgBox.setStandardButtons(QtWidgets.QMessageBox.Ok)
         msgBox.exec_()
 
+    def showInputWarning2(self):
+        # Create and set up the pop-up dialog
+        msgBox = QtWidgets.QMessageBox()
+        msgBox.setIcon(QtWidgets.QMessageBox.Warning)
+        msgBox.setText("Please input one sentence with Maximum of 280 characters!")
+        msgBox.setWindowTitle("Error")
+        msgBox.setStandardButtons(QtWidgets.QMessageBox.Ok)
+        msgBox.exec_()
+
     def updateTextInTable(self):
         original_text = self.plainTextEdit.toPlainText()
 
@@ -952,10 +1057,6 @@ class Ui_OtherWindow(object):
             # Print the text after lemmatization
             print("Plain Text Only :", ' '.join(converted_text))
             print("\n")
-
-        else :
-            self.showButtonWarning()
-            
 
         text_no_stopwords = self.cleaning_stopwords(converted_text)
         text_lowercased = text_no_stopwords.lower()
@@ -1094,12 +1195,18 @@ class Ui_OtherWindow(object):
         if not original_text or original_text == self.plainTextEdit.setPlaceholderText:
             self.showInputWarning()
             return
+
+
+        if len(original_text) > 0 and len(original_text) < 3:
+            self.showInputWarning2()
+            return
+
         
         # Get the emotion from the dictionary with a default value of 'unknown'
         emotion_result_str = emotion_mappings.get(emotion_result_str, 'unknown')
 
         # Updated call
-        intensity_result = self.classify_intensity(polarity_result_str, emotion_result_str, text_spell_checked) # Assuming classify_intensity requires emoticons_count and text
+        intensity_result = self.classify_intensity(polarity_result_str, emotion_result_str, text_spell_checked, converted_text) # Assuming classify_intensity requires emoticons_count and text
         
 
         print("The Polarity is: ", polarity_result_str)
@@ -1245,7 +1352,7 @@ class Ui_OtherWindow(object):
         self.ClearButton.setText(_translate("OtherWindow", "Clear"))
         self.plainTextEdit.setPlainText(_translate("OtherWindow", " Enter the Cryptocurrency related tweets here..."))
         self.radioButton.setText(_translate("OtherWindow", "Combination of keywords, punctuation mark and emojis"))
-        self.radioButton_2.setText(_translate("OtherWindow", "Plaintext Only"))
+        self.radioButton_2.setText(_translate("OtherWindow", "Plain-text Only"))
 
 
         # Connect the button to the function
