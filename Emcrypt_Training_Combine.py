@@ -444,7 +444,6 @@ def convert_emoticons_to_words(text):
             text = text.replace(emoticon, word + " ", 1)
             changed_emoticons += 1
     return text, changed_emoticons
-
 # Apply the function and count emoticons for each row
 def apply_conversion(text):
     converted_text, count = convert_emoticons_to_words(text)
