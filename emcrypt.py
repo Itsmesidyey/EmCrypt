@@ -619,6 +619,7 @@ class Ui_OtherWindow(object):
         self.radioButton = QtWidgets.QRadioButton(self.centralwidget)
         self.radioButton.setGeometry(QtCore.QRect(140, 311, 451, 20))
         self.radioButton.setObjectName("radioButton")
+        self.radioButton.setChecked(True)
         self.radioButton_2 = QtWidgets.QRadioButton(self.centralwidget)
         self.radioButton_2.setGeometry(QtCore.QRect(140, 330, 201, 41))
         self.radioButton_2.setObjectName("radioButton_2")

@@ -9,17 +9,17 @@ from spellchecker import SpellChecker
 from nltk.tokenize import RegexpTokenizer
 
 import chardet
-DATASET_COLUMNS = ['text', 'polarity', 'emotion', 'intensity']
+DATASET_COLUMNS = ['date', 'username','text', 'polarity', 'emotion']
 
 #Detect file encoding using chardet
-with open('dataset_text.csv', 'rb') as f:
+with open('Emcrypt-dataset.csv', 'rb') as f:
     result = chardet.detect(f.read())
 
 # Print the detected encoding
 print("Detected encoding:", result['encoding'])
 
 # Read the file using the detected encoding
-df = pd.read_csv('dataset_text.csv', encoding=result['encoding'], names=DATASET_COLUMNS)
+df = pd.read_csv('Emcrypt-dataset.csv', encoding=result['encoding'], names=DATASET_COLUMNS)
 df.sample(5)
 
 
