@@ -575,9 +575,9 @@ data_majority = data[data.polarity == 1]
 data_minority = data[data.polarity == 0]
 
 data_minority_upsampled = resample(data_minority, 
-                                   replace=True,     # sample with replacement
+                                   replace=True, 
                                    n_samples=len(data_majority),    # to match majority class
-                                   random_state=123) # reproducible results
+                                   random_state=123)
 
 data_balanced = pd.concat([data_majority, data_minority_upsampled])
 

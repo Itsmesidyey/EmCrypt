@@ -7,7 +7,7 @@ class Ui_Manual(object):
         self.window = QtWidgets.QMainWindow()
         self.ui = Ui_OtherWindow()
         self.ui.setupUi(self.window)
-        self.Manual.hide()  # Hide the Manual window using the stored reference
+        self.Manual.hide()
         self.window.show()
 
     def setupUi(self, Manual):
@@ -116,8 +116,8 @@ class Ui_Manual(object):
         _translate = QtCore.QCoreApplication.translate
         Manual.setWindowTitle(_translate("Manual", "Emcrypt Manual"))
         self.pushButton.setText(_translate("Manual", "Continue >"))
-import assets.dsg3 as dsg3
 
+import assets.dsg3 as dsg3
 
 if __name__ == "__main__":
     import sys

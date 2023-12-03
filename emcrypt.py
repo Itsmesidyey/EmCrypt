@@ -304,7 +304,6 @@ class Ui_OtherWindow(object):
         self.intensifiers = {
             'pos': ['very', 'extremely', 'incredibly','absolutely', 'completely', 'utterly', 'totally', 'thoroughly','remarkably', 'exceptionally', 'especially', 'extraordinarily','amazingly', 'unbelievably', 'entirely', 'deeply', 'profoundly','truly', 'immensely', 'wholly', 'significantly', 'exceedingly'],
             'neg': ['less', 'hardly', 'barely', 'scarcely', 'marginally', 'slightly', 'minimally', 'rarely','infrequently', 'little', 'just', 'almost', 'nearly', 'faintly','somewhat', 'insufficiently', 'meagerly', 'sparingly']}
-        #self.negations = ['not', 'never', 'none']
 
         self.emoticon_weights = {
             '🌈': {'angry': 0.0, 'anticipation': 0.28, 'fear': 0.0, 'happy': 0.69, 'sad': 0.06, 'surprise': 0.22 },
@@ -610,7 +609,6 @@ class Ui_OtherWindow(object):
 "")
         self.ClearButton.setObjectName("ClearButton")
         self.plainTextEdit = ClearablePlainTextEdit(self.centralwidget)
-       #self.plainTextEdit = QtWidgets.QPlainTextEdit(self.centralwidget)
         self.plainTextEdit.setGeometry(QtCore.QRect(100, 160, 691, 121))
         font = QtGui.QFont()
         font.setFamily("Poppins")
@@ -653,7 +651,6 @@ class Ui_OtherWindow(object):
         self.OtherWindow = OtherWindow  # Store the reference to OtherWindow
         self.chartbutton.clicked.connect(self.show_chart_dialog)
 
-        # Now instantiate the ChartDialog
         self.chart_dialog = ChartDialog(parent=self.OtherWindow, polarity_counts=self.polarity_counts, emotion_counts=self.emotion_counts, intensity_counts=self.intensity_counts)
 
 
@@ -766,12 +763,11 @@ class Ui_OtherWindow(object):
                         total_emotion_weight += emoticon_weight[emotion_result_str.lower()]
 
             # Thresholds for different intensities can be adjusted as needed
-            high_threshold = 1.5  # Example threshold, adjust based on experimentation
+            high_threshold = 1.5
             medium_threshold = 0.5
 
             print("The emoticon weight is:", total_emotion_weight)
             print("\n")
-            # Additional logic to account for intensifiers and negations
 
             words = text_spell_checked.split()
             intensity_modifier = 1.0
@@ -780,8 +776,6 @@ class Ui_OtherWindow(object):
                     intensity_modifier += 0.5  # Increase the modifier for positive intensifiers
                 elif word in self.intensifiers['neg']:
                     intensity_modifier -= 0.5  #Decrease the modifier for negative intensifiers
-                #elif word in self.negations:
-                #intensity_modifier *= -1  # Negate the modifier for negations
 
             print("Intensity Modifier Score:", intensity_modifier)
             print("\n")
@@ -858,12 +852,11 @@ class Ui_OtherWindow(object):
                         total_emotion_weight += emoticon_weight[emotion_result_str.lower()]
 
             # Thresholds for different intensities can be adjusted as needed
-            high_threshold = 1.5  # Example threshold, adjust based on experimentation
+            high_threshold = 1.5 
             medium_threshold = 0.5
 
             print("The emoticon weight is:", total_emotion_weight)
             print("\n")
-            # Additional logic to account for intensifiers and negations
 
             words = converted_text.split()
             intensity_modifier = 0.5
@@ -872,8 +865,6 @@ class Ui_OtherWindow(object):
                     intensity_modifier += 0.5  # Increase the modifier for positive intensifiers
                 elif word in self.intensifiers['neg']:
                     intensity_modifier -= 0.5  #Decrease the modifier for negative intensifiers
-                #elif word in self.negations:
-                #intensity_modifier *= -1  # Negate the modifier for negations
 
             print("Intensity Modifier Score:", intensity_modifier)
             print("\n")
@@ -937,9 +928,8 @@ class Ui_OtherWindow(object):
                 return 'Undefined'
 
 
-
     def convert_emoticons_to_words(self, text_spell_checked):
-        text = text_spell_checked  # Initialize 'text' with 'original_text'
+        text = text_spell_checked
         emoticons_count = 0
         for emoticon, word in self.emoticon_dict.items():
             while emoticon in text:
@@ -1039,8 +1029,8 @@ class Ui_OtherWindow(object):
         print("<---------- Pre-processing Stage ---------->")
         print("\n")
         text_no_numbers = self.cleaning_numbers(original_text)
-        text_cleaned = self.clean_tweet(text_no_numbers, self.emoticons_to_keep)  # Use class attribute for emoticons_to_keep
-        text_spell_checked = self.spell_correction(text_cleaned, self.emoticons_to_keep)  # Removed the emoticons_to_keep parameter if not used in spell_correction
+        text_cleaned = self.clean_tweet(text_no_numbers, self.emoticons_to_keep)
+        text_spell_checked = self.spell_correction(text_cleaned, self.emoticons_to_keep)
 
         # Check radio button selection
         if self.radioButton.isChecked():
@@ -1283,7 +1273,7 @@ class Ui_OtherWindow(object):
         # Create and set up the pop-up dialog
         dialog = QDialog()
         dialog.setWindowTitle("Upload File Instructions")
-        dialog.setWindowModality(Qt.ApplicationModal)  # Make the dialog modal
+        dialog.setWindowModality(Qt.ApplicationModal)
 
         layout = QVBoxLayout(dialog)
 
@@ -1327,7 +1317,6 @@ class Ui_OtherWindow(object):
         dialog.setWindowModality(Qt.ApplicationModal)
         layout = QVBoxLayout(dialog)
 
-        # Create and set the image label
         label = QLabel(dialog)
         pixmap = QPixmap("/Users/cjcasinsinan/Documents/GitHub/EmCrypt/assets/user-manual.png")
         label.setPixmap(pixmap)
@@ -1338,7 +1327,6 @@ class Ui_OtherWindow(object):
         _translate = QtCore.QCoreApplication.translate
         OtherWindow.setWindowTitle(_translate("OtherWindow", "Emcrypt"))
         self.tableWidget.setSortingEnabled(True)
-        #new code
         OtherWindow.setWindowTitle(_translate("OtherWindow", "EmCrypt Analyzer"))
         self.uploadfile.setText(_translate("OtherWindow", "Upload File"))
         self.tableWidget.setWhatsThis(_translate("OtherWindow", "<html><head/><body><p>dcgvdfvbf</p></body></html>"))

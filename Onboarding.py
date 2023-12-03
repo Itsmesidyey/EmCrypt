@@ -122,8 +122,8 @@ class Ui_MainWindow(object):
         _translate = QtCore.QCoreApplication.translate
         MainWindow.setWindowTitle(_translate("MainWindow", "Emcrypt"))
         self.pushButton.setText(_translate("MainWindow", "Start"))
-import dsg1
 
+import dsg1
 
 if __name__ == "__main__":
     import sys
