@@ -1339,7 +1339,7 @@ class Ui_OtherWindow(object):
         self.evaluateButton.setText(_translate("OtherWindow", "Analyze"))
         self.ClearButton.setText(_translate("OtherWindow", "Clear"))
         self.plainTextEdit.setPlainText(_translate("OtherWindow", " Enter the Cryptocurrency related tweets here..."))
-        self.radioButton.setText(_translate("OtherWindow", "Combination of keywords, punctuation mark and emojis"))
+        self.radioButton.setText(_translate("OtherWindow", "EmCrypt"))
         self.radioButton_2.setText(_translate("OtherWindow", "Plain-text Only"))
 
 
