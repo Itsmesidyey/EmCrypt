@@ -763,14 +763,14 @@ class Ui_OtherWindow(object):
                         total_emotion_weight += emoticon_weight[emotion_result_str.lower()]
 
             # Thresholds for different intensities can be adjusted as needed
-            high_threshold = 1.5
+            high_threshold = 1.0
             medium_threshold = 0.5
 
             print("The emoticon weight is:", total_emotion_weight)
             print("\n")
 
             words = text_spell_checked.split()
-            intensity_modifier = 1.0
+            intensity_modifier = 0.5
             for word in words:
                 if word in self.intensifiers['pos']:
                     intensity_modifier += 0.5  # Increase the modifier for positive intensifiers
