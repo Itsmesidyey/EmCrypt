@@ -8,7 +8,7 @@ import numpy as np
 from spellchecker import SpellChecker
 
 import chardet
-DATASET_COLUMNS = ['date', 'username','text', 'polarity', 'emotion']
+DATASET_COLUMNS = ['text', 'polarity', 'emotion', 'intensity']
 
 #Detect file encoding using chardet
 with open('dataset_combine.csv', 'rb') as f:
