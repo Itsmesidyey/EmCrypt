@@ -1348,6 +1348,10 @@ class Ui_OtherWindow(object):
         self.ClearButton.clicked.connect(self.clearPlainText)  
         self.evaluateButton.clicked.connect(self.updateTextInTable)
 
+from sklearn.metrics import classification_report, confusion_matrix, accuracy_score
+import seaborn as sns
+import matplotlib.pyplot as plt
+
 import dsg4
 
 # Main application execution
