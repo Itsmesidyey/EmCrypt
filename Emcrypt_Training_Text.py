@@ -220,7 +220,9 @@ insert_into_database(dataset, 'text')
 
 #Sentiment Analysis Stage
 
+#Sentiment Analysis Stage
 import pandas as pd
+import numpy as np
 import joblib
 import pickle
 import matplotlib.pyplot as plt
@@ -232,88 +234,85 @@ from keras.models import Sequential
 from keras.layers import LSTM, Dense, Embedding, Dropout
 from keras.preprocessing.text import Tokenizer
 from keras.preprocessing.sequence import pad_sequences
-from keras.models import Model  # Import the Model class
+from keras.models import Model
+from keras.callbacks import EarlyStopping, ModelCheckpoint
 from sklearn.utils import resample
+import gc
 
-# Balancing the dataset
+# Assuming 'data' is your DataFrame with 'text', 'polarity', and 'emotion' columns
+
+# Balancing and Shuffling the dataset
 data_majority = data[data.polarity == 1]
 data_minority = data[data.polarity == 0]
 
 data_minority_upsampled = resample(data_minority, 
-                                   replace=True,     # sample with replacement
-                                   n_samples=len(data_majority),    # to match majority class
-                                   random_state=123) # reproducible results
+                                   replace=True, 
+                                   n_samples=len(data_majority),
+                                   random_state=123)
 
 data_balanced = pd.concat([data_majority, data_minority_upsampled])
-
-# Shuffling the dataset
 data_balanced = data_balanced.sample(frac=1).reset_index(drop=True)
 
-# Assuming 'data' is your DataFrame with 'text', 'polarity', and 'emotion' columns
-# Preprocess the text data here (if needed)
-texts = data['text']
-polarity_labels = data['polarity']
-emotion_labels = data['emotion']
-
-# Tokenize and pad sequences
+# Preprocess the text data
+texts_to_use = data_balanced['text']
 tokenizer = Tokenizer(num_words=20000)
-tokenizer.fit_on_texts(texts)
-sequences = tokenizer.texts_to_sequences(texts)
+tokenizer.fit_on_texts(texts_to_use)
+sequences = tokenizer.texts_to_sequences(texts_to_use)
 data_padded = pad_sequences(sequences, maxlen=100)
+
+# Convert labels to NumPy arrays for better performance
+polarity_labels = np.array(data_balanced['polarity'])
+emotion_labels = np.array(data_balanced['emotion'])
 
 # LSTM Model for Feature Extraction
 model = Sequential()
-model.add(Embedding(input_dim=20000, output_dim=256, input_length=100))  # Adjust 'input_dim' and 'input_length' as needed
+model.add(Embedding(input_dim=20000, output_dim=256, input_length=100))
 model.add(LSTM(128, return_sequences=True))
 model.add(Dropout(0.5))
 model.add(LSTM(64))
 model.add(Dropout(0.5))
-model.add(Dense(32, activation='relu'))  # Added an extra Dense layer
-num_emotions = data['emotion'].nunique()  # Number of unique emotions
-model.add(Dense(num_emotions, activation='softmax'))  # 'num_emotions' should be set to the number of emotion classes
+model.add(Dense(32, activation='relu'))
+num_emotions = data_balanced['emotion'].nunique()
+model.add(Dense(num_emotions, activation='softmax'))
 
 model.compile(optimizer='adam', loss='categorical_crossentropy', metrics=['accuracy'])
 
-model.fit(data_padded, pd.get_dummies(emotion_labels).values, epochs=15, batch_size=32, validation_split=0.2)  # Adjusted training
+# Add callbacks for efficient training
+early_stopping = EarlyStopping(monitor='val_loss', patience=3)
+model_checkpoint = ModelCheckpoint('best_lstm_model_text.h5', save_best_only=True)
 
-# Save the LSTM model and tokenizer
-model.save("lstm_model_text.h5")
+model.fit(data_padded, pd.get_dummies(emotion_labels).values, epochs=15, batch_size=32, validation_split=0.2, callbacks=[early_stopping, model_checkpoint])
+
+# Save the tokenizer
 with open('tokenizer_text.pkl', 'wb') as handle:
     pickle.dump(tokenizer, handle, protocol=pickle.HIGHEST_PROTOCOL)
 
 # Create a new model for feature extraction
 feature_extraction_model = Model(inputs=model.input, outputs=model.layers[-2].output)
-
-# Use the new model to extract features
 features = feature_extraction_model.predict(data_padded)
-print(features.shape)
-
 
 # Splitting the data for polarity and emotion
 X_train, X_temp, y_train_polarity, y_temp_polarity = train_test_split(features, polarity_labels, test_size=0.4, random_state=42)
 X_eval_polarity, X_test_polarity, y_eval_polarity, y_test_polarity = train_test_split(X_temp, y_temp_polarity, test_size=0.25, random_state=42)
 
-# Adjusted data splitting for emotion recognition
 X_train_emotion, X_temp_emotion, y_train_emotion, y_temp_emotion = train_test_split(features, emotion_labels, test_size=0.4, random_state=42)
 X_eval_emotion, X_test_emotion, y_eval_emotion, y_test_emotion = train_test_split(X_temp_emotion, y_temp_emotion, test_size=0.25, random_state=42)
 
-# Define the parameter grid
+# Define the parameter grid for SVM
 param_grid = {
     'C': [0.1, 1, 10, 100],
     'gamma': [1, 0.1, 0.01, 0.001],
     'kernel': ['rbf', 'poly', 'sigmoid']
 }
 
-grid_polarity = GridSearchCV(SVC(), param_grid, refit=True, verbose=2)
+# Grid Search for Polarity and Emotion SVMs with parallel processing
+grid_polarity = GridSearchCV(SVC(), param_grid, refit=True, verbose=2, n_jobs=-1)
 grid_polarity.fit(X_train, y_train_polarity)
-
 print("Best Polarity SVM Parameters:", grid_polarity.best_params_)
 
-# Grid Search for Emotion SVM
-grid_emotion = GridSearchCV(SVC(), param_grid, refit=True, verbose=2)
-grid_emotion.fit(X_train_emotion, y_train_emotion)  # Use X_train_emotion for emotion classification
+grid_emotion = GridSearchCV(SVC(), param_grid, refit=True, verbose=2, n_jobs=-1)
+grid_emotion.fit(X_train_emotion, y_train_emotion)
 print("Best Emotion SVM Parameters:", grid_emotion.best_params_)
-
 
 # Save the best SVM models
 joblib.dump(grid_polarity.best_estimator_, "svm_polarity_text.pkl")
@@ -327,7 +326,6 @@ def evaluate_model(grid, X_test, y_test, title):
     print(classification_report(y_test, y_pred))
     print(f"{title} Model Accuracy: {accuracy * 100:.2f}%\n")
 
-    # Confusion Matrix
     cm = confusion_matrix(y_test, y_pred)
     plt.figure(figsize=(10, 7))
     sns.heatmap(cm, annot=True, fmt='d')
@@ -339,3 +337,6 @@ def evaluate_model(grid, X_test, y_test, title):
 # Evaluate and visualize the performance of the Polarity and Emotion SVM Models
 evaluate_model(grid_polarity, X_test_polarity, y_test_polarity, "Polarity")
 evaluate_model(grid_emotion, X_test_emotion, y_test_emotion, "Emotion")
+
+# Memory Management
+gc.collect()
