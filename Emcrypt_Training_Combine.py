@@ -623,7 +623,6 @@ feature_extraction_model = Model(inputs=model.input, outputs=model.layers[-2].ou
 features = feature_extraction_model.predict(data_padded)
 print(features.shape)
 
-
 # Splitting the data for polarity and emotion
 X_train, X_temp, y_train_polarity, y_temp_polarity = train_test_split(features, polarity_labels, test_size=0.4, random_state=42)
 X_eval_polarity, X_test_polarity, y_eval_polarity, y_test_polarity = train_test_split(X_temp, y_temp_polarity, test_size=0.25, random_state=42)
@@ -653,7 +652,8 @@ print("Best Emotion SVM Parameters:", grid_emotion.best_params_)
 joblib.dump(grid_polarity.best_estimator_, "svm_polarity.pkl")
 joblib.dump(grid_emotion.best_estimator_, "svm_emotion.pkl")
 
-# Evaluation functions
+
+#Evaluation functions
 def evaluate_model(grid, X_test, y_test, title):
     y_pred = grid.predict(X_test)
     accuracy = accuracy_score(y_test, y_pred)
@@ -661,7 +661,7 @@ def evaluate_model(grid, X_test, y_test, title):
     print(classification_report(y_test, y_pred))
     print(f"{title} Model Accuracy: {accuracy * 100:.2f}%\n")
 
-    # Confusion Matrix
+# Confusion Matrix
     cm = confusion_matrix(y_test, y_pred)
     plt.figure(figsize=(10, 7))
     sns.heatmap(cm, annot=True, fmt='d')

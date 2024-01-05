@@ -812,7 +812,7 @@ class Ui_OtherWindow(object):
                     return 'Low'
 
             elif emotion_result_str == 'Angry':
-                if exclamation_marks >= 1 and total_emotion_weight > high_threshold:
+                if exclamation_marks >= 1 or total_emotion_weight > high_threshold:
                     return 'High'
                 elif periods == 1 and question_marks == 0 or total_emotion_weight > medium_threshold:
                     return 'Medium'
@@ -877,49 +877,49 @@ class Ui_OtherWindow(object):
 
             # Define intensity based on the combination of punctuation and emoticon weight
             if emotion_result_str == 'Happy':
-                if exclamation_marks >= 1 and total_emotion_weight > high_threshold:
+                if exclamation_marks >= 1 or total_emotion_weight > high_threshold:
                     return 'High'
-                elif periods == 1 and question_marks == 0 and total_emotion_weight > medium_threshold:
+                elif periods == 1 and question_marks == 0 or total_emotion_weight > medium_threshold:
                     return 'Medium'
                 else:
                     return 'Low'
 
             elif emotion_result_str == 'Sad':
-                if exclamation_marks >= 1 and question_marks > 1 and total_emotion_weight > high_threshold:
+                if exclamation_marks >= 1 and question_marks > 1 or total_emotion_weight > high_threshold:
                     return 'High'
-                elif periods == 1 and question_marks == 1 and total_emotion_weight > medium_threshold:
+                elif periods == 1 and question_marks == 1 or total_emotion_weight > medium_threshold:
                     return 'Medium'
                 else:
                     return 'Low'
 
             elif emotion_result_str == 'Surprise':
-                if exclamation_marks >= 1 and question_marks > 1 and total_emotion_weight > high_threshold:
+                if exclamation_marks >= 1 and question_marks > 1 or total_emotion_weight > high_threshold:
                     return 'High'
-                elif periods == 1 and question_marks == 1 and exclamation_marks == 1 and total_emotion_weight > medium_threshold:
+                elif periods == 1 and question_marks == 1 and exclamation_marks == 1 or total_emotion_weight > medium_threshold:
                     return 'Medium'
                 else:
                     return 'Low'
 
             elif emotion_result_str == 'Angry':
-                if exclamation_marks >= 1 and total_emotion_weight > high_threshold:
+                if exclamation_marks >= 1 or total_emotion_weight > high_threshold:
                     return 'High'
-                elif periods == 1 and question_marks == 0 and total_emotion_weight > medium_threshold:
+                elif periods == 1 and question_marks == 0 or total_emotion_weight > medium_threshold:
                     return 'Medium'
                 else:
                     return 'Low'
 
             elif emotion_result_str == 'Anticipation':
-                if exclamation_marks >= 1 and question_marks > 1 and total_emotion_weight > high_threshold:
+                if exclamation_marks >= 1 and question_marks > 1 or total_emotion_weight > high_threshold:
                     return 'High'
-                elif periods == 1 and question_marks == 1 and total_emotion_weight > medium_threshold:
+                elif periods == 1 and question_marks == 1 or total_emotion_weight > medium_threshold:
                     return 'Medium'
                 else:
                     return 'Low'
 
             elif emotion_result_str == 'Fear':
-                if exclamation_marks >= 1 and question_marks > 1 and total_emotion_weight > high_threshold:
+                if exclamation_marks >= 1 and question_marks > 1 or total_emotion_weight > high_threshold:
                     return 'High'
-                elif periods == 1 and question_marks == 1 and total_emotion_weight > medium_threshold:
+                elif periods == 1 and question_marks == 1 or total_emotion_weight > medium_threshold:
                     return 'Medium'
                 else:
                     return 'Low'
