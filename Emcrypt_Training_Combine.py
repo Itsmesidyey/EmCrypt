@@ -572,7 +572,6 @@ from keras.callbacks import EarlyStopping, ModelCheckpoint
 from sklearn.utils import resample
 import gc
 
-# Assuming 'data' is your DataFrame with 'text', 'polarity', and 'emotion' columns
 
 # Balancing and Shuffling the dataset
 data_majority = data[data.polarity == 1]
@@ -586,16 +585,24 @@ data_minority_upsampled = resample(data_minority,
 data_balanced = pd.concat([data_majority, data_minority_upsampled])
 data_balanced = data_balanced.sample(frac=1).reset_index(drop=True)
 
+# Assuming 'data' is your DataFrame with 'text', 'polarity', and 'emotion' columns
+# Assuming 'data' is your DataFrame with 'text', 'polarity', and 'emotion' columns
+# Preprocess the text data here (if needed)
+texts = data['text']
+polarity_labels = data['polarity']
+emotion_labels = data['emotion']
+
+# Tokenize and pad sequences
 # Preprocess the text data
-texts_to_use = data_balanced['text']
+#texts_to_use = data_balanced['text']
 tokenizer = Tokenizer(num_words=20000)
-tokenizer.fit_on_texts(texts_to_use)
-sequences = tokenizer.texts_to_sequences(texts_to_use)
+tokenizer.fit_on_texts(texts)
+sequences = tokenizer.texts_to_sequences(texts)
 data_padded = pad_sequences(sequences, maxlen=100)
 
 # Convert labels to NumPy arrays for better performance
-polarity_labels = np.array(data_balanced['polarity'])
-emotion_labels = np.array(data_balanced['emotion'])
+#polarity_labels = np.array(data_balanced['polarity'])
+#emotion_labels = np.array(data_balanced['emotion'])
 
 # LSTM Model for Feature Extraction
 model = Sequential()
@@ -610,29 +617,32 @@ model.add(Dense(num_emotions, activation='softmax'))
 
 model.compile(optimizer='adam', loss='categorical_crossentropy', metrics=['accuracy'])
 
-# Add callbacks for efficient training
-early_stopping = EarlyStopping(monitor='val_loss', patience=3)
-model_checkpoint = ModelCheckpoint('best_lstm_model.h5', save_best_only=True)
+model.fit(data_padded, pd.get_dummies(emotion_labels).values, epochs=15, batch_size=32, validation_split=0.2)  # Adjusted training
 
-model.fit(data_padded, pd.get_dummies(emotion_labels).values, epochs=15, batch_size=32, validation_split=0.2, callbacks=[early_stopping, model_checkpoint])
+# Add callbacks for efficient training
+#early_stopping = EarlyStopping(monitor='val_loss', patience=3)
+#model_checkpoint = ModelCheckpoint('best_lstm_model_text.h5', save_best_only=True)
+
+#model.fit(data_padded, pd.get_dummies(emotion_labels).values, epochs=15, batch_size=32, validation_split=0.2, callbacks=[early_stopping, model_checkpoint])
+
+# Save the LSTM model and tokenizer
+model.save("lstm_model.h5")
 
 # Save the tokenizer
-with open('tokenizer.pkl', 'wb') as handle:
+with open('tokenizer_text.pkl', 'wb') as handle:
     pickle.dump(tokenizer, handle, protocol=pickle.HIGHEST_PROTOCOL)
 
 # Create a new model for feature extraction
 feature_extraction_model = Model(inputs=model.input, outputs=model.layers[-2].output)
 features = feature_extraction_model.predict(data_padded)
+print(features.shape)
 
-# Splitting the data for polarity
-X_train_polarity, X_temp_polarity, y_train_polarity, y_temp_polarity = train_test_split(features, polarity_labels, test_size=0.4, random_state=42)
+# Splitting the data for polarity and emotion
+X_train, X_temp, y_train_polarity, y_temp_polarity = train_test_split(features, polarity_labels, test_size=0.4, random_state=42)
+X_eval_polarity, X_test_polarity, y_eval_polarity, y_test_polarity = train_test_split(X_temp, y_temp_polarity, test_size=0.25, random_state=42)
 
-# Adjust the test_size to 0.75 to get 450 samples for testing
-X_test_polarity, X_eval_polarity, y_test_polarity, y_eval_polarity = train_test_split(X_temp_polarity, y_temp_polarity, test_size=0.75, random_state=42)
-
-# Repeat the same for emotion data
 X_train_emotion, X_temp_emotion, y_train_emotion, y_temp_emotion = train_test_split(features, emotion_labels, test_size=0.4, random_state=42)
-X_test_emotion, X_eval_emotion, y_test_emotion, y_eval_emotion = train_test_split(X_temp_emotion, y_temp_emotion, test_size=0.75, random_state=42)
+X_eval_emotion, X_test_emotion, y_eval_emotion, y_test_emotion = train_test_split(X_temp_emotion, y_temp_emotion, test_size=0.25, random_state=42)
 
 # Define the parameter grid for SVM
 param_grid = {
@@ -643,16 +653,16 @@ param_grid = {
 
 # Grid Search for Polarity and Emotion SVMs with parallel processing
 grid_polarity = GridSearchCV(SVC(), param_grid, refit=True, verbose=2, n_jobs=-1)
-grid_polarity.fit(X_train_polarity, y_train_polarity)
+grid_polarity.fit(X_train, y_train_polarity)
 print("Best Polarity SVM Parameters:", grid_polarity.best_params_)
 
-grid_emotion = GridSearchCV(SVC(), param_grid, refit=True, verbose=2, n_jobs=-1)
-grid_emotion.fit(X_train_emotion, y_train_emotion)
-print("Best Emotion SVM Parameters:", grid_emotion.best_params_)
+# Grid Search for Emotion SVM
+grid_emotion = GridSearchCV(SVC(), param_grid, refit=True, verbose=2)
+grid_emotion.fit(X_train_emotion, y_train_emotion)  # Use X_train_emotion for emotion classification
 
 # Save the best SVM models
-joblib.dump(grid_polarity.best_estimator_, "svm_polarity.pkl")
-joblib.dump(grid_emotion.best_estimator_, "svm_emotion.pkl")
+joblib.dump(grid_polarity.best_estimator_, "svm_polarity_text.pkl")
+joblib.dump(grid_emotion.best_estimator_, "svm_emotion_text.pkl")
 
 # Evaluation functions
 def evaluate_model(grid, X_test, y_test, title):
@@ -673,6 +683,3 @@ def evaluate_model(grid, X_test, y_test, title):
 # Evaluate and visualize the performance of the Polarity and Emotion SVM Models
 evaluate_model(grid_polarity, X_test_polarity, y_test_polarity, "Polarity")
 evaluate_model(grid_emotion, X_test_emotion, y_test_emotion, "Emotion")
-
-# Memory Management
-gc.collect()

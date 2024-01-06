@@ -962,11 +962,11 @@ class Ui_OtherWindow(object):
         if self.radioButton.isChecked():
             print("The Feature that you use is the Proposed System")
             print("\n")
-            features = self.extract_features_from_lstm(text, 'best_lstm_model.h5', 'tokenizer.pkl')
+            features = self.extract_features_from_lstm(text, 'lstm_model.h5', 'tokenizer.pkl')
         elif self.radioButton_2.isChecked():
             print("The Feature that you use is using the Plain-Text Only")
             print("\n")
-            features = self.extract_features_from_lstm(text, 'best_lstm_model_text.h5', 'tokenizer_text.pkl')
+            features = self.extract_features_from_lstm(text, 'lstm_model_text.h5', 'tokenizer_text.pkl')
 
         # Transform features to 32 dimensions
         transformed_features = self.adjust_features_to_expected_dim(features, 32)
