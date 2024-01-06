@@ -624,12 +624,15 @@ with open('tokenizer.pkl', 'wb') as handle:
 feature_extraction_model = Model(inputs=model.input, outputs=model.layers[-2].output)
 features = feature_extraction_model.predict(data_padded)
 
-# Splitting the data for polarity and emotion
-X_train, X_temp, y_train_polarity, y_temp_polarity = train_test_split(features, polarity_labels, test_size=0.4, random_state=42)
-X_eval_polarity, X_test_polarity, y_eval_polarity, y_test_polarity = train_test_split(X_temp, y_temp_polarity, test_size=0.25, random_state=42)
+# Splitting the data for polarity
+X_train_polarity, X_temp_polarity, y_train_polarity, y_temp_polarity = train_test_split(features, polarity_labels, test_size=0.4, random_state=42)
 
+# Adjust the test_size to 0.75 to get 450 samples for testing
+X_test_polarity, X_eval_polarity, y_test_polarity, y_eval_polarity = train_test_split(X_temp_polarity, y_temp_polarity, test_size=0.75, random_state=42)
+
+# Repeat the same for emotion data
 X_train_emotion, X_temp_emotion, y_train_emotion, y_temp_emotion = train_test_split(features, emotion_labels, test_size=0.4, random_state=42)
-X_eval_emotion, X_test_emotion, y_eval_emotion, y_test_emotion = train_test_split(X_temp_emotion, y_temp_emotion, test_size=0.25, random_state=42)
+X_test_emotion, X_eval_emotion, y_test_emotion, y_eval_emotion = train_test_split(X_temp_emotion, y_temp_emotion, test_size=0.75, random_state=42)
 
 # Define the parameter grid for SVM
 param_grid = {
@@ -640,7 +643,7 @@ param_grid = {
 
 # Grid Search for Polarity and Emotion SVMs with parallel processing
 grid_polarity = GridSearchCV(SVC(), param_grid, refit=True, verbose=2, n_jobs=-1)
-grid_polarity.fit(X_train, y_train_polarity)
+grid_polarity.fit(X_train_polarity, y_train_polarity)
 print("Best Polarity SVM Parameters:", grid_polarity.best_params_)
 
 grid_emotion = GridSearchCV(SVC(), param_grid, refit=True, verbose=2, n_jobs=-1)
