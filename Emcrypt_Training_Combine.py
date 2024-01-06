@@ -23,7 +23,7 @@ df.sample(10)
 
 
 #Data preprocessing
-data=df[['text','polarity', 'emotion']]
+data=df[['text','polarity', 'emotion', 'intensity']]
 
 data_pos = data[data['polarity'] == 1]
 data_neg = data[data['polarity'] == 0]
@@ -515,10 +515,6 @@ dataset['converted_text'] = dataset['converted_text'].apply(lambda x: lemmatizer
 dataset['converted_text'] = dataset['converted_text'].apply(lambda x: ' '.join(x) if isinstance(x, list) else x)
 
 
-intensifiers = {
-            'pos': ['very', 'extremely', 'incredibly','absolutely', 'completely', 'utterly', 'totally', 'thoroughly','remarkably', 'exceptionally', 'especially', 'extraordinarily','amazingly', 'unbelievably', 'entirely', 'deeply', 'profoundly','truly', 'immensely', 'wholly', 'significantly', 'exceedingly'],
-            'neg': ['less', 'hardly', 'barely', 'scarcely', 'marginally', 'slightly', 'minimally', 'rarely','infrequently', 'little', 'just', 'almost', 'nearly', 'faintly','somewhat', 'insufficiently', 'meagerly', 'sparingly']}
-
 emoticon_weights = {
             '🌈': {'angry': 0.0, 'anticipation': 0.28, 'fear': 0.0, 'happy': 0.69, 'sad': 0.06, 'surprise': 0.22 },
             '🌙': {'angry': 0.0, 'anticipation': 0.31, 'fear': 0.0, 'happy': 0.25, 'sad': 0.0, 'surprise': 0.06},
@@ -686,16 +682,24 @@ emoticon_weights = {
             "💸": { 'angry': 0.2, 'anticipation': 0.5, 'fear': 0.1, 'happy': 0.3, 'sad': 0.4, 'surprise': 0.4 }
 }
 
-def classify_intensity(self, emotion_result_str, text_spell_checked, intensifiers):
-            question_marks = text_spell_checked.count('?')
-            periods = text_spell_checked.count('.')
-            exclamation_marks = text_spell_checked.count('!')
+intensifiers = {
+            'pos': ['very', 'extremely', 'incredibly','absolutely', 'completely', 'utterly', 'totally', 'thoroughly','remarkably', 'exceptionally', 'especially', 'extraordinarily','amazingly', 'unbelievably', 'entirely', 'deeply', 'profoundly','truly', 'immensely', 'wholly', 'significantly', 'exceedingly'],
+            'neg': ['less', 'hardly', 'barely', 'scarcely', 'marginally', 'slightly', 'minimally', 'rarely','infrequently', 'little', 'just', 'almost', 'nearly', 'faintly','somewhat', 'insufficiently', 'meagerly', 'sparingly']
+            }
+def classify_intensity(emotion_result_str, text, intensifiers):
+            # Ensure 'text' is a string
+            if not isinstance(text, str):
+                text = str(text)
+
+            question_marks = text.count('?')
+            periods = text.count('.')
+            exclamation_marks = text.count('!')
             total_emotion_weight = 0
 
             # Calculate total emotion weight for the given emotion
-            for char in text_spell_checked:
-                if char in self.emoticon_weights:
-                    emoticon_weight = self.emoticon_weights[char]
+            for char in text:
+                if char in emoticon_weights:
+                    emoticon_weight = emoticon_weights[char]
                     if emotion_result_str.lower() in emoticon_weight:
                         total_emotion_weight += emoticon_weight[emotion_result_str.lower()]
 
@@ -706,12 +710,12 @@ def classify_intensity(self, emotion_result_str, text_spell_checked, intensifier
             print("The emoticon weight is:", total_emotion_weight)
             print("\n")
 
-            words = text_spell_checked.split()
+            words = text.split()
             intensity_modifier = 0.5
             for word in words:
-                if word in self.intensifiers['pos']:
+                if word in intensifiers['pos']:
                     intensity_modifier += 0.5  # Increase the modifier for positive intensifiers
-                elif word in self.intensifiers['neg']:
+                elif word in intensifiers['neg']:
                     intensity_modifier -= 0.5  #Decrease the modifier for negative intensifiers
 
             print("Intensity Modifier Score:", intensity_modifier)
@@ -780,11 +784,12 @@ def apply_classify_intensity(row):
     return classify_intensity(
         row['emotion'], 
         row['converted_text'],
-        emoticon_weights,
         intensifiers
     )
 
+# Apply the modified function to the dataset
 dataset['intensity'] = dataset.apply(apply_classify_intensity, axis=1)
+
 
 import mysql.connector
 from mysql.connector import Error
@@ -868,6 +873,9 @@ data_padded = pad_sequences(sequences, maxlen=100)
 # Convert labels to NumPy arrays for better performance
 polarity_labels = np.array(data_balanced['polarity'])
 emotion_labels = np.array(data_balanced['emotion'])
+# Assuming the 'intensity' column exists in the data_balanced DataFrame
+intensity_labels = np.array(data_balanced['intensity'])
+
 
 # LSTM Model for Feature Extraction
 model = Sequential()
@@ -902,6 +910,9 @@ X_eval_polarity, X_test_polarity, y_eval_polarity, y_test_polarity = train_test_
 
 X_train_emotion, X_temp_emotion, y_train_emotion, y_temp_emotion = train_test_split(features, emotion_labels, test_size=0.4, random_state=42)
 X_eval_emotion, X_test_emotion, y_eval_emotion, y_test_emotion = train_test_split(X_temp_emotion, y_temp_emotion, test_size=0.25, random_state=42)
+
+# Splitting the dataset for intensity level evaluation
+X_test_intensity, X_eval_intensity, y_test_intensity, y_eval_intensity = train_test_split(features, intensity_labels, test_size=0.1, random_state=42)
 
 # Define the parameter grid for SVM
 param_grid = {
@@ -943,21 +954,23 @@ def evaluate_model(grid, X_test, y_test, title):
 evaluate_model(grid_polarity, X_test_polarity, y_test_polarity, "Polarity")
 evaluate_model(grid_emotion, X_test_emotion, y_test_emotion, "Emotion")
 
-# Assuming the 'intensity' column exists in the data_balanced DataFrame
-intensity_labels = np.array(data_balanced['intensity'])
-
-# Splitting the dataset for intensity level evaluation
-X_test_intensity, X_eval_intensity, y_test_intensity, y_eval_intensity = train_test_split(features, intensity_labels, test_size=0.1, random_state=42)
 
 # Function to evaluate Intensity Level based on your rule-based classifier
-def evaluate_intensity_model(X_test, y_test):
+def evaluate_intensity_model(X_test_indices, y_test):
     y_pred = []  # Placeholder for predicted intensity levels
 
-    for i in range(len(X_test)):
-        # Insert your rule-based intensity classification logic here
-        # Example: predicted_intensity = your_intensity_classifier(X_test[i])
-        # For the sake of demonstration, I'm appending a placeholder value
-        y_pred.append('placeholder_intensity')
+    for idx in X_test_indices:
+        # Retrieve the corresponding text for the current sample using the index
+        text = dataset.loc[idx, 'text']  # Use .loc to access the 'text' column for the specific row
+
+        # Placeholder for obtaining emotion result string for the current test sample
+        emotion_result_str = emotion_labels[idx]  # Adjust this according to your logic or data
+
+        # Call classify_intensity with correct parameters
+        predicted_intensity = classify_intensity(emotion_result_str, text, intensifiers)
+
+        y_pred.append(predicted_intensity)
+
 
     # Calculate and print the evaluation metrics
     accuracy = accuracy_score(y_test, y_pred)
