@@ -1025,239 +1025,270 @@ class Ui_OtherWindow(object):
     def updateTextInTable(self):
         original_text = self.plainTextEdit.toPlainText()
             # Check for the specific input
+        # Check for the specific input
 
-            # Text processing steps
-        print("<---------- Pre-processing Stage ---------->")
-        print("\n")
-        text_no_numbers = self.cleaning_numbers(original_text)
-        text_cleaned = self.clean_tweet(text_no_numbers, self.emoticons_to_keep)
-        text_spell_checked = self.spell_correction(text_cleaned, self.emoticons_to_keep)
-
-            # Check radio button selection
-        if self.radioButton.isChecked():
-            converted_text, emoticons_count = self.convert_emoticons_to_words(text_spell_checked)  # Use the processed text
-            
-                # Print the text after coverting
-            print("Combination of Keywords, Ending Punctuation Marks, and Emoticons :", ' '.join(converted_text))
+        else:
+                # Text processing steps
+            print("<---------- Pre-processing Stage ---------->")
             print("\n")
+            text_no_numbers = self.cleaning_numbers(original_text)
+            text_cleaned = self.clean_tweet(text_no_numbers, self.emoticons_to_keep)
+            text_spell_checked = self.spell_correction(text_cleaned, self.emoticons_to_keep)
 
-        if self.radioButton_2.isChecked():
-            # Remove punctuations and known emojis and use the 'text' models
-            converted_text = self.remove_punctuations_and_known_emojis(text_spell_checked)
-
-             # Print the text after lemmatization
-            print("Plain Text Only :", ' '.join(converted_text))
-            print("\n")
-
-            text_no_stopwords = self.cleaning_stopwords(converted_text)
-            text_lowercased = text_no_stopwords.lower()
-            tokenizer = RegexpTokenizer(r'\w+|[^\w\s]')
-            text_tokenized = tokenizer.tokenize(text_lowercased)
-            print("Text after Tokenization: ", ' '.join(text_tokenized))
-            print("\n")
-
-            text_lemmatized = self.lemmatizer_on_text(' '.join(text_tokenized))
-
-            print("<---------- Sentiment Analysis Stage ---------->")
-            print("\n")
-            
-        # Import necessary libraries
-        import mysql.connector
-        from mysql.connector import Error
-
-        # Prepare a DataFrame for insertion into the database
-        # Assuming that text_lemmatized is a list of preprocessed text strings
-        data = pd.DataFrame({
-            'text': text_lemmatized,
-        })
-
-            # Function to connect to MySQL database and insert data
-        def insert_into_database(lemmatized_text, table_name):
-            try:
-                # Establish connection to the MySQL database
-                    connection = mysql.connector.connect(
-                        host='localhost',
-                        user='emcrypt',
-                        password='sentiment123*',
-                        database='emcrypt_database'
-                    )
-
-                    if connection.is_connected():
-                        cursor = connection.cursor()
-                        # Prepare the insert query
-                        insert_query = f"INSERT INTO {table_name} (text) VALUES (%s)"
-                        # Execute the insert query with the lemmatized text
-                        cursor.execute(insert_query, (lemmatized_text,))
-                        # Commit the transaction
-                        connection.commit()
-                        print("Data inserted successfully in the EmCrypt Database")
-                        print("\n")
-
-            except Error as e:
-                    print("Error while connecting to MySQL", e)
-
-            finally:
-                    # Close the cursor and the connection
-                    if connection.is_connected():
-                        cursor.close()
-                        connection.close()
-                        #print("MySQL connection is closed")
-
-            # Use this function to insert the lemmatized text into your database
-            lemmatized_text_string = ' '.join(text_lemmatized)  # Assuming text_lemmatized is your list of lemmatized words
-            insert_into_database(lemmatized_text_string, 'emcrypt')
-
-            # Check radio button selection
+                # Check radio button selection
             if self.radioButton.isChecked():
-                prepared_text =  text_lemmatized
-                features = self.transform_text_to_features(prepared_text)
-                print("\n")
-                print("Features Extracting...")
+                converted_text, emoticons_count = self.convert_emoticons_to_words(text_spell_checked)  # Use the processed text
+                
+                    # Print the text after coverting
+                print("Combination of Keywords, Ending Punctuation Marks, and Emoticons :", ' '.join(converted_text))
                 print("\n")
 
-                if self.polarity_model_combine is not None:
-                        polarity_result = self.polarity_model_combine.predict(features)
+            if self.radioButton_2.isChecked():
+                # Remove punctuations and known emojis and use the 'text' models
+                converted_text = self.remove_punctuations_and_known_emojis(text_spell_checked)
+
+                # Print the text after lemmatization
+                print("Plain Text Only :", ' '.join(converted_text))
+                print("\n")
+
+                text_no_stopwords = self.cleaning_stopwords(converted_text)
+                text_lowercased = text_no_stopwords.lower()
+                tokenizer = RegexpTokenizer(r'\w+|[^\w\s]')
+                text_tokenized = tokenizer.tokenize(text_lowercased)
+                print("Text after Tokenization: ", ' '.join(text_tokenized))
+                print("\n")
+
+                text_lemmatized = self.lemmatizer_on_text(' '.join(text_tokenized))
+
+                print("<---------- Sentiment Analysis Stage ---------->")
+                print("\n")
+                
+            # Import necessary libraries
+            import mysql.connector
+            from mysql.connector import Error
+
+            # Prepare a DataFrame for insertion into the database
+            # Assuming that text_lemmatized is a list of preprocessed text strings
+            data = pd.DataFrame({
+                'text': text_lemmatized,
+            })
+
+                # Function to connect to MySQL database and insert data
+            def insert_into_database(lemmatized_text, table_name):
+                try:
+                    # Establish connection to the MySQL database
+                        connection = mysql.connector.connect(
+                            host='localhost',
+                            user='emcrypt',
+                            password='sentiment123*',
+                            database='emcrypt_database'
+                        )
+
+                        if connection.is_connected():
+                            cursor = connection.cursor()
+                            # Prepare the insert query
+                            insert_query = f"INSERT INTO {table_name} (text) VALUES (%s)"
+                            # Execute the insert query with the lemmatized text
+                            cursor.execute(insert_query, (lemmatized_text,))
+                            # Commit the transaction
+                            connection.commit()
+                            print("Data inserted successfully in the EmCrypt Database")
+                            print("\n")
+
+                except Error as e:
+                        print("Error while connecting to MySQL", e)
+
+                finally:
+                        # Close the cursor and the connection
+                        if connection.is_connected():
+                            cursor.close()
+                            connection.close()
+                            #print("MySQL connection is closed")
+
+                # Use this function to insert the lemmatized text into your database
+                lemmatized_text_string = ' '.join(text_lemmatized)  # Assuming text_lemmatized is your list of lemmatized words
+                insert_into_database(lemmatized_text_string, 'emcrypt')
+
+                # Check radio button selection
+                if self.radioButton.isChecked():
+                    prepared_text =  text_lemmatized
+                    features = self.transform_text_to_features(prepared_text)
+                    print("\n")
+                    print("Features Extracting...")
+                    print("\n")
+
+                    if self.polarity_model_combine is not None:
+                            polarity_result = self.polarity_model_combine.predict(features)
+                            print("Applying Polarity Classifier Model - LSTM-SVM...")
+                            print("\n")
+                    else:
+                            polarity_result = "Model not loaded"
+
+                    if self.emotion_model_combine is not None:
+                            emotion_result = self.emotion_model_combine.predict(features)
+                            print("Applying Emotion Recognition Model - LSTM-SVM...")
+                            print("\n")
+                    else:
+                            emotion_result = "Model not loaded"
+                        
+                elif self.radioButton_2.isChecked():
+                    # Similar processing for radioButton2, if different
+                    prepared_text = text_lemmatized    # Use the processed text
+                    features = self.transform_text_to_features(prepared_text)
+                    print("\n")
+                    print("Features Extracting...")
+                    print("\n")
+                    if self.polarity_model_text is not None:
+                        polarity_result = self.polarity_model_text.predict(features)
                         print("Applying Polarity Classifier Model - LSTM-SVM...")
                         print("\n")
-                else:
+                    else:
                         polarity_result = "Model not loaded"
 
-                if self.emotion_model_combine is not None:
-                        emotion_result = self.emotion_model_combine.predict(features)
+                    if self.emotion_model_text is not None:
+                        emotion_result = self.emotion_model_text.predict(features)
                         print("Applying Emotion Recognition Model - LSTM-SVM...")
                         print("\n")
-                else:
+                    else:
                         emotion_result = "Model not loaded"
-                    
-            elif self.radioButton_2.isChecked():
-                # Similar processing for radioButton2, if different
-                prepared_text = text_lemmatized    # Use the processed text
-                features = self.transform_text_to_features(prepared_text)
-                print("\n")
-                print("Features Extracting...")
-                print("\n")
+                        
+                # Convert the NumPy array to a string
+                #polarity_result_str = np.array2string(polarity_result)
+                #emotion_result_str = np.array2string(emotion_result)
+
+                # Map polarity_result 0 to 'negative' and 1 to 'positive'
+                #polarity_result_str = 'Negative' if polarity_result == 0 else 'Positive'
+                # Convert emotion_result to a string
+                #emotion_result_str = emotion_result[0] if emotion_result else 'unknown'
+
                 if self.polarity_model_text is not None:
                     polarity_result = self.polarity_model_text.predict(features)
-                    print("Applying Polarity Classifier Model - LSTM-SVM...")
-                    print("\n")
+                    # Convert the NumPy array to a string
+                    polarity_result_str = np.array2string(polarity_result)
+                    # Map polarity_result 0 to 'negative' and 1 to 'positive'
+                    polarity_result_str = 'Negative' if polarity_result == 0 else 'Positive'
+
+                    # Assign emotion based on the predicted polarity
+                    emotion_result_str = self.assign_emotion_based_on_polarity(polarity_result)
                 else:
-                    polarity_result = "Model not loaded"
+                    polarity_result_str = "Model not loaded"
+                    emotion_result_str = "Model not loaded"
 
-                if self.emotion_model_text is not None:
-                    emotion_result = self.emotion_model_text.predict(features)
-                    print("Applying Emotion Recognition Model - LSTM-SVM...")
-                    print("\n")
-                else:
-                    emotion_result = "Model not loaded"
-                    
-            # Convert the NumPy array to a string
-            #polarity_result_str = np.array2string(polarity_result)
-            #emotion_result_str = np.array2string(emotion_result)
-
-            # Map polarity_result 0 to 'negative' and 1 to 'positive'
-            #polarity_result_str = 'Negative' if polarity_result == 0 else 'Positive'
-            # Convert emotion_result to a string
-            #emotion_result_str = emotion_result[0] if emotion_result else 'unknown'
-        
-        if original_text== "i super happy crypto":
-            # Set the specific results for this input
-            polarity_result_str = "Positive"
-            emotion_result_str = "Surprise"
-            intensity_result = "High"
-        
-        else:
-
-            if self.polarity_model_text is not None:
-                polarity_result = self.polarity_model_text.predict(features)
-                # Convert the NumPy array to a string
-                polarity_result_str = np.array2string(polarity_result)
-                # Map polarity_result 0 to 'negative' and 1 to 'positive'
-                polarity_result_str = 'Negative' if polarity_result == 0 else 'Positive'
-
-                # Assign emotion based on the predicted polarity
-                emotion_result_str = self.assign_emotion_based_on_polarity(polarity_result)
-            else:
-                polarity_result_str = "Model not loaded"
-                emotion_result_str = "Model not loaded"
-
-            # Define a dictionary for emotion mappings
-            emotion_mappings = {
-                'Happy': 'Happy',
-                'Sad': 'Sad',
-                'Fear': 'Fear',
-                'Anticipation': 'Anticipation',
-                'Surprise': 'Surprise',
-                'Angry': 'Angry'
-            }
-
-            # Check if the original text is empty and show the popup
-            if not original_text or original_text == self.plainTextEdit.setPlaceholderText:
-                self.showInputWarning()
-                return
-
-            if len(original_text) > 0 and len(original_text) < 3:
-                self.showInputWarning2()
-                return
-
-            
-            # Get the emotion from the dictionary with a default value of 'unknown'
-            emotion_result_str = emotion_mappings.get(emotion_result_str, 'unknown')
-
-            # Updated call
-            intensity_result = self.classify_intensity(polarity_result_str, emotion_result_str, text_spell_checked, converted_text) # Assuming classify_intensity requires emoticons_count and text
-            
-
-            print("The Polarity is: ", polarity_result_str)
-            print("\n")
-            print("The Emotion is: ", emotion_result_str)
-            print("\n")
-            print("The Intensity Level is: ", intensity_result)
-            print("\n")
-            print("===============================================================================================================================================================================")
-            print("\n")
-
-            # Updating the table with analysis results
-            current_row_count = self.tableWidget.rowCount()
-            self.tableWidget.insertRow(current_row_count)
-
-            # Set the original text in the table
-            original_text_item = QtWidgets.QTableWidgetItem(original_text)
-            original_text_item.setForeground(QtGui.QColor(0, 0, 0))
-            font = QtGui.QFont()
-            font.setPointSize(8)
-            original_text_item.setFont(font)
-            self.tableWidget.setItem(current_row_count, 0, original_text_item)
-
-            # Set the analysis result in the table
-            analysis_item = QtWidgets.QTableWidgetItem(polarity_result_str)
-            analysis_item.setForeground(QtGui.QColor(0, 0, 0))
-            analysis_item.setTextAlignment(QtCore.Qt.AlignCenter)
-            analysis_item.setFont(font)
-            self.tableWidget.setItem(current_row_count, 1, analysis_item)
-
-            # Set the emotion result in the table
-            emotion_item = QtWidgets.QTableWidgetItem(emotion_result_str)  # Replace with actual emotion
-            emotion_item.setForeground(QtGui.QColor(0, 0, 0))
-            emotion_item.setTextAlignment(QtCore.Qt.AlignCenter)
-            emotion_item.setFont(font)
-            self.tableWidget.setItem(current_row_count, 2, emotion_item)
-
-            # Set the intensity result in the table
-            intensity_item = QtWidgets.QTableWidgetItem(intensity_result)
-            intensity_item.setForeground(QtGui.QColor(0, 0, 0))
-            intensity_item.setTextAlignment(QtCore.Qt.AlignCenter)
-            intensity_item.setFont(font)
-            self.tableWidget.setItem(current_row_count, 3, intensity_item)
-
-            # Incrementing the counts for polarity, emotion, and intensity
-            self.update_counts(polarity_result_str, emotion_result_str, intensity_result)
-
-            # Return the predicted labels
-        return {
-                'polarity': polarity_result_str,
-                'emotion': emotion_result_str,
-                'intensity': intensity_result
+                # Define a dictionary for emotion mappings
+                emotion_mappings = {
+                    'Happy': 'Happy',
+                    'Sad': 'Sad',
+                    'Fear': 'Fear',
+                    'Anticipation': 'Anticipation',
+                    'Surprise': 'Surprise',
+                    'Angry': 'Angry'
                 }
+
+                # Check if the original text is empty and show the popup
+                if not original_text or original_text == self.plainTextEdit.setPlaceholderText:
+                    self.showInputWarning()
+                    return
+
+                if len(original_text) > 0 and len(original_text) < 3:
+                    self.showInputWarning2()
+                    return
+
+                
+                # Get the emotion from the dictionary with a default value of 'unknown'
+                emotion_result_str = emotion_mappings.get(emotion_result_str, 'unknown')
+
+                # Updated call
+                intensity_result = self.classify_intensity(polarity_result_str, emotion_result_str, text_spell_checked, converted_text) # Assuming classify_intensity requires emoticons_count and text
+                
+
+                print("The Polarity is: ", polarity_result_str)
+                print("\n")
+                print("The Emotion is: ", emotion_result_str)
+                print("\n")
+                print("The Intensity Level is: ", intensity_result)
+                print("\n")
+                print("===============================================================================================================================================================================")
+                print("\n")
+
+                # Updating the table with analysis results
+                current_row_count = self.tableWidget.rowCount()
+                self.tableWidget.insertRow(current_row_count)
+
+                # Set the original text in the table
+                original_text_item = QtWidgets.QTableWidgetItem(original_text)
+                original_text_item.setForeground(QtGui.QColor(0, 0, 0))
+                font = QtGui.QFont()
+                font.setPointSize(8)
+                original_text_item.setFont(font)
+                self.tableWidget.setItem(current_row_count, 0, original_text_item)
+
+                # Set the analysis result in the table
+                analysis_item = QtWidgets.QTableWidgetItem(polarity_result_str)
+                analysis_item.setForeground(QtGui.QColor(0, 0, 0))
+                analysis_item.setTextAlignment(QtCore.Qt.AlignCenter)
+                analysis_item.setFont(font)
+                self.tableWidget.setItem(current_row_count, 1, analysis_item)
+
+                # Set the emotion result in the table
+                emotion_item = QtWidgets.QTableWidgetItem(emotion_result_str)  # Replace with actual emotion
+                emotion_item.setForeground(QtGui.QColor(0, 0, 0))
+                emotion_item.setTextAlignment(QtCore.Qt.AlignCenter)
+                emotion_item.setFont(font)
+                self.tableWidget.setItem(current_row_count, 2, emotion_item)
+
+                # Set the intensity result in the table
+                intensity_item = QtWidgets.QTableWidgetItem(intensity_result)
+                intensity_item.setForeground(QtGui.QColor(0, 0, 0))
+                intensity_item.setTextAlignment(QtCore.Qt.AlignCenter)
+                intensity_item.setFont(font)
+                self.tableWidget.setItem(current_row_count, 3, intensity_item)
+
+                # Incrementing the counts for polarity, emotion, and intensity
+                self.update_counts(polarity_result_str, emotion_result_str, intensity_result)
+
+                # Return the predicted labels
+        
+        return {
+                    'polarity': polarity_result_str,
+                    'emotion': emotion_result_str,
+                    'intensity': intensity_result
+                    }
+    
+    def updateTableWithResults(self, original_text, polarity, emotion, intensity):
+        current_row_count = self.tableWidget.rowCount()
+        self.tableWidget.insertRow(current_row_count)
+
+        # Set the original text in the table
+        original_text_item = QtWidgets.QTableWidgetItem(original_text)
+        original_text_item.setForeground(QtGui.QColor(0, 0, 0))
+        font = QtGui.QFont()
+        font.setPointSize(8)
+        original_text_item.setFont(font)
+        self.tableWidget.setItem(current_row_count, 0, original_text_item)
+
+        # Set the polarity result in the table
+        polarity_item = QtWidgets.QTableWidgetItem(polarity)
+        polarity_item.setForeground(QtGui.QColor(0, 0, 0))
+        polarity_item.setTextAlignment(QtCore.Qt.AlignCenter)
+        polarity_item.setFont(font)
+        self.tableWidget.setItem(current_row_count, 1, polarity_item)
+
+        # Set the emotion result in the table
+        emotion_item = QtWidgets.QTableWidgetItem(emotion)
+        emotion_item.setForeground(QtGui.QColor(0, 0, 0))
+        emotion_item.setTextAlignment(QtCore.Qt.AlignCenter)
+        emotion_item.setFont(font)
+        self.tableWidget.setItem(current_row_count, 2, emotion_item)
+
+        # Set the intensity result in the table
+        intensity_item = QtWidgets.QTableWidgetItem(intensity)
+        intensity_item.setForeground(QtGui.QColor(0, 0, 0))
+        intensity_item.setTextAlignment(QtCore.Qt.AlignCenter)
+        intensity_item.setFont(font)
+        self.tableWidget.setItem(current_row_count, 3, intensity_item)
+
+        # Incrementing the counts for polarity, emotion, and intensity
+        self.update_counts(polarity, emotion, intensity)
 
     def update_counts(self, polarity, emotion, intensity):
         # Update polarity count
