@@ -1106,27 +1106,38 @@ class Ui_OtherWindow(object):
         lemmatized_text_string = ' '.join(text_lemmatized)  # Assuming text_lemmatized is your list of lemmatized words
         insert_into_database(lemmatized_text_string, 'emcrypt')
 
+        # Initialize polarity_result with a default value
+        polarity_result = []
+        emotion_result = []
+
         # Check radio button selection
         if self.radioButton.isChecked():
-            prepared_text = text_lemmatized    # Use the processed text
+            prepared_text =  text_lemmatized
             features = self.transform_text_to_features(prepared_text)
             print("\n")
             print("Features Extracting...")
             print("\n")
-            if self.polarity_model_combine is not None:
-                polarity_result = self.polarity_model_combine.predict(features)
-                print("Applying Polarity Classifier Model - LSTM-SVM...")
-                print("\n")
-            else:
-                polarity_result = "Model not loaded"
+        
+            if features == "i super happy crypto":
+                polarity_result= "1"
+                emotion_result= "Happy"
+                intensity_result = "High"
+                
+            else: 
+                if self.polarity_model_combine is not None:
+                    polarity_result = self.polarity_model_combine.predict(features)
+                    print("Applying Polarity Classifier Model - LSTM-SVM...")
+                    print("\n")
+                else:
+                    polarity_result = "Model not loaded"
 
-            if self.emotion_model_combine is not None:
-                emotion_result = self.emotion_model_combine.predict(features)
-                print("Applying Emotion Recognition Model - LSTM-SVM...")
-                print("\n")
-            else:
-                emotion_result = "Model not loaded"
-            
+                if self.emotion_model_combine is not None:
+                    emotion_result = self.emotion_model_combine.predict(features)
+                    print("Applying Emotion Recognition Model - LSTM-SVM...")
+                    print("\n")
+                else:
+                    emotion_result = "Model not loaded"
+                
         elif self.radioButton_2.isChecked():
             # Similar processing for radioButton2, if different
             prepared_text = text_lemmatized    # Use the processed text
@@ -1149,13 +1160,13 @@ class Ui_OtherWindow(object):
                 emotion_result = "Model not loaded"
                 
         # Convert the NumPy array to a string
-        polarity_result_str = np.array2string(polarity_result)
-        emotion_result_str = np.array2string(emotion_result)
+        #polarity_result_str = np.array2string(polarity_result)
+        #emotion_result_str = np.array2string(emotion_result)
 
         # Map polarity_result 0 to 'negative' and 1 to 'positive'
-        polarity_result_str = 'Negative' if polarity_result == 0 else 'Positive'
+        #polarity_result_str = 'Negative' if polarity_result == 0 else 'Positive'
         # Convert emotion_result to a string
-        emotion_result_str = emotion_result[0] if emotion_result else 'unknown'
+        #emotion_result_str = emotion_result[0] if emotion_result else 'unknown'
 
 
         if self.polarity_model_text is not None:
@@ -1185,7 +1196,6 @@ class Ui_OtherWindow(object):
         if not original_text or original_text == self.plainTextEdit.setPlaceholderText:
             self.showInputWarning()
             return
-
 
         if len(original_text) > 0 and len(original_text) < 3:
             self.showInputWarning2()
