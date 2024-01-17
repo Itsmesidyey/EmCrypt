@@ -1340,7 +1340,7 @@ class Ui_OtherWindow(object):
         # Create and set up the pop-up dialog
         dialog = QDialog()
         dialog.setWindowTitle("Upload File Instructions")
-        dialog.setWindowModality(Qt.ApplicationModal)
+        dialog.setWindowModality(Qt.ApplicationModal)  # Make the dialog modal
 
         layout = QVBoxLayout(dialog)
 
@@ -1364,17 +1364,13 @@ class Ui_OtherWindow(object):
                     df = pd.read_csv(file_name)
                 else:
                     raise ValueError("Unsupported file format")
-            
 
                 self.tableWidget.setRowCount(0)
                 for index, row in df.iterrows():
                     self.plainTextEdit.setPlainText(row['Tweets'])  # Access the 'Tweets' column of the row
-                    # Process the tweet and update the table
-                    predicted_labels = self.updateTextInTable()  # This should return the predicted labels for polarity, emotion, and intensity
-
-                # After processing all rows, set the filename in plainTextEdit
-                self.plainTextEdit.setPlainText(file_name)
-
+                    self.updateTextInTable()  # Process and update the table
+                    # After processing all rows, set the filename in plainTextEdit
+                    self.plainTextEdit.setPlainText(file_name)
 
             except Exception as e:
                 print("An error occurred:", e)
