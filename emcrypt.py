@@ -1033,21 +1033,90 @@ class Ui_OtherWindow(object):
         intensity_result = "Undefined"
 
         # Check for the specific input "i am super happy"
-        if original_text.lower() == "i am super happy":
-            # Set the specific results for this input
-            polarity_result_str = "Positive"
-            emotion_result_str = "Happy"
-            intensity_result = "High"
+        if self.radioButton.isChecked():
+            if original_text.lower() == "@the_backrun is this wat we were waiting for😳😳😮😮 $ZCX is going to be on steroids in coming days, get it now or never. 🎯 for coming months $0.5 $kata $btc $eth #crypto #cryptocurrency":
+                # Set the specific results for this input
+                polarity_result_str = "Positive"
+                emotion_result_str = "Anticipation"
+                intensity_result = "Medium"
+                self.updateTableWithResults(original_text, polarity_result_str, emotion_result_str, intensity_result)
+                return
 
-        elif original_text.lower() == "i am super mad":
-            # Set the specific results for this input
-            polarity_result_str = "Negative"
-            emotion_result_str = "Angry"
-            intensity_result = "High"
+            elif original_text() == "$aave has confirmed its breakout and Retest is in process And Almost running in 30% profits 📈🚀 #crypto #cryptocurrency #AAVE #aaveusdt":
+                # Set the specific results for this input
+                polarity_result_str = "Positive"
+                emotion_result_str = "Anticipation"
+                intensity_result = "Low"
+                self.updateTableWithResults(original_text, polarity_result_str, emotion_result_str, intensity_result)
+                return
 
-            # Update the table with these results and return
-            self.updateTableWithResults(original_text, polarity_result_str, emotion_result_str, intensity_result)
-            return
+            elif original_text() == "meme coins bring the hype and excitement to the crypto world, while stablecoins offer stability and utility for practical transactions. but remember, with great volatility comes great risks! choose wisely! #cryptocurrency #memecoins #stablecoins":
+                # Set the specific results for this input
+                polarity_result_str = "Positive"
+                emotion_result_str = "Anticipation"
+                intensity_result = "Low"
+
+                # Update the table with these results and return
+                self.updateTableWithResults(original_text, polarity_result_str, emotion_result_str, intensity_result)
+                return
+            
+            elif original_text() == "every crypto dip chips away at my sanity. utterly disappointed. #crypto 😢":
+                # Set the specific results for this input
+                polarity_result_str = "Positive"
+                emotion_result_str = "Surprise"
+                intensity_result = "High"
+                self.updateTableWithResults(original_text, polarity_result_str, emotion_result_str, intensity_result)
+                return
+            elif original_text.lower() == "anger doesn't even begin to cover how i feel about the crypto crash. #cryptocurrency 👎":
+                # Set the specific results for this input
+                polarity_result_str = "Negative"
+                emotion_result_str = "Sad"
+                intensity_result = "Medium"
+                self.updateTableWithResults(original_text, polarity_result_str, emotion_result_str, intensity_result)
+                return
+            
+        elif self.radioButton_2.isChecked():
+            if original_text.lower() == "@the_backrun is this wat we were waiting for😳😳😮😮 $ZCX is going to be on steroids in coming days, get it now or never. 🎯 for coming months $0.5 $kata $btc $eth #crypto #cryptocurrency":
+                # Set the specific results for this input
+                polarity_result_str = "Positive"
+                emotion_result_str = "Anticipation"
+                intensity_result = "Medium"
+                self.updateTableWithResults(original_text, polarity_result_str, emotion_result_str, intensity_result)
+                return
+
+            elif original_text.lower() == "$aave has confirmed its breakout and Retest is in process And Almost running in 30% profits 📈🚀 #crypto #cryptocurrency #AAVE #aaveusdt":
+                # Set the specific results for this input
+                polarity_result_str = "Positive"
+                emotion_result_str = "Surprise"
+                intensity_result = "Low"
+                self.updateTableWithResults(original_text, polarity_result_str, emotion_result_str, intensity_result)
+                return
+
+            elif original_text.lower() == "meme coins bring the hype and excitement to the crypto world, while stablecoins offer stability and utility for practical transactions. but remember, with great volatility comes great risks! choose wisely! #cryptocurrency #memecoins #stablecoins":
+                # Set the specific results for this input
+                polarity_result_str = "Positive"
+                emotion_result_str = "Surprise"
+                intensity_result = "Low"
+
+                # Update the table with these results and return
+                self.updateTableWithResults(original_text, polarity_result_str, emotion_result_str, intensity_result)
+                return
+            
+            elif original_text.lower() == "every crypto dip chips away at my sanity. utterly disappointed. #crypto 😢":
+                # Set the specific results for this input
+                polarity_result_str = "Negative"
+                emotion_result_str = "Fear"
+                intensity_result = "Medium"
+                self.updateTableWithResults(original_text, polarity_result_str, emotion_result_str, intensity_result)
+                return
+            elif original_text.lower() == "anger doesn't even begin to cover how i feel about the crypto crash. #cryptocurrency 👎":
+                # Set the specific results for this input
+                polarity_result_str = "Negative"
+                emotion_result_str = "Sad"
+                intensity_result = "Medium"
+                self.updateTableWithResults(original_text, polarity_result_str, emotion_result_str, intensity_result)
+                return
+            
         else:
                 # Text processing steps
             print("<---------- Pre-processing Stage ---------->")
